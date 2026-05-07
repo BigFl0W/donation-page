@@ -29,66 +29,69 @@ if ($adminRows === []) {
 ?>
 <div class="admin-topbar">
     <div>
-        <h2>Admins & Roles</h2>
-        <p>Add platform managers, define roles, and keep access auditable.</p>
+        <h2>Users & Roles</h2>
+        <p>Manage administrator accounts, permissions, and access boundaries for the platform.</p>
     </div>
     <div class="admin-actions">
-        <a class="admin-btn primary" href="#">Add Admin</a>
+        <a class="admin-btn primary" href="#">Add User</a>
     </div>
 </div>
 
-<section class="admin-grid-2">
-    <div class="admin-table-card">
-        <div class="admin-section-title">
-            <h3>Current Admin Accounts</h3>
-        </div>
-        <table class="admin-table">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($adminRows as $admin): ?>
+<div class="admin-workspace-grid">
+    <div class="admin-workspace-main">
+        <section class="admin-table-card">
+            <div class="admin-section-title">
+                <h3>Current Admin Accounts</h3>
+            </div>
+            <table class="admin-table admin-table-clean">
+                <thead>
                 <tr>
-                    <td><?php echo e($admin["full_name"]); ?></td>
-                    <td><?php echo e($admin["email"]); ?></td>
-                    <td><?php echo e($admin["role_name"]); ?></td>
-                    <td><span class="admin-badge success"><?php echo e($admin["status"]); ?></span></td>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
                 </tr>
-            <?php endforeach; ?>
-            <tr>
-                <td>Content Editor</td>
-                <td>editor@graciouscharity.org</td>
-                <td>editor</td>
-                <td><span class="admin-badge info">Planned</span></td>
-            </tr>
-            <tr>
-                <td>Finance Officer</td>
-                <td>finance@graciouscharity.org</td>
-                <td>finance</td>
-                <td><span class="admin-badge info">Planned</span></td>
-            </tr>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <?php foreach ($adminRows as $admin): ?>
+                    <tr>
+                        <td><?php echo e($admin["full_name"]); ?></td>
+                        <td><?php echo e($admin["email"]); ?></td>
+                        <td><?php echo e($admin["role_name"]); ?></td>
+                        <td><span class="admin-badge success"><?php echo e($admin["status"]); ?></span></td>
+                    </tr>
+                <?php endforeach; ?>
+                <tr>
+                    <td>Content Editor</td>
+                    <td>editor@graciouscharity.org</td>
+                    <td>editor</td>
+                    <td><span class="admin-badge info">Planned</span></td>
+                </tr>
+                <tr>
+                    <td>Finance Officer</td>
+                    <td>finance@graciouscharity.org</td>
+                    <td>finance</td>
+                    <td><span class="admin-badge info">Planned</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
     </div>
-
-    <div class="admin-list-card">
-        <div class="admin-section-title">
-            <h3>Role Permissions</h3>
-        </div>
-        <ul class="admin-list">
-            <?php foreach ($roles as $role => $description): ?>
-                <li>
-                    <div>
-                        <strong><?php echo e($role); ?></strong>
-                        <div class="admin-helper"><?php echo e($description); ?></div>
-                    </div>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </div>
-</section>
+    <aside class="admin-workspace-side">
+        <section class="admin-panel">
+            <div class="admin-panel-head">
+                <div><h3>Role Permissions</h3></div>
+            </div>
+            <ul class="admin-plain-list">
+                <?php foreach ($roles as $role => $description): ?>
+                    <li>
+                        <div>
+                            <strong><?php echo e($role); ?></strong>
+                            <span><?php echo e($description); ?></span>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </section>
+    </aside>
+</div>

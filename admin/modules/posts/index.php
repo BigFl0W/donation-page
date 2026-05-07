@@ -169,6 +169,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["save_post"])) {
 }
 
 $posts = admin_posts();
+
+$publishedPosts = count(array_filter(
+    $posts,
+    static fn(array $post): bool => (string) ($post["status"] ?? "") === "published"
+));
+$draftPosts = count(array_filter(
+    $posts,
+    static fn(array $post): bool => (string) ($post["status"] ?? "") === "draft"
+));
+$scheduledPosts = count(array_filter(
+    $posts,
+    static function (array $post): bool {
+        $publishedAt = (string) ($post["published_at"] ?? "");
+
+        return $publishedAt !== "" && strtotime($publishedAt) > time();
+    }
+));
 ?>
 <div class="admin-topbar">
     <div>
@@ -185,75 +202,107 @@ $posts = admin_posts();
     <?php if ($error !== ""): ?>
         <div class="admin-alert error"><?php echo e($error); ?></div>
     <?php endif; ?>
-    
     <form method="post" class="post-edit-layout">
         <input type="hidden" name="id" value="<?php echo e((string) $form["id"]); ?>">
-        
+
         <div class="post-edit-main">
-            <div class="admin-form-group title-group">
+            <div class="admin-kicker">
+                <i class="icofont-edit"></i>
+                <?php echo $isEditing ? "Editorial Update" : "New Story"; ?>
+            </div>
+
+            <div class="admin-form-group title-group admin-title-field">
                 <label for="post-title" class="sr-only">Title</label>
-                <input id="post-title" name="title" type="text" value="<?php echo e((string) $form["title"]); ?>" placeholder="Enter title here" required>
-            </div>
-            
-            <div class="admin-form-group slug-group">
-                <label for="post-slug">Permalink:</label>
-                <span><?php echo e(site_url("blog/")); ?></span>
-                <input id="post-slug" name="slug" type="text" value="<?php echo e((string) $form["slug"]); ?>" required>
-                <a href="<?php echo e($publicUrlPreview); ?>" target="_blank" class="admin-btn light">View Post</a>
+                <input id="post-title" name="title" type="text" value="<?php echo e((string) $form["title"]); ?>" placeholder="Write the post headline" required>
             </div>
 
-            <div class="admin-table-card">
-                <div class="admin-section-title">
-                    <h3>Content</h3>
-                </div>
-                <div class="admin-form-group">
-                    <textarea id="post-content" name="content" rows="20" placeholder="Start writing..."><?php echo e((string) $form["content"]); ?></textarea>
-                </div>
+            <div class="slug-group admin-permalink-box">
+                <strong>Permalink</strong>
+                <span><?php echo e($publicUrlPreview); ?></span>
+                <input id="post-slug" name="slug" type="text" value="<?php echo e((string) $form["slug"]); ?>" placeholder="story-slug" required>
+                <a href="<?php echo e($publicUrlPreview); ?>" target="_blank" class="admin-btn light">Preview</a>
             </div>
 
-            <div class="admin-table-card">
-                <div class="admin-section-title">
-                    <h3>Excerpt</h3>
+            <section class="admin-panel">
+                <div class="admin-panel-head">
+                    <div>
+                        <h3>Article Content</h3>
+                        <p>Main story copy for the public blog detail page.</p>
+                    </div>
                 </div>
                 <div class="admin-form-group">
-                    <textarea id="post-excerpt" name="excerpt" rows="3" placeholder="Write a short summary..."><?php echo e((string) $form["excerpt"]); ?></textarea>
+                    <textarea id="post-content" name="content" rows="18" placeholder="Start writing the article..."><?php echo e((string) $form["content"]); ?></textarea>
                 </div>
-            </div>
+            </section>
 
-            <div class="admin-table-card">
-                <div class="admin-section-title">
-                    <h3>SEO Settings</h3>
+            <section class="admin-panel">
+                <div class="admin-panel-head">
+                    <div>
+                        <h3>Story Setup</h3>
+                        <p>Control how the article appears on listing pages and article cards.</p>
+                    </div>
+                </div>
+                <div class="admin-grid-2">
+                    <div class="admin-form-group">
+                        <label for="post-category">Primary Category</label>
+                        <input id="post-category" name="category" type="text" list="post-category-options" value="<?php echo e((string) $form["category"]); ?>" placeholder="Select or add category">
+                    </div>
+                    <div class="admin-form-group">
+                        <label for="post-author">Author</label>
+                        <input id="post-author" name="author_name" type="text" value="<?php echo e((string) $form["author_name"]); ?>">
+                    </div>
                 </div>
                 <div class="admin-form-group">
-                    <label for="post-meta-title">SEO Title</label>
-                    <input id="post-meta-title" name="meta_title" type="text" value="<?php echo e((string) $form["meta_title"]); ?>">
+                    <label for="post-excerpt">Excerpt</label>
+                    <textarea id="post-excerpt" name="excerpt" rows="4" placeholder="Write a concise summary for blog cards and search results..."><?php echo e((string) $form["excerpt"]); ?></textarea>
+                </div>
+                <div class="admin-form-group">
+                    <label for="post-image">Featured Image</label>
+                    <input id="post-image" name="featured_image" type="text" value="<?php echo e((string) $form["featured_image"]); ?>" placeholder="assets/images/blogs/blog_img_1.jpg">
+                </div>
+            </section>
+
+            <section class="admin-panel">
+                <div class="admin-panel-head">
+                    <div>
+                        <h3>SEO & Discoverability</h3>
+                        <p>Metadata that helps search engines and social previews stay polished.</p>
+                    </div>
+                </div>
+                <div class="admin-grid-2">
+                    <div class="admin-form-group">
+                        <label for="post-meta-title">SEO Title</label>
+                        <input id="post-meta-title" name="meta_title" type="text" value="<?php echo e((string) $form["meta_title"]); ?>">
+                    </div>
+                    <div class="admin-form-group">
+                        <label for="post-keywords">Focus Keywords</label>
+                        <input id="post-keywords" name="seo_keywords" type="text" value="<?php echo e((string) $form["seo_keywords"]); ?>" placeholder="charity impact, outreach, education">
+                    </div>
                 </div>
                 <div class="admin-form-group">
                     <label for="post-meta-description">SEO Description</label>
-                    <textarea id="post-meta-description" name="meta_description" rows="2"><?php echo e((string) $form["meta_description"]); ?></textarea>
-                </div>
-                <div class="admin-form-group">
-                    <label for="post-keywords">Focus Keywords</label>
-                    <input id="post-keywords" name="seo_keywords" type="text" value="<?php echo e((string) $form["seo_keywords"]); ?>" placeholder="charity impact, outreach, education">
+                    <textarea id="post-meta-description" name="meta_description" rows="3"><?php echo e((string) $form["meta_description"]); ?></textarea>
                 </div>
                 <div class="admin-form-group">
                     <label for="post-canonical">Canonical URL</label>
                     <input id="post-canonical" name="canonical_url" type="text" value="<?php echo e((string) $form["canonical_url"]); ?>">
                 </div>
-            </div>
+            </section>
         </div>
 
-        <div class="post-edit-side">
-            <div class="admin-table-card side-panel">
+        <aside class="post-edit-side admin-panel-stack">
+            <section class="admin-panel side-panel">
                 <div class="admin-section-title">
-                    <h3>Publish</h3>
+                    <h3>Publishing</h3>
                 </div>
                 <div class="side-panel-content">
                     <div class="publish-stat">
-                        <i class="icofont-key"></i> Status: <strong><?php echo e(ucfirst((string) $form["status"])); ?></strong>
+                        <i class="icofont-ui-text-chat"></i> Status:
+                        <strong><?php echo e(ucfirst((string) $form["status"])); ?></strong>
                     </div>
                     <div class="publish-stat">
-                        <i class="icofont-calendar"></i> Published on: <strong><?php echo e($form["published_at"] ? date("M j, Y @ H:i", strtotime($form["published_at"])) : "Immediately"); ?></strong>
+                        <i class="icofont-ui-calendar"></i> Publish time:
+                        <strong><?php echo e($form["published_at"] ? date("M j, Y @ H:i", strtotime((string) $form["published_at"])) : "Immediately"); ?></strong>
                     </div>
                     <div class="admin-form-group mt-3">
                         <label for="post-status">Change Status</label>
@@ -267,56 +316,68 @@ $posts = admin_posts();
                         <label for="post-published">Publish Date</label>
                         <input id="post-published" name="published_at" type="datetime-local" value="<?php echo e((string) $form["published_at"]); ?>">
                     </div>
-                    <div class="admin-form-group">
-                        <label for="post-author">Author</label>
-                        <input id="post-author" name="author_name" type="text" value="<?php echo e((string) $form["author_name"]); ?>">
-                    </div>
                 </div>
                 <div class="side-panel-footer">
-                    <a href="<?php echo e(admin_url("index.php?page=posts")); ?>" class="admin-btn light">Move to Trash</a>
-                    <button type="submit" name="save_post" class="admin-btn primary">Update</button>
+                    <a href="<?php echo e(admin_url("index.php?page=posts")); ?>" class="admin-btn light">Back to Posts</a>
+                    <button type="submit" name="save_post" class="admin-btn primary"><?php echo $isEditing ? "Save Changes" : "Publish Post"; ?></button>
                 </div>
-            </div>
+            </section>
 
-            <div class="admin-table-card side-panel">
+            <section class="admin-panel side-panel">
                 <div class="admin-section-title">
-                    <h3>Categories</h3>
+                    <h3>Taxonomy</h3>
                 </div>
                 <div class="side-panel-content">
                     <div class="admin-form-group">
-                        <input id="post-category" name="category" type="text" list="post-category-options" value="<?php echo e((string) $form["category"]); ?>" placeholder="Select or add category">
+                        <label for="post-tags">Tags</label>
+                        <textarea id="post-tags" name="tag_names" rows="3" placeholder="Separate tags with commas"><?php echo e((string) $form["tag_names"]); ?></textarea>
+                        <p class="admin-helper">Example: education, outreach, donors</p>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="admin-table-card side-panel">
+            <section class="admin-panel side-panel">
                 <div class="admin-section-title">
-                    <h3>Tags</h3>
+                    <h3>Editorial Checklist</h3>
                 </div>
                 <div class="side-panel-content">
-                    <div class="admin-form-group">
-                        <textarea id="post-tags" name="tag_names" rows="2" placeholder="Separate tags with commas"><?php echo e((string) $form["tag_names"]); ?></textarea>
-                        <p class="admin-helper">Separate tags with commas</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="admin-table-card side-panel">
-                <div class="admin-section-title">
-                    <h3>Featured Image</h3>
-                </div>
-                <div class="side-panel-content">
-                    <div class="admin-form-group">
-                        <input id="post-image" name="featured_image" type="text" value="<?php echo e((string) $form["featured_image"]); ?>" placeholder="Image URL path">
-                        <?php if ($form["featured_image"]): ?>
-                            <div class="mt-2">
-                                <img src="../<?php echo e($form["featured_image"]); ?>" alt="Preview" style="max-width: 100%; height: auto; border: 1px solid #ddd;">
+                    <ul class="admin-plain-list">
+                        <li>
+                            <div>
+                                <strong>Clear headline</strong>
+                                <span>Keep it specific and readable in search results.</span>
                             </div>
-                        <?php endif; ?>
-                    </div>
+                            <span class="admin-chip">Required</span>
+                        </li>
+                        <li>
+                            <div>
+                                <strong>Category and tags</strong>
+                                <span>Use them so the archive stays organized.</span>
+                            </div>
+                            <span class="admin-chip">Recommended</span>
+                        </li>
+                        <li>
+                            <div>
+                                <strong>SEO fields</strong>
+                                <span>Fill them before publishing important campaign stories.</span>
+                            </div>
+                            <span class="admin-chip">Best Practice</span>
+                        </li>
+                    </ul>
                 </div>
-            </div>
-        </div>
+            </section>
+
+            <?php if ($form["featured_image"]): ?>
+                <section class="admin-panel side-panel">
+                    <div class="admin-section-title">
+                        <h3>Image Preview</h3>
+                    </div>
+                    <div class="side-panel-content">
+                        <img src="../<?php echo e((string) $form["featured_image"]); ?>" alt="Featured image preview" style="width: 100%; height: auto; border-radius: 12px; border: 1px solid #e7ded8;">
+                    </div>
+                </section>
+            <?php endif; ?>
+        </aside>
     </form>
 
     <datalist id="post-category-options">
@@ -325,33 +386,121 @@ $posts = admin_posts();
         <?php endforeach; ?>
     </datalist>
 <?php else: ?>
-    <section class="admin-table-card">
-        <div class="admin-section-title">
-            <h3>Published and Draft Posts</h3>
+    <div class="admin-workspace-grid">
+        <div class="admin-workspace-main">
+            <section class="admin-panel">
+                <div class="admin-panel-head">
+                    <div>
+                        <h3>Editorial Overview</h3>
+                        <p>Track publishing volume, draft load, and scheduled stories in one workspace.</p>
+                    </div>
+                </div>
+                <div class="admin-summary-grid">
+                    <div class="admin-summary-metric">
+                        <span>Total Posts</span>
+                        <strong><?php echo e((string) count($posts)); ?></strong>
+                        <small>All articles in the system</small>
+                    </div>
+                    <div class="admin-summary-metric">
+                        <span>Published</span>
+                        <strong><?php echo e((string) $publishedPosts); ?></strong>
+                        <small>Live on the public blog</small>
+                    </div>
+                    <div class="admin-summary-metric">
+                        <span>Scheduled / Drafts</span>
+                        <strong><?php echo e((string) ($scheduledPosts + $draftPosts)); ?></strong>
+                        <small>Still in workflow</small>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-table-card">
+                <div class="admin-section-title">
+                    <h3>Published and Draft Posts</h3>
+                </div>
+                <table class="admin-table admin-table-clean">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Permalink</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Published</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($posts as $post): ?>
+                        <tr>
+                            <td>
+                                <strong><?php echo e((string) $post["title"]); ?></strong>
+                                <div class="admin-listing-meta">
+                                    <span><?php echo e((string) ($post["author_name"] ?? "Admin Team")); ?></span>
+                                </div>
+                            </td>
+                            <td><?php echo e((string) ($post["permalink_path"] ?? $post["slug"])); ?></td>
+                            <td><?php echo e((string) ($post["category"] ?? "")); ?></td>
+                            <td>
+                                <span class="admin-badge <?php echo (($post["status"] ?? "") === "published") ? "success" : "warning"; ?>">
+                                    <?php echo e((string) $post["status"]); ?>
+                                </span>
+                            </td>
+                            <td><?php echo e(isset($post["published_at"]) ? (string) $post["published_at"] : ""); ?></td>
+                            <td><a class="admin-btn light" href="<?php echo e(admin_url("index.php?page=posts&action=edit&id=" . (string) $post["id"])); ?>">Edit</a></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </section>
         </div>
-        <table class="admin-table">
-            <thead>
-            <tr>
-                <th>Title</th>
-                <th>URL Path</th>
-                <th>Category</th>
-                <th>Status</th>
-                <th>Published</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($posts as $post): ?>
-                <tr>
-                    <td><?php echo e((string) $post["title"]); ?></td>
-                    <td><?php echo e((string) ($post["permalink_path"] ?? $post["slug"])); ?></td>
-                    <td><?php echo e((string) ($post["category"] ?? "")); ?></td>
-                    <td><span class="admin-badge <?php echo (($post["status"] ?? "") === "published") ? "success" : "warning"; ?>"><?php echo e((string) $post["status"]); ?></span></td>
-                    <td><?php echo e(isset($post["published_at"]) ? (string) $post["published_at"] : ""); ?></td>
-                    <td><a class="admin-btn light" href="<?php echo e(admin_url("index.php?page=posts&action=edit&id=" . (string) $post["id"])); ?>">Edit</a></td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
-    </section>
+
+        <aside class="admin-workspace-side">
+            <section class="admin-panel">
+                <div class="admin-panel-head">
+                    <div>
+                        <h3>Content Structure</h3>
+                    </div>
+                </div>
+                <ul class="admin-plain-list">
+                    <li>
+                        <div>
+                            <strong>Categories</strong>
+                            <span><?php echo e((string) count($categories)); ?> saved content groups</span>
+                        </div>
+                        <span class="admin-chip">Taxonomy</span>
+                    </li>
+                    <li>
+                        <div>
+                            <strong>Tags</strong>
+                            <span><?php echo e((string) count($availableTags)); ?> reusable topic labels</span>
+                        </div>
+                        <span class="admin-chip">SEO</span>
+                    </li>
+                    <li>
+                        <div>
+                            <strong>Public archive</strong>
+                            <span>Permalinks follow clean category-first blog URLs.</span>
+                        </div>
+                        <span class="admin-chip">Live</span>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="admin-panel">
+                <div class="admin-panel-head">
+                    <div>
+                        <h3>Editorial Notes</h3>
+                    </div>
+                </div>
+                <div class="admin-note-box">
+                    <strong>Publishing standard</strong>
+                    <p>Use short excerpts, one clear primary category, and populated SEO fields for campaign stories that should rank well in search.</p>
+                </div>
+                <div class="admin-note-box mt-3">
+                    <strong>Workflow</strong>
+                    <p>Create the story, set a clean slug, confirm taxonomy, then review the public preview before publishing.</p>
+                </div>
+            </section>
+        </aside>
+    </div>
 <?php endif; ?>

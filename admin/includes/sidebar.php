@@ -53,14 +53,14 @@ declare(strict_types=1);
                 <a href="<?php echo e(admin_url("index.php?page=admins")); ?>">
                     <div class="wp-menu-arrow"><div></div></div>
                     <div class="wp-menu-image"><i class="icofont-users"></i></div>
-                    <div class="wp-menu-name">Admins</div>
+                    <div class="wp-menu-name">Users</div>
                 </a>
             </li>
             <li class="wp-menu-item <?php echo is_active_admin_route("settings") ? "active" : ""; ?>">
                 <a href="<?php echo e(admin_url("index.php?page=settings")); ?>">
                     <div class="wp-menu-arrow"><div></div></div>
                     <div class="wp-menu-image"><i class="icofont-settings-alt"></i></div>
-                    <div class="wp-menu-name">Settings</div>
+                    <div class="wp-menu-name">Site Settings</div>
                 </a>
             </li>
         </ul>

@@ -20,21 +20,21 @@ $allowedPages = [
 $view = $allowedPages[$page] ?? $allowedPages["dashboard"];
 $pageTitles = [
     "dashboard" => "Dashboard",
-    "admins" => "Admins & Roles",
-    "content" => "Content Management",
+    "admins" => "Users & Roles",
+    "content" => "Content & Partners",
     "posts" => "Blog Posts",
     "events" => "Events",
     "donations" => "Donations & Gateways",
-    "settings" => "Settings",
+    "settings" => "Site Settings",
 ];
 $pageDescriptions = [
     "dashboard" => "Monitor donations, content activity, payment channels, and admin operations.",
-    "admins" => "Manage admin accounts, roles, and platform access.",
-    "content" => "Control public-facing pages, Explore content, and reusable content blocks.",
+    "admins" => "Manage admin accounts, permissions, and user access.",
+    "content" => "Control public-facing pages, partner records, and reusable content blocks.",
     "posts" => "Manage slug-based blog articles, summaries, and publish status.",
     "events" => "Manage upcoming events, featured events, venues, and registration links.",
     "donations" => "Track donations from Paystack and Stripe in one place.",
-    "settings" => "Centralize platform identity, credentials, and global configuration.",
+    "settings" => "Centralize platform identity, integrations, SEO defaults, and global configuration.",
 ];
 $pageTitle = $pageTitles[$page] ?? $pageTitles["dashboard"];
 $pageDescription = $pageDescriptions[$page] ?? $pageDescriptions["dashboard"];
