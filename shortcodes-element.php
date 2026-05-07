@@ -102,16 +102,13 @@
                                     <li><a class="dropdown-item" href="causes-single.php">Causes Single</a></li>                
                                 </ul>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Pages</a>
+                                                        <li class="nav-item dropdown">
+                                <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="volunteers.php">Volunteers</a></li>
-                                    <li><a class="dropdown-item" href="become-volunteers.php">Become Volunteers</a></li>
-                                    <li><a class="dropdown-item" href="donation-page.php">Donation Page</a></li>
-                                    <li><a class="dropdown-item" href="shortcodes-element.php">Shortcode Elements</a></li>
-                                    <li><a class="dropdown-item" href="typography.php">Typography</a></li> 
-                                    <li><a class="dropdown-item" href="our-faqs.php">Our Faq's</a></li>
-                                    <li><a class="dropdown-item" href="404-page.php">404 Page</a></li>                  
+                                    <li><a class="dropdown-item" href="gallery.php">Photo & Video Gallery</a></li>
+                                    <li><a class="dropdown-item" href="partners-sponsors.php">Partners & Sponsors</a></li>
+                                    <li><a class="dropdown-item" href="projects-programmes.php">Projects & Programmes</a></li>
+                                    <li><a class="dropdown-item" href="faqs.php">FAQs</a></li>
                                 </ul>
                             </li>
                             <li class="nav-item dropdown">

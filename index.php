@@ -103,16 +103,13 @@
                                     <li><a class="dropdown-item" href="causes-single.php">Causes Single</a></li>                
                                 </ul>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Pages </a>
+                                                        <li class="nav-item dropdown">
+                                <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="volunteers.php">Volunteers</a></li>
-                                    <li><a class="dropdown-item" href="become-volunteers.php">Become Volunteers</a></li>
-                                    <li><a class="dropdown-item" href="donation-page.php">Donation Page</a></li>
-                                    <li><a class="dropdown-item" href="shortcodes-element.php">Shortcode Elements</a></li>
-                                    <li><a class="dropdown-item" href="typography.php">Typography</a></li> 
-                                    <li><a class="dropdown-item" href="our-faqs.php">Our Faq's</a></li>
-                                    <li><a class="dropdown-item" href="404-page.php">404 Page</a></li>                  
+                                    <li><a class="dropdown-item" href="gallery.php">Photo & Video Gallery</a></li>
+                                    <li><a class="dropdown-item" href="partners-sponsors.php">Partners & Sponsors</a></li>
+                                    <li><a class="dropdown-item" href="projects-programmes.php">Projects & Programmes</a></li>
+                                    <li><a class="dropdown-item" href="faqs.php">FAQs</a></li>
                                 </ul>
                             </li>
                             <li class="nav-item dropdown">
@@ -499,7 +496,7 @@
         <!-- Counter Style 2 -->
 
         <!-- Causes Grid Start -->
-        <section class="wide-tb-100">
+        <section id="media-gallery" class="wide-tb-100">
             <div class="container">
                 
                 <div class="row justify-content-between align-items-end">
@@ -724,7 +721,7 @@
         <!-- Callout Style End -->
 
         <!-- Images Gallery Style Start -->
-        <section class="wide-tb-100">
+        <section id="media-gallery" class="wide-tb-100">
             <div class="container">
                 <div class="row img-gallery">                    
                     <div class="col-lg-4">
@@ -916,7 +913,7 @@
         <!-- About Us Style Start -->
 
         <!-- Event Style Start -->
-        <section class="wide-tb-100">
+        <section id="media-gallery" class="wide-tb-100">
             <div class="container">
                 <div class="row justify-content-between align-items-end">
                     <div class="col-lg-6 col-md-8">
@@ -1408,7 +1405,7 @@
         <!-- Google Map Style End -->   
 
         <!-- Our Partners Start -->
-        <section class="wide-tb-100 pt-5">
+        <section id="partners-sponsors" class="wide-tb-100 pt-5">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-12">

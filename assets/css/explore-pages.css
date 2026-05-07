@@ -1,0 +1,186 @@
+.explore-intro-card,
+.explore-panel,
+.explore-stat-card,
+.explore-tier-card,
+.explore-programme-card,
+.explore-contact-card,
+.explore-faq-card {
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+}
+
+.explore-intro-card,
+.explore-tier-card,
+.explore-programme-card,
+.explore-contact-card,
+.explore-faq-card {
+    padding: 2rem;
+}
+
+.explore-panel {
+    overflow: hidden;
+}
+
+.explore-media-thumb {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+}
+
+.explore-media-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.explore-video-badge,
+.explore-photo-badge {
+    position: absolute;
+    left: 1rem;
+    bottom: 1rem;
+    background: rgba(10, 10, 10, 0.72);
+    color: var(--white);
+    border-radius: 999px;
+    padding: 0.55rem 1rem;
+    font-weight: 700;
+}
+
+.explore-feature-copy {
+    padding: 2rem;
+}
+
+.explore-mini-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+.explore-gallery-card {
+    background: var(--white);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 16px 35px rgba(15, 23, 42, 0.08);
+}
+
+.explore-gallery-card .copy {
+    padding: 1.25rem 1.35rem 1.5rem;
+}
+
+.explore-gallery-card h3,
+.explore-tier-card h3,
+.explore-programme-card h3,
+.explore-faq-card h3,
+.explore-contact-card h3 {
+    font-size: 1.35rem;
+    margin-bottom: 0.75rem;
+}
+
+.explore-kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    font-weight: 700;
+    margin-bottom: 0.85rem;
+}
+
+.explore-stat-card {
+    padding: 1.5rem;
+    text-align: center;
+    height: 100%;
+}
+
+.explore-stat-card .number {
+    font-size: 2rem;
+    line-height: 1;
+    font-weight: 800;
+    color: var(--primary-color);
+    display: block;
+    margin-bottom: 0.65rem;
+}
+
+.explore-logo-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.explore-logo-item {
+    min-height: 120px;
+    background: var(--light-bg);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+}
+
+.explore-logo-item img {
+    max-width: 100%;
+    max-height: 52px;
+}
+
+.explore-tier-list,
+.explore-programme-list,
+.explore-check-list,
+.explore-faq-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.explore-tier-list li,
+.explore-programme-list li,
+.explore-check-list li,
+.explore-faq-list li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    margin-bottom: 0.9rem;
+}
+
+.explore-tier-list i,
+.explore-programme-list i,
+.explore-check-list i,
+.explore-faq-list i {
+    color: var(--primary-color);
+    margin-top: 0.2rem;
+}
+
+.explore-accent-block {
+    background: linear-gradient(135deg, rgba(237, 175, 35, 0.14), rgba(16, 24, 40, 0.02));
+    border-radius: 22px;
+    padding: 2rem;
+}
+
+.explore-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+.explore-footer-note p {
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 991.98px) {
+    .explore-logo-grid,
+    .explore-grid-2,
+    .explore-mini-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .explore-feature-copy,
+    .explore-intro-card,
+    .explore-tier-card,
+    .explore-programme-card,
+    .explore-contact-card,
+    .explore-faq-card {
+        padding: 1.5rem;
+    }
+}
