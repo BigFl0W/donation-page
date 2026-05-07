@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 $contentAreas = [
     ["name" => "Homepage", "owner" => "Landing content", "status" => "Ready"],
+    ["name" => "Events", "owner" => "Featured event and upcoming events page", "status" => "Ready"],
     ["name" => "Photo & Video Gallery", "owner" => "Explore media", "status" => "Ready"],
     ["name" => "Partners & Sponsors", "owner" => "Explore partners", "status" => "Ready"],
     ["name" => "Projects & Programmes", "owner" => "Explore programmes", "status" => "Ready"],

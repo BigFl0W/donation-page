@@ -9,6 +9,11 @@ if (is_admin_logged_in()) {
     exit;
 }
 
+if (admin_setup_required()) {
+    header("Location: " . admin_url("setup.php"));
+    exit;
+}
+
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -16,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = (string) ($_POST["password"] ?? "");
 
     if (!attempt_admin_login($email, $password)) {
-        $error = "Login failed. Use the scaffold admin account until database auth is wired.";
+        $error = "Login failed. Check your email and password, or complete admin setup first.";
     } else {
         header("Location: " . admin_url("index.php"));
         exit;
@@ -31,39 +36,45 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Login | Gracious</title>
     <link rel="shortcut icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="../assets/library/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/css/admin.css" rel="stylesheet">
 </head>
 <body class="admin-body">
 <div class="admin-auth-wrap">
-    <div class="admin-auth-card">
-        <div class="admin-auth-brand">
-            <img src="../assets/images/logo_dark.svg" alt="Gracious">
-            <div>
-                <h1>Gracious Admin</h1>
-                <div class="admin-auth-meta">Secure dashboard access for content, donations, and admin control.</div>
+    <div class="admin-auth-shell admin-auth-shell-single">
+        <section class="admin-auth-card admin-auth-form-panel">
+            <div class="admin-auth-brand admin-auth-brand-center">
+                <img src="../assets/images/logo_dark.svg" alt="Gracious">
+                <div>
+                    <div class="admin-auth-kicker">Administration</div>
+                    <h1 class="admin-auth-title admin-auth-title-dark">Sign In</h1>
+                </div>
             </div>
-        </div>
-
-        <?php if ($error !== ""): ?>
-            <div class="admin-alert error"><?php echo e($error); ?></div>
-        <?php endif; ?>
-
-        <form method="post">
-            <div class="admin-form-group">
-                <label for="email">Email</label>
-                <input id="email" name="email" type="email" value="admin@graciouscharity.org" required>
+            <div class="admin-auth-form-head">
+                <p>Use your administrator credentials to continue.</p>
             </div>
-            <div class="admin-form-group">
-                <label for="password">Password</label>
-                <input id="password" name="password" type="password" value="ChangeMe123!" required>
-            </div>
-            <button class="admin-btn primary" type="submit">Sign In</button>
-        </form>
 
-        <p class="admin-helper mt-3 mb-0">
-            Scaffold account: <strong>admin@graciouscharity.org</strong> / <strong>ChangeMe123!</strong>
-        </p>
+            <?php if ($error !== ""): ?>
+                <div class="admin-alert error"><?php echo e($error); ?></div>
+            <?php endif; ?>
+
+            <form method="post">
+                <div class="admin-form-group">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" value="" required>
+                </div>
+                <div class="admin-form-group">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" value="" required>
+                </div>
+                <button class="admin-btn primary" type="submit">Sign In</button>
+            </form>
+
+            <p class="admin-helper admin-auth-footnote mb-0">
+                Need a first account? <a href="<?php echo e(admin_url("setup.php")); ?>">Open admin setup</a>.
+            </p>
+        </section>
     </div>
 </div>
 </body>

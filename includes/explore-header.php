@@ -1,8 +1,15 @@
 <?php
 $page_title = $page_title ?? "Explore";
+$page_description = $page_description ?? "Gracious charity platform";
+$meta_keywords = $meta_keywords ?? "";
+$canonical_url = $canonical_url ?? site_url();
+$share_image = $share_image ?? site_url("assets/images/logo_dark.svg");
+$structured_data = $structured_data ?? "";
 $breadcrumb_title = $breadcrumb_title ?? $page_title;
 $hero_title = $hero_title ?? $page_title;
 $hero_label = $hero_label ?? "Explore";
+$section_title = $section_title ?? "Explore";
+$section_url = $section_url ?? "gallery.php";
 ?>
 <!doctype html>
 <html lang="en">
@@ -10,10 +17,22 @@ $hero_label = $hero_label ?? "Explore";
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
-    <title><?php echo htmlspecialchars($page_title); ?> | Gracious Charity</title>
-    <meta name="author" content="Mannat Studio">
-    <meta name="description" content="Gracious charity platform">
+    <title><?php echo htmlspecialchars($page_title); ?></title>
+    <meta name="author" content="Gracious Charity">
+    <meta name="description" content="<?php echo htmlspecialchars($page_description); ?>">
+    <?php if ($meta_keywords !== ""): ?>
+        <meta name="keywords" content="<?php echo htmlspecialchars($meta_keywords); ?>">
+    <?php endif; ?>
+    <link rel="canonical" href="<?php echo htmlspecialchars($canonical_url); ?>">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="<?php echo htmlspecialchars($page_title); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($page_description); ?>">
+    <meta property="og:url" content="<?php echo htmlspecialchars($canonical_url); ?>">
+    <meta property="og:image" content="<?php echo htmlspecialchars($share_image); ?>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?php echo htmlspecialchars($page_title); ?>">
+    <meta name="twitter:description" content="<?php echo htmlspecialchars($page_description); ?>">
+    <meta name="twitter:image" content="<?php echo htmlspecialchars($share_image); ?>">
     <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.ico">
     <link href="assets/library/animate/animate.min.css" rel="stylesheet">
     <link href="assets/library/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -23,6 +42,9 @@ $hero_label = $hero_label ?? "Explore";
     <link href="assets/library/magnific-popup/magnific-popup.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
     <link href="assets/css/explore-pages.css" rel="stylesheet">
+    <?php if ($structured_data !== ""): ?>
+        <script type="application/ld+json"><?php echo $structured_data; ?></script>
+    <?php endif; ?>
 </head>
 <body>
     <div id="pageloader">
@@ -69,13 +91,6 @@ $hero_label = $hero_label ?? "Explore";
                                 <a class="nav-link" href="about-us.php">About Us</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Causes</a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="causes-list.php">Causes List</a></li>
-                                    <li><a class="dropdown-item" href="causes-single.php">Causes Single</a></li>
-                                </ul>
-                            </li>
-                            <li class="nav-item dropdown">
                                 <a class="nav-link has-children" href="gallery.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="gallery.php">Photo &amp; Video Gallery</a></li>
@@ -84,21 +99,11 @@ $hero_label = $hero_label ?? "Explore";
                                     <li><a class="dropdown-item" href="faqs.php">FAQs</a></li>
                                 </ul>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Events</a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="events-list.php">Events List</a></li>
-                                    <li><a class="dropdown-item" href="events-alternate.php">Events Alternate</a></li>
-                                    <li><a class="dropdown-item" href="events-single.php">Events Single</a></li>
-                                </ul>
+                            <li class="nav-item">
+                                <a class="nav-link" href="events.php">Events</a>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Blog</a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="blog-standard.php">Blog Standard</a></li>
-                                    <li><a class="dropdown-item" href="blog-grid.php">Blog Grid</a></li>
-                                    <li><a class="dropdown-item" href="blog-single.php">Blog Single</a></li>
-                                </ul>
+                            <li class="nav-item">
+                                <a class="nav-link" href="blog.php">Blog</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="contact-us.php">Contact</a>
@@ -118,7 +123,9 @@ $hero_label = $hero_label ?? "Explore";
                 <nav aria-label="breadcrumb" class="breadcrumb-wrap">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                        <li class="breadcrumb-item"><a href="gallery.php">Explore</a></li>
+                        <?php if ($section_title !== "" && $section_title !== $breadcrumb_title): ?>
+                            <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($section_url); ?>"><?php echo htmlspecialchars($section_title); ?></a></li>
+                        <?php endif; ?>
                         <li class="breadcrumb-item active" aria-current="page"><?php echo htmlspecialchars($breadcrumb_title); ?></li>
                     </ol>
                 </nav>

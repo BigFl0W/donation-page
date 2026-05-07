@@ -96,13 +96,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="about-us.php">About Us</a>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Causes </a>
-                                <ul class="dropdown-menu">                  
-                                    <li><a class="dropdown-item" href="causes-list.php">Causes List</a></li>
-                                    <li><a class="dropdown-item" href="causes-single.php">Causes Single</a></li>                
-                                </ul>
-                            </li>
+                            
                                                         <li class="nav-item dropdown">
                                 <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
                                 <ul class="dropdown-menu">
@@ -112,13 +106,8 @@
                                     <li><a class="dropdown-item" href="faqs.php">FAQs</a></li>
                                 </ul>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Events </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="events-list.php">Events List</a></li>
-                                    <li><a class="dropdown-item" href="events-alternate.php">Events Alternate</a></li>
-                                    <li><a class="dropdown-item" href="events-single.php">Events Single</a></li>
-                                </ul>
+                                                        <li class="nav-item">
+                                <a class="nav-link" href="events.php">Events</a>
                             </li>                        
                                                         <li class="nav-item">
                                 <a class="nav-link" href="blog-standard.php">Blog</a>

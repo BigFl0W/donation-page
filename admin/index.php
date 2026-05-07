@@ -11,6 +11,8 @@ $allowedPages = [
     "dashboard" => __DIR__ . "/modules/dashboard/index.php",
     "admins" => __DIR__ . "/modules/admins/index.php",
     "content" => __DIR__ . "/modules/content/index.php",
+    "posts" => __DIR__ . "/modules/posts/index.php",
+    "events" => __DIR__ . "/modules/events/index.php",
     "donations" => __DIR__ . "/modules/donations/index.php",
     "settings" => __DIR__ . "/modules/settings/index.php",
 ];
@@ -20,6 +22,8 @@ $pageTitles = [
     "dashboard" => "Dashboard",
     "admins" => "Admins & Roles",
     "content" => "Content Management",
+    "posts" => "Blog Posts",
+    "events" => "Events",
     "donations" => "Donations & Gateways",
     "settings" => "Settings",
 ];
@@ -27,6 +31,8 @@ $pageDescriptions = [
     "dashboard" => "Monitor donations, content activity, payment channels, and admin operations.",
     "admins" => "Manage admin accounts, roles, and platform access.",
     "content" => "Control public-facing pages, Explore content, and reusable content blocks.",
+    "posts" => "Manage slug-based blog articles, summaries, and publish status.",
+    "events" => "Manage upcoming events, featured events, venues, and registration links.",
     "donations" => "Track donations from Paystack and Stripe in one place.",
     "settings" => "Centralize platform identity, credentials, and global configuration.",
 ];

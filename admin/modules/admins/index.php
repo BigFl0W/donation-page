@@ -3,7 +3,29 @@
 declare(strict_types=1);
 
 $roles = app_config("roles", []);
-$seedAdmins = app_config("default_admins", []);
+$adminRows = [];
+
+if (admin_database_ready()) {
+    $adminRows = db_fetch_all(
+        "SELECT a.full_name, a.email, a.status, r.name AS role_name
+         FROM admins a
+         INNER JOIN roles r ON r.id = a.role_id
+         ORDER BY a.created_at ASC"
+    );
+}
+
+if ($adminRows === []) {
+    $seedAdmins = app_config("default_admins", []);
+
+    foreach ($seedAdmins as $admin) {
+        $adminRows[] = [
+            "full_name" => $admin["name"],
+            "email" => $admin["email"],
+            "role_name" => $admin["role"],
+            "status" => $admin["status"],
+        ];
+    }
+}
 ?>
 <div class="admin-topbar">
     <div>
@@ -30,11 +52,11 @@ $seedAdmins = app_config("default_admins", []);
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($seedAdmins as $admin): ?>
+            <?php foreach ($adminRows as $admin): ?>
                 <tr>
-                    <td><?php echo e($admin["name"]); ?></td>
+                    <td><?php echo e($admin["full_name"]); ?></td>
                     <td><?php echo e($admin["email"]); ?></td>
-                    <td><?php echo e($admin["role"]); ?></td>
+                    <td><?php echo e($admin["role_name"]); ?></td>
                     <td><span class="admin-badge success"><?php echo e($admin["status"]); ?></span></td>
                 </tr>
             <?php endforeach; ?>

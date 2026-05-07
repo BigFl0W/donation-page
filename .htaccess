@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Keep existing files and directories accessible directly.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Clean blog landing page.
+RewriteRule ^blog/?$ blog.php [L,QSA]
+
+# Professional article permalinks: /blog/category-slug/post-slug
+RewriteRule ^blog/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)/?$ post.php?category=$1&slug=$2 [L,QSA]
