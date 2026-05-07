@@ -8,7 +8,7 @@
     
     <!-- xxx Change With Your Information xxx -->    
     <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
-    <title>Gracious - Charity and Donation HTML Template</title>
+    <title>Blog | Gracious Charity</title>
     <meta name="author" content="Mannat Studio">     
     <meta name="description" content="Gracious is a Responsive HTML5 Template for Charity and NGO related services.">
     <meta name="keywords" content="Gracious, responsive, html5, charity, charity agency, charity foundation, charity template, church, donate, donation, fundraiser, fundraising, mosque, ngo, non-profit, nonprofit, organization, volunteer">
@@ -118,14 +118,8 @@
                                     <li><a class="dropdown-item" href="events-single.php">Events Single</a></li>
                                 </ul>
                             </li>                        
-                            <li class="nav-item dropdown">
-                                <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Blog</a>
-    
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="blog-standard.php">Blog Standard</a></li>
-                                    <li><a class="dropdown-item" href="blog-grid.php">Blog Grid</a></li>
-                                    <li><a class="dropdown-item" href="blog-single.php">Blog Single</a></li>
-                                </ul>
+                                                        <li class="nav-item">
+                                <a class="nav-link" href="blog-standard.php">Blog</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="contact-us.php">Contact</a>
@@ -147,11 +141,11 @@
     <section class="breadcrumbs-page-wrap">
         <div class="bg-fixed pos-rel breadcrumbs-page">
             <div class="container">
-                <h1>Blog Standard</h1>
+                <h1>Blog</h1>
                 <nav aria-label="breadcrumb" class="breadcrumb-wrap">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Blog Standard</li>
+                        <li class="breadcrumb-item active" aria-current="page">Blog</li>
                     </ol>
                 </nav>  
             </div>

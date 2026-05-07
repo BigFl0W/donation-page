@@ -119,14 +119,8 @@
                                     <li><a class="dropdown-item" href="events-single.php">Events Single</a></li>
                                 </ul>
                             </li>                        
-                            <li class="nav-item dropdown">
-                                <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Blog</a>
-    
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="blog-standard.php">Blog Standard</a></li>
-                                    <li><a class="dropdown-item" href="blog-grid.php">Blog Grid</a></li>
-                                    <li><a class="dropdown-item" href="blog-single.php">Blog Single</a></li>
-                                </ul>
+                                                        <li class="nav-item">
+                                <a class="nav-link" href="blog-standard.php">Blog</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="contact-us.php">Contact</a>

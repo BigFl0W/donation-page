@@ -6404,6 +6404,7 @@ label.error {
 @media (max-width: 991.99px) {
 
     .header-fullpage.fixed { box-shadow: rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px; padding: 0.5rem 0; backdrop-filter: blur(10px); }
+    .request-btn a#search_home { display: none; }
 
     .wide-tb-150{ padding-top: 130px; padding-bottom: 130px; }
     .wide-tb-100{ padding-top: 80px; padding-bottom: 80px; }
