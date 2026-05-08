@@ -1928,7 +1928,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
             <div class="bar-col">
               <div class="bar-stack">
                 <div class="bar primary" style="height:<?php echo Helpers::e(max(4, (int)(($m["total"] / $maxMonthly) * 100))); ?>%">
-                  <span class="bar-tooltip">$<?php echo Helpers::e(number_format($m["total"], 0)); ?></span>
+                  <span class="bar-tooltip"><?php echo Helpers::e(Helpers::fmt($m["total"])); ?></span>
                 </div>
               </div>
               <div class="bar-lbl"><?php echo Helpers::e($m["label"]); ?></div>
