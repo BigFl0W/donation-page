@@ -107,7 +107,7 @@
                                 <a class="nav-link" href="events.php">Events</a>
                             </li>                        
                                                         <li class="nav-item">
-                                <a class="nav-link" href="blog-standard.php">Blog</a>
+                                <a class="nav-link" href="blog.php">Blog</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="contact-us.php">Contact</a>
@@ -187,7 +187,7 @@
                 <div class="row">
                     <div class="col-lg-7">
                         <h3 class="fw-7 txt-blue mb-4">Personal Experience</h3>
-                        <p>? ?onsumers have the right to know what is in their drinking water air The information contained in an Annual Water Quality Report can raise southof their drinking water, help consumers’ awareness regarding the source their drinking water, help three consumers to understand the process by which safe drinking water is delivered to their homes, and educate consumers about the importance. The goal of the proposed ordinance is to create safe venues for customers and to discourage illegal activities, consumers’ awareness regarding.</p>
+                        <p>? ?onsumers have the right to know what is in their drinking water air The information contained in an Annual Water Quality Report can raise southof their drinking water, help consumersï¿½ awareness regarding the source their drinking water, help three consumers to understand the process by which safe drinking water is delivered to their homes, and educate consumers about the importance. The goal of the proposed ordinance is to create safe venues for customers and to discourage illegal activities, consumersï¿½ awareness regarding.</p>
 
                         <div>The man who sent this news, the wireless operator, was alone with his instrument on the top of a lofty building. The people remaining in the city he estimated them at several hundred thousand had gone mad from fear and drink, and on all sides of him great fires were raging. He was a hero, that man who staid by his post an obscure.</div>
 
@@ -309,7 +309,7 @@
                             <img src="assets/images/logo_white.svg" alt="">
                         </a>
                     </div>
-                    <p>This is Photoshop’s version of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet</p>
+                    <p>This is Photoshopï¿½s version of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet</p>
                     <div class="social-icons">
                         <ul class="list-unstyled list-group list-group-horizontal">
                             <li><a href="#"><i class="icofont-facebook"></i></a></li>
@@ -381,7 +381,7 @@
             <div class="container pos-rel">
                 <div class="row text-md-start text-center">
                     <div class="col-sm-12 col-md-auto copyright-text">
-                        © Copyright <span class="txt-blue">Gracious</span> <span id="yearText"></span>.   |   Created by <a href="https://mannatstudio.com/" target="_blank">MannatStudio</a>
+                        ï¿½ Copyright <span class="txt-blue">Gracious</span> <span id="yearText"></span>.   |   Created by <a href="https://mannatstudio.com/" target="_blank">MannatStudio</a>
                     </div>
                     <div class="col-sm-12 col-md-auto ms-md-auto text-md-end text-center copyright-links">
                         <a href="#">Terms & Condition</a> | <a href="#">Privacy Policy</a> | <a href="#">Legal</a>

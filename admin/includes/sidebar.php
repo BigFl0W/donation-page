@@ -5,8 +5,11 @@ declare(strict_types=1);
 <aside class="admin-sidebar" id="admin-sidebar">
     <div class="admin-sidebar-header">
         <div class="brand">
-            <i class="icofont-unity-hand"></i>
-            <span>Gracious Admin</span>
+            <img src="../assets/images/logo_white.svg" alt="Gracious Charity">
+            <div class="brand-copy">
+                <span>Gracious Admin</span>
+                <small>Charity Control Centre</small>
+            </div>
         </div>
     </div>
 

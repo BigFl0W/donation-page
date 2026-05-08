@@ -3,17 +3,17 @@
 declare(strict_types=1);
 
 return [
-    "app_name" => (string) env("APP_NAME", "Gracious Charity Platform"),
-    "app_url" => (string) env("APP_URL", "http://localhost/donation-page"),
-    "admin_path" => (string) env("ADMIN_PATH", "/donation-page/admin"),
-    "session_name" => (string) env("SESSION_NAME", "gracious_admin_session"),
-    "timezone" => (string) env("APP_TIMEZONE", "Africa/Lagos"),
+    "app_name" => (string) \App\Env::get("APP_NAME", "Gracious Charity Platform"),
+    "app_url" => (string) \App\Env::get("APP_URL", "http://localhost/donation-page"),
+    "admin_path" => (string) \App\Env::get("ADMIN_PATH", "admin"),
+    "session_name" => (string) \App\Env::get("SESSION_NAME", "gracious_admin_session"),
+    "timezone" => (string) \App\Env::get("APP_TIMEZONE", "Africa/Lagos"),
     "default_admins" => [
         [
             "id" => 1,
-            "name" => (string) env("DEFAULT_ADMIN_NAME", "Super Admin"),
-            "email" => (string) env("DEFAULT_ADMIN_EMAIL", "admin@graciouscharity.org"),
-            "password" => (string) env("DEFAULT_ADMIN_PASSWORD", "ChangeMe123!"),
+            "name" => (string) \App\Env::get("DEFAULT_ADMIN_NAME", "Super Admin"),
+            "email" => (string) \App\Env::get("DEFAULT_ADMIN_EMAIL", "admin@graciouscharity.org"),
+            "password" => (string) \App\Env::get("DEFAULT_ADMIN_PASSWORD", "ChangeMe123!"),
             "role" => "super_admin",
             "status" => "active",
         ],

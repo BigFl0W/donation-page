@@ -1,10 +1,10 @@
 <?php
-
 declare(strict_types=1);
 
-require_once __DIR__ . "/../config/bootstrap.php";
+require_once __DIR__ . "/../config/autoload.php";
 
-logout_admin();
+use App\Auth;
+use App\Helpers;
 
-header("Location: " . admin_url("login.php"));
-exit;
+Auth::logout();
+Helpers::redirect(Helpers::adminUrl("login.php"));

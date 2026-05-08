@@ -1,8 +1,9 @@
 <?php
+require __DIR__ . "/config/autoload.php";
 $page_title = "Projects & Programmes";
 $breadcrumb_title = "Projects & Programmes";
 $hero_title = "Projects & Programmes";
-require __DIR__ . "/includes/explore-header.php";
+require __DIR__ . "/includes/header.php";
 ?>
 
 <section class="wide-tb-100">
@@ -103,4 +104,4 @@ require __DIR__ . "/includes/explore-header.php";
     </div>
 </section>
 
-<?php require __DIR__ . "/includes/explore-footer.php"; ?>
+<?php require __DIR__ . "/includes/footer.php"; ?>

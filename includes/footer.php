@@ -22,7 +22,7 @@
             <div class="row">
                 <div class="col-lg-3 col-md-6">
                     <div class="logo-footer">
-                        <img src="../../assets/images/logo_white.svg" alt="Gracious">
+                        <img src="../ets/images/logo_white.svg" alt="Gracious">
                     </div>
                     <p>We create credible programmes, visible impact, and trusted partnerships that supporters can follow with confidence.</p>
                     <div class="social-icons">
@@ -113,19 +113,19 @@
 
     <a id="mkdf-back-to-top" href="#" class="off"><i data-feather="corner-right-up"></i></a>
 
-    <script src="../../assets/library/jquery/jquery.min.js"></script>
-    <script src="../../assets/library/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="../../assets/library/feather-icons/feather.min.js"></script>
-    <script src="../../assets/library/owlcarousel/js/owl.carousel.min.js"></script>
-    <script src="../../assets/library/select2/js/select2.min.js"></script>
-    <script src="../../assets/library/magnific-popup/jquery.magnific-popup.min.js"></script>
-    <script src="../../assets/library/jflickrfeed/jflickrfeed.min.js"></script>
-    <script src="../../assets/library/jquery-waypoints/jquery.waypoints.min.js"></script>
-    <script src="../../assets/library/countdown/jquery.countdown.min.js"></script>
-    <script src="../../assets/library/jquery-appear/jquery.appear.js"></script>
-    <script src="../../assets/library/jquery-easing/jquery.easing.min.js"></script>
-    <script src="../../assets/library/jquery.counterup/jquery.counterup.min.js"></script>
-    <script src="../../assets/library/jquery-validate/jquery.validate.min.js"></script>
-    <script src="../../assets/js/site-custom.js"></script>
+    <script src="assets/library/jquery/jquery.min.js"></script>
+    <script src="assets/library/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/library/feather-icons/feather.min.js"></script>
+    <script src="assets/library/owlcarousel/js/owl.carousel.min.js"></script>
+    <script src="assets/library/select2/js/select2.min.js"></script>
+    <script src="assets/library/magnific-popup/jquery.magnific-popup.min.js"></script>
+    <script src="assets/library/jflickrfeed/jflickrfeed.min.js"></script>
+    <script src="assets/library/jquery-waypoints/jquery.waypoints.min.js"></script>
+    <script src="assets/library/countdown/jquery.countdown.min.js"></script>
+    <script src="assets/library/jquery-appear/jquery.appear.js"></script>
+    <script src="assets/library/jquery-easing/jquery.easing.min.js"></script>
+    <script src="assets/library/jquery.counterup/jquery.counterup.min.js"></script>
+    <script src="assets/library/jquery-validate/jquery.validate.min.js"></script>
+    <script src="assets/js/site-custom.js"></script>
 </body>
 </html>

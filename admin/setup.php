@@ -1,16 +1,17 @@
 <?php
-
 declare(strict_types=1);
 
-require_once __DIR__ . "/../config/bootstrap.php";
+require_once __DIR__ . "/../config/autoload.php";
 
-if (is_admin_logged_in()) {
-    header("Location: " . admin_url("index.php"));
-    exit;
+use App\Auth;
+use App\Helpers;
+
+if (Auth::isLoggedIn()) {
+    Helpers::redirect(Helpers::adminUrl("index.php"));
 }
 
-$databaseReady = admin_database_ready();
-$setupRequired = admin_setup_required();
+$databaseReady = Auth::databaseReady();
+$setupRequired = Auth::setupRequired();
 $error = "";
 $success = "";
 $form = [
@@ -19,21 +20,26 @@ $form = [
 ];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && $setupRequired) {
-    $form["full_name"] = trim((string) ($_POST["full_name"] ?? ""));
-    $form["email"] = trim((string) ($_POST["email"] ?? ""));
-    $password = (string) ($_POST["password"] ?? "");
-    $passwordConfirm = (string) ($_POST["password_confirm"] ?? "");
-
-    if ($password !== $passwordConfirm) {
-        $error = "Passwords do not match.";
+    // CSRF
+    $csrfToken = (string)($_POST["_csrf_token"] ?? "");
+    if ($csrfToken === "" || !hash_equals($_SESSION["_csrf_token"] ?? "", $csrfToken)) {
+        $error = "Invalid form token. Please reload and try again.";
     } else {
-        [$created, $message] = create_admin_account($form["full_name"], $form["email"], $password);
+        $form["full_name"] = trim((string) ($_POST["full_name"] ?? ""));
+        $form["email"] = trim((string) ($_POST["email"] ?? ""));
+        $password = (string) ($_POST["password"] ?? "");
+        $passwordConfirm = (string) ($_POST["password_confirm"] ?? "");
 
-        if (!$created) {
-            $error = $message;
+        if ($password !== $passwordConfirm) {
+            $error = "Passwords do not match.";
         } else {
-            $success = "Your admin account is ready. You can sign in now.";
-            $setupRequired = false;
+            $result = Auth::createAccount($form["full_name"], $form["email"], $password);
+            if ($result["success"]) {
+                $success = "Your admin account is ready. You can sign in now.";
+                $setupRequired = false;
+            } else {
+                $error = implode(" ", $result["errors"] ?? ["Account creation failed."]);
+            }
         }
     }
 }
@@ -65,26 +71,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $setupRequired) {
             </div>
 
             <?php if ($error !== ""): ?>
-                <div class="admin-alert error"><?php echo e($error); ?></div>
+                <div class="admin-alert error"><?php echo Helpers::e($error); ?></div>
             <?php endif; ?>
 
             <?php if ($success !== ""): ?>
-                <div class="admin-alert success"><?php echo e($success); ?></div>
+                <div class="admin-alert success"><?php echo Helpers::e($success); ?></div>
             <?php endif; ?>
 
             <?php if (!$databaseReady): ?>
                 <div class="admin-alert error">The database is not ready yet. Import the schema first, then return here to create the first admin.</div>
-                <a class="admin-btn light" href="<?php echo e(admin_url("login.php")); ?>">Back to Sign In</a>
+                <a class="admin-btn light" href="<?php echo Helpers::e(Helpers::adminUrl("login.php")); ?>">Back to Sign In</a>
             <?php elseif ($setupRequired): ?>
                 <form method="post">
+                    <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
                     <div class="admin-auth-grid">
                         <div class="admin-form-group">
                             <label for="full-name">Full Name</label>
-                            <input id="full-name" name="full_name" type="text" value="<?php echo e($form["full_name"]); ?>" required>
+                            <input id="full-name" name="full_name" type="text" value="<?php echo Helpers::e($form["full_name"]); ?>" required>
                         </div>
                         <div class="admin-form-group">
                             <label for="setup-email">Email</label>
-                            <input id="setup-email" name="email" type="email" value="<?php echo e($form["email"]); ?>" required>
+                            <input id="setup-email" name="email" type="email" value="<?php echo Helpers::e($form["email"]); ?>" required>
                         </div>
                         <div class="admin-form-group">
                             <label for="setup-password">Password</label>
@@ -100,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $setupRequired) {
                 <p class="admin-helper admin-auth-footnote mb-0">This page is available only until the first admin account is created.</p>
             <?php else: ?>
                 <div class="admin-alert success">Admin setup is already complete. Sign in with your existing admin account.</div>
-                <a class="admin-btn primary" href="<?php echo e(admin_url("login.php")); ?>">Go to Sign In</a>
+                <a class="admin-btn primary" href="<?php echo Helpers::e(Helpers::adminUrl("login.php")); ?>">Go to Sign In</a>
             <?php endif; ?>
         </section>
     </div>

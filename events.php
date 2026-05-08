@@ -1,8 +1,10 @@
 <?php
-
 declare(strict_types=1);
 
-require __DIR__ . "/config/bootstrap.php";
+require __DIR__ . "/config/autoload.php";
+
+use App\Content;
+use App\Helpers;
 
 $page_title = "Events";
 $breadcrumb_title = "Events";
@@ -10,10 +12,10 @@ $hero_title = "Events";
 $section_title = "";
 $section_url = "events.php";
 
-$featuredEvent = featured_event();
-$upcomingEvents = published_events(6, true);
+$featuredEvent = Content::featuredEvent();
+$upcomingEvents = Content::publishedEvents(6, true);
 
-require __DIR__ . "/includes/explore-header.php";
+require __DIR__ . "/includes/header.php";
 ?>
 
 <section class="wide-tb-100">
@@ -34,18 +36,18 @@ require __DIR__ . "/includes/explore-header.php";
                 <div class="col-lg-6">
                     <div class="explore-panel event-hero-panel">
                         <div class="event-hero-image">
-                            <img src="<?php echo e($featuredEvent["featured_image"]); ?>" alt="<?php echo e($featuredEvent["title"]); ?>">
+                            <img src="<?php echo Helpers::e($featuredEvent["featured_image"] ?? ""); ?>" alt="<?php echo Helpers::e($featuredEvent["title"] ?? ""); ?>">
                         </div>
                         <div class="event-hero-copy">
                             <div class="explore-kicker">Featured Gathering</div>
-                            <h3><?php echo e($featuredEvent["title"]); ?></h3>
-                            <p><?php echo e($featuredEvent["summary"]); ?></p>
+                            <h3><?php echo Helpers::e($featuredEvent["title"] ?? ""); ?></h3>
+                            <p><?php echo Helpers::e($featuredEvent["summary"] ?? ""); ?></p>
                             <div class="event-meta-list">
-                                <span><i class="icofont-calendar"></i> <?php echo e(format_event_date($featuredEvent["event_start"])); ?></span>
-                                <span><i class="icofont-clock-time"></i> <?php echo e(format_event_time($featuredEvent["event_start"])); ?></span>
-                                <span><i class="icofont-location-pin"></i> <?php echo e($featuredEvent["venue"]); ?></span>
+                                <span><i class="icofont-calendar"></i> <?php echo Helpers::e(Content::formatEventDate($featuredEvent["event_start"] ?? "")); ?></span>
+                                <span><i class="icofont-clock-time"></i> <?php echo Helpers::e(Content::formatEventTime($featuredEvent["event_start"] ?? "")); ?></span>
+                                <span><i class="icofont-location-pin"></i> <?php echo Helpers::e($featuredEvent["venue"] ?? ""); ?></span>
                             </div>
-                            <a href="event.php?slug=<?php echo urlencode($featuredEvent["slug"]); ?>" class="btn btn-default mt-4 event-hero-btn">View Event Details</a>
+                            <a href="event.php?slug=<?php echo urlencode($featuredEvent["slug"] ?? ""); ?>" class="btn btn-default mt-4 event-hero-btn">View Event Details</a>
                         </div>
                     </div>
                 </div>
@@ -68,18 +70,18 @@ require __DIR__ . "/includes/explore-header.php";
             <?php foreach ($upcomingEvents as $event): ?>
                 <div class="col-md-6 col-lg-4">
                     <article class="event-card-pro">
-                        <a class="event-card-image" href="event.php?slug=<?php echo urlencode($event["slug"]); ?>">
-                            <img src="<?php echo e($event["featured_image"]); ?>" alt="<?php echo e($event["title"]); ?>">
+                        <a class="event-card-image" href="event.php?slug=<?php echo urlencode($event["slug"] ?? ""); ?>">
+                            <img src="<?php echo Helpers::e($event["featured_image"] ?? ""); ?>" alt="<?php echo Helpers::e($event["title"] ?? ""); ?>">
                         </a>
                         <div class="event-card-copy">
-                            <div class="event-date-pill"><?php echo e(format_event_date($event["event_start"])); ?></div>
-                            <h3><a href="event.php?slug=<?php echo urlencode($event["slug"]); ?>"><?php echo e($event["title"]); ?></a></h3>
-                            <p><?php echo e($event["summary"]); ?></p>
+                            <div class="event-date-pill"><?php echo Helpers::e(Content::formatEventDate($event["event_start"] ?? "")); ?></div>
+                            <h3><a href="event.php?slug=<?php echo urlencode($event["slug"] ?? ""); ?>"><?php echo Helpers::e($event["title"] ?? ""); ?></a></h3>
+                            <p><?php echo Helpers::e($event["summary"] ?? ""); ?></p>
                             <div class="event-meta-list compact">
-                                <span><i class="icofont-clock-time"></i> <?php echo e(format_event_time($event["event_start"])); ?></span>
-                                <span><i class="icofont-location-pin"></i> <?php echo e($event["city"] ?: $event["venue"]); ?></span>
+                                <span><i class="icofont-clock-time"></i> <?php echo Helpers::e(Content::formatEventTime($event["event_start"] ?? "")); ?></span>
+                                <span><i class="icofont-location-pin"></i> <?php echo Helpers::e($event["city"] ?: $event["venue"] ?? ""); ?></span>
                             </div>
-                            <a href="event.php?slug=<?php echo urlencode($event["slug"]); ?>" class="read-more-line event-read-more"><span>Read Event</span></a>
+                            <a href="event.php?slug=<?php echo urlencode($event["slug"] ?? ""); ?>" class="read-more-line event-read-more"><span>Read Event</span></a>
                         </div>
                     </article>
                 </div>
@@ -106,4 +108,4 @@ require __DIR__ . "/includes/explore-header.php";
     </div>
 </section>
 
-<?php require __DIR__ . "/includes/explore-footer.php"; ?>
+<?php require __DIR__ . "/includes/footer.php"; ?>

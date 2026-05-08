@@ -110,7 +110,7 @@
                                 <a class="nav-link" href="events.php">Events</a>
                             </li>                        
                                                         <li class="nav-item">
-                                <a class="nav-link" href="blog-standard.php">Blog</a>
+                                <a class="nav-link" href="blog.php">Blog</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="contact-us.php">Contact</a>
@@ -305,7 +305,7 @@
                                 <small>Welcome To Raise Hope</small>
                                 Small Actions Lead To Big changes
                             </h1>
-                            <p>That’s 14% of the world’s population. Put another way, that's 1 in 8 people alive today living without hope amongst trash, sewage, drugs, and abuse in unimaginable conditions. Life without secure housing is a life without basic needs being met.</p>                        
+                            <p>Thatï¿½s 14% of the worldï¿½s population. Put another way, that's 1 in 8 people alive today living without hope amongst trash, sewage, drugs, and abuse in unimaginable conditions. Life without secure housing is a life without basic needs being met.</p>                        
 
                             <div class="row my-5 home-second-welcome">                      
                                 <!-- Map Icons Start -->
@@ -920,7 +920,7 @@
                             <div class="img-wrap">
                                 <a href="events-single.php"><img src="assets/images/events/event_alternate_img_1.jpg" alt=""></a>
                                 <div class="content-wrap">
-                                    <h3><a href="events-single.php">Everyone Let’s Run For The Humanity This Time</a></h3>
+                                    <h3><a href="events-single.php">Everyone Letï¿½s Run For The Humanity This Time</a></h3>
                                     <div class="event-details">
                                         <div><i data-feather="clock"></i> 09:00 Am</div>
                                         <div><i data-feather="map-pin"></i> Midpoint Center</div>
@@ -942,7 +942,7 @@
                             <div class="img-wrap">
                                 <a href="events-single.php"><img src="assets/images/events/event_alternate_img_2.jpg" alt=""></a>
                                 <div class="content-wrap">
-                                    <h3><a href="events-single.php">Everyone Let’s Run For The Humanity This Time</a></h3>
+                                    <h3><a href="events-single.php">Everyone Letï¿½s Run For The Humanity This Time</a></h3>
                                     <div class="event-details">
                                         <div><i data-feather="clock"></i> 09:00 Am</div>
                                         <div><i data-feather="map-pin"></i> Midpoint Center</div>
@@ -964,7 +964,7 @@
                             <div class="img-wrap">
                                 <a href="events-single.php"><img src="assets/images/events/event_alternate_img_3.jpg" alt=""></a>
                                 <div class="content-wrap">
-                                    <h3><a href="events-single.php">Everyone Let’s Run For The Humanity This Time</a></h3>
+                                    <h3><a href="events-single.php">Everyone Letï¿½s Run For The Humanity This Time</a></h3>
                                     <div class="event-details">
                                         <div><i data-feather="clock"></i> 09:00 Am</div>
                                         <div><i data-feather="map-pin"></i> Midpoint Center</div>
@@ -986,7 +986,7 @@
                             <div class="img-wrap">
                                 <a href="events-single.php"><img src="assets/images/events/event_alternate_img_4.jpg" alt=""></a>
                                 <div class="content-wrap">
-                                    <h3><a href="events-single.php">Everyone Let’s Run For The Humanity This Time</a></h3>
+                                    <h3><a href="events-single.php">Everyone Letï¿½s Run For The Humanity This Time</a></h3>
                                     <div class="event-details">
                                         <div><i data-feather="clock"></i> 09:00 Am</div>
                                         <div><i data-feather="map-pin"></i> Midpoint Center</div>
@@ -1008,7 +1008,7 @@
                             <div class="img-wrap">
                                 <a href="events-single.php"><img src="assets/images/events/event_alternate_img_5.jpg" alt=""></a>
                                 <div class="content-wrap">
-                                    <h3><a href="events-single.php">Everyone Let’s Run For The Humanity This Time</a></h3>
+                                    <h3><a href="events-single.php">Everyone Letï¿½s Run For The Humanity This Time</a></h3>
                                     <div class="event-details">
                                         <div><i data-feather="clock"></i> 09:00 Am</div>
                                         <div><i data-feather="map-pin"></i> Midpoint Center</div>
@@ -1030,7 +1030,7 @@
                             <div class="img-wrap">
                                 <a href="events-single.php"><img src="assets/images/events/event_alternate_img_6.jpg" alt=""></a>
                                 <div class="content-wrap">
-                                    <h3><a href="events-single.php">Everyone Let’s Run For The Humanity This Time</a></h3>
+                                    <h3><a href="events-single.php">Everyone Letï¿½s Run For The Humanity This Time</a></h3>
                                     <div class="event-details">
                                         <div><i data-feather="clock"></i> 09:00 Am</div>
                                         <div><i data-feather="map-pin"></i> Midpoint Center</div>
@@ -1461,7 +1461,7 @@
                             <img src="assets/images/logo_white.svg" alt="">
                         </a>
                     </div>
-                    <p>This is Photoshop’s version of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet</p>
+                    <p>This is Photoshopï¿½s version of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet</p>
 
                     <div class="footer-widget-contact">
                         <ul class="list-unstyled">
@@ -1540,7 +1540,7 @@
             <div class="container pos-rel">
                 <div class="row text-md-start text-center">
                     <div class="col-sm-12 col-md-auto copyright-text">
-                        © Copyright <span class="txt-blue">Gracious</span> <span id="yearText"></span>.   |   Created by <a href="https://mannatstudio.com/" target="_blank">MannatStudio</a>
+                        ï¿½ Copyright <span class="txt-blue">Gracious</span> <span id="yearText"></span>.   |   Created by <a href="https://mannatstudio.com/" target="_blank">MannatStudio</a>
                     </div>
                     <div class="col-sm-12 col-md-auto ms-md-auto text-md-end text-center copyright-links">
                         <a href="#">Terms & Condition</a> | <a href="#">Privacy Policy</a> | <a href="#">Legal</a>

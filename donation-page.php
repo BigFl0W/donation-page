@@ -108,7 +108,7 @@
                                 <a class="nav-link" href="events.php">Events</a>
                             </li>                        
                                                         <li class="nav-item">
-                                <a class="nav-link" href="blog-standard.php">Blog</a>
+                                <a class="nav-link" href="blog.php">Blog</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="contact-us.php">Contact</a>
@@ -646,7 +646,7 @@
                             <img src="assets/images/logo_white.svg" alt="">
                         </a>
                     </div>
-                    <p>This is Photoshop’s version of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet</p>
+                    <p>This is Photoshopï¿½s version of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet</p>
                     <div class="social-icons">
                         <ul class="list-unstyled list-group list-group-horizontal">
                             <li><a href="#"><i class="icofont-facebook"></i></a></li>
@@ -718,7 +718,7 @@
             <div class="container pos-rel">
                 <div class="row text-md-start text-center">
                     <div class="col-sm-12 col-md-auto copyright-text">
-                        © Copyright <span class="txt-blue">Gracious</span> <span id="yearText"></span>.   |   Created by <a href="https://mannatstudio.com/" target="_blank">MannatStudio</a>
+                        ï¿½ Copyright <span class="txt-blue">Gracious</span> <span id="yearText"></span>.   |   Created by <a href="https://mannatstudio.com/" target="_blank">MannatStudio</a>
                     </div>
                     <div class="col-sm-12 col-md-auto ms-md-auto text-md-end text-center copyright-links">
                         <a href="#">Terms & Condition</a> | <a href="#">Privacy Policy</a> | <a href="#">Legal</a>

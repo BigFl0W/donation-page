@@ -1,12 +1,55 @@
 RewriteEngine On
 
-# Keep existing files and directories accessible directly.
+# ------------------------------------------------------------------
+# Error document – any 404 status (Apache internal or PHP‑set) will
+# show the custom 404 page (path relative to DocumentRoot).
+# ------------------------------------------------------------------
+ErrorDocument 404 /donation-page/404-page.php
+
+# ------------------------------------------------------------------
+# Existing files & directories – serve them directly.
+# ------------------------------------------------------------------
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Clean blog landing page.
-RewriteRule ^blog/?$ blog.php [L,QSA]
+# ------------------------------------------------------------------
+# Extensionless public page URLs
+# ------------------------------------------------------------------
 
-# Professional article permalinks: /blog/category-slug/post-slug
-RewriteRule ^blog/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)/?$ post.php?category=$1&slug=$2 [L,QSA]
+# Blog
+RewriteRule ^blog/?$                                            blog.php [L,QSA]
+RewriteRule ^blog/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)/?$           post.php?category=$1&slug=$2 [L,QSA]
+
+# Events
+RewriteRule ^events/?$                                           events.php [L,QSA]
+RewriteRule ^event/([a-zA-Z0-9-]+)/?$                            event.php?slug=$1 [L,QSA]
+
+# Gallery & FAQs
+RewriteRule ^gallery/?$                                          gallery.php [L,QSA]
+RewriteRule ^faqs/?$                                             faqs.php [L,QSA]
+
+# Contact & About
+RewriteRule ^contact-us/?$                                       contact-us.php [L,QSA]
+RewriteRule ^about-us/?$                                         about-us.php [L,QSA]
+
+# Donation
+RewriteRule ^donation-page/?$                                    donation-page.php [L,QSA]
+
+# Volunteers
+RewriteRule ^volunteers/?$                                       volunteers.php [L,QSA]
+RewriteRule ^volunteer/([a-zA-Z0-9-]+)/?$                        volunteers-single.php?slug=$1 [L,QSA]
+RewriteRule ^become-volunteers/?$                                 become-volunteers.php [L,QSA]
+
+# Programmes & Partners
+RewriteRule ^projects-programmes/?$                               projects-programmes.php [L,QSA]
+RewriteRule ^partners-sponsors/?$                                 partners-sponsors.php [L,QSA]
+
+# Admin
+RewriteRule ^admin/?$                                             admin/index.php [L,QSA]
+
+# ------------------------------------------------------------------
+# Catch‑all – anything that wasn't matched above goes to the 404
+# page instead of exposing a PHP error or Apache's default 404.
+# ------------------------------------------------------------------
+RewriteRule . 404-page.php [L]

@@ -1,18 +1,20 @@
 <?php
-
 declare(strict_types=1);
 
-require __DIR__ . "/config/bootstrap.php";
+require __DIR__ . "/config/autoload.php";
+
+use App\Content;
+use App\Helpers;
 
 $categoryParam = trim((string) ($_GET["category"] ?? ""));
 $tagParam = trim((string) ($_GET["tag"] ?? ""));
-$categoryFilter = $categoryParam !== "" ? slugify($categoryParam) : "";
-$tagFilter = $tagParam !== "" ? slugify($tagParam) : "";
-$posts = published_posts_filtered(12, $categoryFilter, $tagFilter);
+$categoryFilter = $categoryParam !== "" ? Helpers::slugify($categoryParam) : "";
+$tagFilter = $tagParam !== "" ? Helpers::slugify($tagParam) : "";
+$posts = Content::publishedPostsFiltered(12, $categoryFilter, $tagFilter);
 $featuredPost = $posts[0] ?? null;
 $secondaryPosts = array_slice($posts, 1);
-$categories = blog_category_summaries();
-$tags = blog_tag_summaries();
+$categories = Content::blogCategorySummaries();
+$tags = Content::blogTagSummaries();
 
 $page_title = "Blog | Gracious Charity";
 $breadcrumb_title = "Blog";
@@ -21,17 +23,17 @@ $section_title = "";
 $section_url = "blog.php";
 $page_description = "News, impact stories, announcements, and programme updates from Gracious Charity.";
 $meta_keywords = "charity blog, non-profit news, impact stories, outreach updates";
-$canonical_url = site_url("blog");
-$share_image = site_url("assets/images/blogs/blog_img_1.jpg");
+$canonical_url = Helpers::siteUrl("blog");
+$share_image = Helpers::siteUrl("assets/images/blogs/blog_img_1.jpg");
 
 if ($categoryFilter !== "") {
     foreach ($categories as $category) {
-        if ($category["slug"] === $categoryFilter) {
-            $page_title = $category["name"] . " | Gracious Charity Blog";
-            $breadcrumb_title = $category["name"];
-            $hero_title = $category["name"];
-            $page_description = "Browse " . $category["name"] . " articles from Gracious Charity.";
-            $canonical_url = site_url("blog?category=" . urlencode($categoryFilter));
+        if (($category["slug"] ?? "") === $categoryFilter) {
+            $page_title = ($category["name"] ?? "") . " | Gracious Charity Blog";
+            $breadcrumb_title = $category["name"] ?? "";
+            $hero_title = $category["name"] ?? "";
+            $page_description = "Browse " . ($category["name"] ?? "") . " articles from Gracious Charity.";
+            $canonical_url = Helpers::siteUrl("blog?category=" . urlencode($categoryFilter));
             break;
         }
     }
@@ -42,10 +44,10 @@ if ($tagFilter !== "") {
     $breadcrumb_title = "Tagged Stories";
     $hero_title = "Tagged Stories";
     $page_description = "Explore tagged Gracious Charity stories and updates.";
-    $canonical_url = site_url("blog?tag=" . urlencode($tagFilter));
+    $canonical_url = Helpers::siteUrl("blog?tag=" . urlencode($tagFilter));
 }
 
-require __DIR__ . "/includes/explore-header.php";
+require __DIR__ . "/includes/header.php";
 ?>
 
 <section class="wide-tb-100">
@@ -61,7 +63,7 @@ require __DIR__ . "/includes/explore-header.php";
                 <div class="story-filter-pills justify-content-lg-end">
                     <a class="<?php echo $categoryFilter === "" && $tagFilter === "" ? "active" : ""; ?>" href="blog.php">All Posts</a>
                     <?php foreach (array_slice($categories, 0, 3) as $category): ?>
-                        <a class="<?php echo $categoryFilter === $category["slug"] ? "active" : ""; ?>" href="blog.php?category=<?php echo urlencode((string) $category["slug"]); ?>"><?php echo e((string) $category["name"]); ?></a>
+                        <a class="<?php echo $categoryFilter === ($category["slug"] ?? "") ? "active" : ""; ?>" href="blog.php?category=<?php echo urlencode((string) ($category["slug"] ?? "")); ?>"><?php echo Helpers::e((string) ($category["name"] ?? "")); ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -71,17 +73,17 @@ require __DIR__ . "/includes/explore-header.php";
                 <?php if ($featuredPost): ?>
                     <article class="post-wrap">
                         <div class="post-img">
-                            <a href="<?php echo e(post_public_url($featuredPost)); ?>">
-                                <img src="<?php echo e((string) $featuredPost["featured_image"]); ?>" alt="<?php echo e((string) $featuredPost["title"]); ?>">
+                            <a href="<?php echo Helpers::e(Helpers::postPublicUrl($featuredPost)); ?>">
+                                <img src="<?php echo Helpers::e((string) ($featuredPost["featured_image"] ?? "")); ?>" alt="<?php echo Helpers::e((string) ($featuredPost["title"] ?? "")); ?>">
                             </a>
                         </div>
                         <div class="post-content">
-                            <div class="post-date"><?php echo e(date("j M, Y", strtotime((string) $featuredPost["published_at"]))); ?></div>
-                            <h3 class="post-title"><a href="<?php echo e(post_public_url($featuredPost)); ?>"><?php echo e((string) $featuredPost["title"]); ?></a></h3>
-                            <div class="post-category"><?php echo e((string) ($featuredPost["category"] ?: "Updates")); ?> / <?php echo e((string) ($featuredPost["display_author"] ?? "Admin Team")); ?></div>
-                            <p><?php echo e((string) $featuredPost["excerpt"]); ?></p>
+                            <div class="post-date"><?php echo Helpers::e(date("j M, Y", strtotime((string) ($featuredPost["published_at"] ?? "now")))); ?></div>
+                            <h3 class="post-title"><a href="<?php echo Helpers::e(Helpers::postPublicUrl($featuredPost)); ?>"><?php echo Helpers::e((string) ($featuredPost["title"] ?? "")); ?></a></h3>
+                            <div class="post-category"><?php echo Helpers::e((string) ($featuredPost["category"] ?: "Updates")); ?> / <?php echo Helpers::e((string) ($featuredPost["display_author"] ?? $featuredPost["author"] ?? "Admin Team")); ?></div>
+                            <p><?php echo Helpers::e((string) ($featuredPost["excerpt"] ?? "")); ?></p>
                             <div class="text-md-end">
-                                <a href="<?php echo e(post_public_url($featuredPost)); ?>" class="read-more-line"><span>Read More</span></a>
+                                <a href="<?php echo Helpers::e(Helpers::postPublicUrl($featuredPost)); ?>" class="read-more-line"><span>Read More</span></a>
                             </div>
                         </div>
                     </article>
@@ -93,16 +95,16 @@ require __DIR__ . "/includes/explore-header.php";
                             <div class="col-md-6">
                                 <article class="post-wrap blog-post-broken">
                                     <div class="post-img">
-                                        <a href="<?php echo e(post_public_url($post)); ?>">
-                                            <img src="<?php echo e((string) $post["featured_image"]); ?>" alt="<?php echo e((string) $post["title"]); ?>">
+                                        <a href="<?php echo Helpers::e(Helpers::postPublicUrl($post)); ?>">
+                                            <img src="<?php echo Helpers::e((string) ($post["featured_image"] ?? "")); ?>" alt="<?php echo Helpers::e((string) ($post["title"] ?? "")); ?>">
                                         </a>
                                     </div>
                                     <div class="post-content">
-                                        <div class="post-date"><?php echo e(date("j M, Y", strtotime((string) $post["published_at"]))); ?></div>
-                                        <h3 class="post-title"><a href="<?php echo e(post_public_url($post)); ?>"><?php echo e((string) $post["title"]); ?></a></h3>
-                                        <div class="post-category"><?php echo e((string) ($post["category"] ?: "News")); ?></div>
+                                        <div class="post-date"><?php echo Helpers::e(date("j M, Y", strtotime((string) ($post["published_at"] ?? "now")))); ?></div>
+                                        <h3 class="post-title"><a href="<?php echo Helpers::e(Helpers::postPublicUrl($post)); ?>"><?php echo Helpers::e((string) ($post["title"] ?? "")); ?></a></h3>
+                                        <div class="post-category"><?php echo Helpers::e((string) ($post["category"] ?: "News")); ?></div>
                                         <div class="text-md-end">
-                                            <a href="<?php echo e(post_public_url($post)); ?>" class="read-more-line"><span>Read More</span></a>
+                                            <a href="<?php echo Helpers::e(Helpers::postPublicUrl($post)); ?>" class="read-more-line"><span>Read More</span></a>
                                         </div>
                                     </div>
                                 </article>
@@ -126,10 +128,10 @@ require __DIR__ . "/includes/explore-header.php";
                     <ul class="list-unstyled mb-0">
                         <?php foreach ($categories as $category): ?>
                             <li class="d-flex justify-content-between align-items-center py-2">
-                                <a href="blog.php?category=<?php echo urlencode((string) $category["slug"]); ?>">
-                                    <?php echo e((string) $category["name"]); ?>
+                                <a href="blog.php?category=<?php echo urlencode((string) ($category["slug"] ?? "")); ?>">
+                                    <?php echo Helpers::e((string) ($category["name"] ?? "")); ?>
                                 </a>
-                                <strong><?php echo e((string) $category["post_count"]); ?></strong>
+                                <strong><?php echo Helpers::e((string) ($category["post_count"] ?? "0")); ?></strong>
                             </li>
                         <?php endforeach; ?>
                     </ul>
@@ -139,7 +141,7 @@ require __DIR__ . "/includes/explore-header.php";
                     <h4 class="mb-4">Popular Tags</h4>
                     <div class="story-tag-cloud">
                         <?php foreach ($tags as $tag): ?>
-                            <a href="blog.php?tag=<?php echo urlencode((string) $tag["slug"]); ?>"><?php echo e((string) $tag["name"]); ?></a>
+                            <a href="blog.php?tag=<?php echo urlencode((string) ($tag["slug"] ?? "")); ?>"><?php echo Helpers::e((string) ($tag["name"] ?? "")); ?></a>
                         <?php endforeach; ?>
                     </div>
                 </aside>
@@ -153,4 +155,4 @@ require __DIR__ . "/includes/explore-header.php";
     </div>
 </section>
 
-<?php require __DIR__ . "/includes/explore-footer.php"; ?>
+<?php require __DIR__ . "/includes/footer.php"; ?>

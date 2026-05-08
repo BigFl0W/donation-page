@@ -14,7 +14,6 @@ $pageDescription = $pageDescription ?? "Manage the donation platform from one pl
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo e($pageTitle); ?> | Admin</title>
     <link rel="shortcut icon" type="image/x-icon" href="../assets/images/favicon.ico">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="../assets/library/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/library/icofont/icofont.min.css" rel="stylesheet">
     <link href="../assets/css/admin.css" rel="stylesheet">
