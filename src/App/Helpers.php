@@ -79,7 +79,8 @@ class Helpers
 
     public static function brandLogoPath(string $default = "assets/images/logo_dark.svg"): string
     {
-        $value = (string) self::setting("site_logo", $default);
+        // Use the 'brand_logo' setting key used by the admin branding form
+        $value = (string) self::setting("brand_logo", $default);
         return trim($value) !== "" ? $value : $default;
     }
 

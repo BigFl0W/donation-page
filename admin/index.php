@@ -30,9 +30,9 @@ if ($dbAvail) {
 }
 
 // ─── DEFAULT VARIABLES (NOW $SETTINGS IS AVAILABLE) ────────────────────────────────
-$adminBrandLogo = $settings['brand_logo'] ?? 'assets/images/logo.png';
-$siteName = $settings['site_name'] ?? 'HopeConnect';
-$adminFavicon = $settings['site_favicon'] ?? 'assets/images/favicon.ico';
+$adminBrandLogo = Helpers::brandLogoPath();
+$siteName = Helpers::brandName();
+$adminFavicon = Helpers::brandFaviconPath();
 
 $totalDonationsYear = 0; $totalDonationsCurrency = "USD";
 $totalDonationsAll = 0; $totalTxCount = 0;
