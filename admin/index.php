@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 declare(strict_types=1);
 require_once __DIR__ . "/../config/autoload.php";
@@ -452,6 +453,75 @@ body{
 }
 .sidebar-overlay.show{display:block}
 
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HopeConnect NGO — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --brand:#0f766e;
+  --brand-light:#14b8a6;
+  --brand-dim:#ccfbf1;
+  --brand-bg:#f0fdfa;
+  --amber:#d97706;
+  --amber-l:#fbbf24;
+  --amber-bg:#fffbeb;
+  --rose:#dc2626;
+  --rose-bg:#fef2f2;
+  --blue:#2563eb;
+  --blue-bg:#eff6ff;
+  --violet:#7c3aed;
+  --violet-bg:#f5f3ff;
+  --dark:#0c1220;
+  --mid:#374151;
+  --muted:#6b7280;
+  --soft:#9ca3af;
+  --border:#e5e7eb;
+  --surface:#f9fafb;
+  --white:#ffffff;
+  --sidebar-w:265px;
+  --header-h:66px;
+  --radius:14px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06);
+  --shadow-md:0 4px 20px rgba(0,0,0,.1);
+}
+
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--surface);
+  color:var(--dark);
+  min-height:100vh;
+  overflow-x:hidden;
+  font-size:14px;
+  line-height:1.5;
+}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:#9ca3af}
+
+/* ═══════ LAYOUT ═══════ */
+.app{display:flex;min-height:100vh}
+
+/* ═══════ OVERLAY (mobile) ═══════ */
+.sidebar-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.5);
+  z-index:199;
+  backdrop-filter:blur(2px);
+}
+.sidebar-overlay.show{display:block}
+
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 /* ═══════ SIDEBAR ═══════ */
 .sidebar{
   width:var(--sidebar-w);
@@ -462,6 +532,11 @@ body{
   transition:transform .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1);
   overflow:hidden;
 }
+<<<<<<< HEAD
+=======
+
+/* Collapsed (desktop) */
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .sidebar.collapsed{width:72px}
 .sidebar.collapsed .nav-text,
 .sidebar.collapsed .brand-text,
@@ -475,6 +550,10 @@ body{
 .sidebar.collapsed .sidebar-footer{padding:14px;justify-content:center}
 .sidebar.collapsed .user-ava{margin:0}
 
+<<<<<<< HEAD
+=======
+/* Mobile hidden */
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 @media(max-width:1023px){
   .sidebar{transform:translateX(-100%)}
   .sidebar.mobile-open{transform:translateX(0)}
@@ -482,6 +561,10 @@ body{
   .sidebar.collapsed.mobile-open{transform:translateX(0)}
 }
 
+<<<<<<< HEAD
+=======
+/* Brand */
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .brand{
   display:flex;align-items:center;gap:12px;
   padding:20px 18px 16px;
@@ -494,12 +577,20 @@ body{
   display:flex;align-items:center;justify-content:center;
   color:#fff;font-size:.9rem;flex-shrink:0;
 }
+<<<<<<< HEAD
+=======
+.brand-text{}
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .brand-name{
   font-family:'Instrument Serif',serif;
   font-size:1.1rem;color:#fff;white-space:nowrap;line-height:1.2;
 }
 .brand-sub{font-size:.68rem;color:#6b7280;white-space:nowrap;margin-top:1px;letter-spacing:.3px}
 
+<<<<<<< HEAD
+=======
+/* Nav scroll */
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .nav-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 0}
 .nav-section{
   font-size:.65rem;font-weight:700;letter-spacing:1.6px;
@@ -534,6 +625,10 @@ body{
 .nav-badge.green{background:#059669}
 .nav-badge.amber{background:var(--amber)}
 
+<<<<<<< HEAD
+=======
+/* Sidebar footer */
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .sidebar-footer{
   border-top:1px solid rgba(255,255,255,.07);
   padding:14px 18px;
@@ -546,6 +641,10 @@ body{
   display:flex;align-items:center;justify-content:center;
   font-size:.72rem;font-weight:700;color:#fff;
 }
+<<<<<<< HEAD
+=======
+.user-text{}
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .user-name{font-size:.8rem;font-weight:700;color:#f1f5f9}
 .user-role{font-size:.68rem;color:#4b5563;margin-top:1px}
 .footer-links{
@@ -588,6 +687,10 @@ body{
   display:block;width:18px;height:1.8px;
   background:var(--mid);border-radius:2px;transition:all .28s;
 }
+<<<<<<< HEAD
+=======
+.page-heading{}
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .page-title{font-size:.95rem;font-weight:700;color:var(--dark);line-height:1}
 .breadcrumb{
   font-size:.72rem;color:var(--muted);
@@ -641,10 +744,15 @@ body{
   display:grid;grid-template-columns:repeat(4,1fr);
   gap:16px;margin-bottom:22px;
 }
+<<<<<<< HEAD
 .stats-grid.cols-3{grid-template-columns:repeat(3,1fr)}
 @media(max-width:1279px){.stats-grid,.stats-grid.cols-3{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:767px){.stats-grid,.stats-grid.cols-3{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:479px){.stats-grid,.stats-grid.cols-3{grid-template-columns:1fr}}
+=======
+@media(max-width:1279px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:479px){.stats-grid{grid-template-columns:1fr}}
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 
 .stat-card{
   background:var(--white);border-radius:var(--radius);
@@ -661,7 +769,10 @@ body{
 .stat-card.t2::after{background:var(--amber)}
 .stat-card.t3::after{background:var(--rose)}
 .stat-card.t4::after{background:var(--blue)}
+<<<<<<< HEAD
 .stat-card.t5::after{background:var(--violet)}
+=======
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 
 .stat-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
 .stat-icon-wrap{
@@ -688,12 +799,15 @@ body{
 .stat-label{font-size:.75rem;color:var(--muted);margin-top:4px;font-weight:500}
 .stat-sub{font-size:.72rem;color:var(--soft);margin-top:10px}
 
+<<<<<<< HEAD
 .stat-skeleton{
   height:20px;background:linear-gradient(90deg,var(--border) 25%,#f3f4f6 50%,var(--border) 75%);
   background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;margin-bottom:8px;
 }
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
+=======
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 /* ═══════ CARD ═══════ */
 .card{
   background:var(--white);border-radius:var(--radius);
@@ -704,6 +818,10 @@ body{
   display:flex;align-items:center;justify-content:space-between;
   margin-bottom:18px;gap:10px;flex-wrap:wrap;
 }
+<<<<<<< HEAD
+=======
+.card-hd-left{}
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .card-title{font-size:.9rem;font-weight:700;color:var(--dark)}
 .card-sub{font-size:.75rem;color:var(--muted);margin-top:2px}
 .card-link{
@@ -720,6 +838,7 @@ body{
 }
 @media(max-width:1199px){.charts-row{grid-template-columns:1fr}}
 
+<<<<<<< HEAD
 .bar{transition:height .6s cubic-bezier(.4,0,.2,1)}
 .bar-chart {
   display:flex;align-items:flex-end;gap:8px;
@@ -744,6 +863,21 @@ body{
   opacity:0;transition:opacity .18s;pointer-events:none;
 }
 .bar:hover .bar-tooltip{opacity:1}
+=======
+/* Bar chart */
+.bar-chart-wrap{display:flex;flex-direction:column;gap:8px}
+.bar-chart{
+  display:flex;align-items:flex-end;gap:8px;
+  height:130px;padding-top:8px;
+}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+.bar-stack{width:100%;display:flex;align-items:flex-end;gap:2px;height:105px}
+.bar{
+  flex:1;border-radius:4px 4px 0 0;min-width:6px;
+  transition:opacity .18s;cursor:pointer;
+}
+.bar:hover{opacity:.75}
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .bar.primary{background:var(--brand)}
 .bar.secondary{background:var(--brand-dim)}
 .bar-lbl{font-size:.62rem;color:var(--soft);font-weight:500}
@@ -753,12 +887,21 @@ body{
 .legend-item{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--muted)}
 .legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
 
+<<<<<<< HEAD
+=======
+/* Donut */
+.donut-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .donut-legend{display:flex;flex-direction:column;gap:9px;min-width:120px}
 .dl-item{display:flex;align-items:center;gap:8px;font-size:.78rem}
 .dl-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
 .dl-lbl{color:var(--muted);flex:1}
 .dl-val{font-weight:700;color:var(--dark)}
 
+<<<<<<< HEAD
+=======
+/* Mini stats below donut */
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
 .mini-stat{
   background:var(--surface);border-radius:9px;
@@ -789,6 +932,21 @@ body{
 .feed-sub{font-size:.72rem;color:var(--muted)}
 .feed-amt{font-size:.88rem;font-weight:700;color:var(--brand);white-space:nowrap}
 
+<<<<<<< HEAD
+=======
+/* Patient status */
+.ps-list{display:flex;flex-direction:column}
+.ps-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--border);
+}
+.ps-row:last-child{border-bottom:none}
+.ps-bar{width:3px;height:36px;border-radius:2px;flex-shrink:0}
+.ps-info{flex:1;min-width:0}
+.ps-name{font-size:.82rem;font-weight:600;color:var(--dark)}
+.ps-detail{font-size:.71rem;color:var(--muted);margin-top:1px}
+
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 /* ═══════ BADGES ═══════ */
 .badge{
   display:inline-flex;align-items:center;gap:4px;
@@ -832,7 +990,11 @@ body{
   display:flex;align-items:center;gap:6px;transition:all .18s;
 }
 .filter-btn i{font-size:.8rem;color:var(--soft)}
+<<<<<<< HEAD
 .filter-btn:hover,.filter-btn.on{border-color:var(--brand-light);color:var(--brand)}
+=======
+.filter-btn:hover{border-color:var(--brand-light);color:var(--brand)}
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .btn-primary{
   padding:8px 16px;border:none;border-radius:9px;
   background:var(--brand);color:#fff;
@@ -852,7 +1014,10 @@ body{
 .btn-secondary:hover{border-color:var(--brand-light);color:var(--brand)}
 
 .data-table{width:100%;border-collapse:collapse}
+<<<<<<< HEAD
 @media(max-width:767px){.data-table thead{display:none}.data-table tr{display:block;margin-bottom:12px;border:1px solid var(--border);border-radius:10px;padding:10px}.data-table td{display:flex;justify-content:space-between;align-items:center;padding:8px 6px;border-bottom:1px solid var(--border);gap:8px}.data-table td:last-child{border-bottom:none}.data-table td::before{content:attr(data-label);font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);white-space:nowrap;flex-shrink:0}.data-table td .action-btns{flex-shrink:0}.data-table .action-btn{width:34px;height:34px;font-size:.85rem}}
+=======
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .data-table th{
   text-align:left;font-size:.67rem;font-weight:700;
   letter-spacing:.7px;text-transform:uppercase;
@@ -892,6 +1057,10 @@ body{
 .action-btn:hover.edit{border-color:var(--brand);color:var(--brand);background:var(--brand-bg)}
 .action-btn:hover.del{border-color:var(--rose);color:var(--rose);background:var(--rose-bg)}
 
+<<<<<<< HEAD
+=======
+/* Pagination */
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .pagination{
   display:flex;align-items:center;gap:5px;
   margin-top:16px;justify-content:flex-end;flex-wrap:wrap;
@@ -906,6 +1075,10 @@ body{
 }
 .page-btn:hover,.page-btn.on{background:var(--brand);color:#fff;border-color:var(--brand)}
 
+<<<<<<< HEAD
+=======
+/* Tabs */
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .tabs{display:flex;gap:4px;margin-bottom:18px;flex-wrap:wrap}
 .tab-btn{
   padding:7px 14px;border-radius:8px;
@@ -916,10 +1089,18 @@ body{
 .tab-btn:hover{border-color:var(--brand-light);color:var(--brand)}
 .tab-btn.on{background:var(--brand);color:#fff;border-color:var(--brand)}
 
+<<<<<<< HEAD
+=======
+/* Progress bar */
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .prog-wrap{width:100%;background:var(--border);border-radius:99px;height:5px;margin:6px 0}
 .prog-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand-light))}
 .prog-bar.urgent{background:linear-gradient(90deg,#f87171,var(--rose))}
 
+<<<<<<< HEAD
+=======
+/* Section header */
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .section-hd{
   display:flex;align-items:flex-start;justify-content:space-between;
   margin-bottom:18px;flex-wrap:wrap;gap:10px;
@@ -988,7 +1169,11 @@ body{
   text-transform:uppercase;color:var(--brand);margin-bottom:6px;
 }
 .blog-title{font-size:.85rem;font-weight:700;color:var(--dark);line-height:1.4;margin-bottom:5px}
+<<<<<<< HEAD
 .blog-excerpt{font-size:.75rem;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+=======
+.blog-excerpt{font-size:.75rem;color:var(--muted);line-height:1.5}
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .blog-meta{
   display:flex;align-items:center;gap:8px;
   font-size:.7rem;color:var(--muted);margin-top:11px;flex-wrap:wrap;
@@ -1100,7 +1285,11 @@ body{
 .notif-label{font-size:.82rem;font-weight:600;color:var(--dark)}
 .notif-desc{font-size:.71rem;color:var(--muted);margin-top:2px}
 
+<<<<<<< HEAD
 /* ═══════ RESPONSIVE ═══════ */
+=======
+/* ═══════ RESPONSIVE HELPERS ═══════ */
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .hide-sm{display:block}
 @media(max-width:767px){
   .hide-sm{display:none}
@@ -1112,10 +1301,20 @@ body{
 @media(max-width:479px){
   .topbar-search{display:none}
   .card{padding:16px}
+<<<<<<< HEAD
 }
 
 .mono{font-family:'Courier New',monospace;font-size:.78rem;color:var(--muted)}
 
+=======
+  .data-table th:nth-child(n+4),.data-table td:nth-child(n+4){display:none}
+}
+
+/* ═══════ EMPTY / MONO ═══════ */
+.mono{font-family:'Courier New',monospace;font-size:.78rem;color:var(--muted)}
+
+/* ═══════ ALERT BANNER ═══════ */
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 .alert-banner{
   display:flex;align-items:center;gap:10px;
   padding:11px 16px;border-radius:10px;
@@ -1125,6 +1324,7 @@ body{
 .alert-banner.danger{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}
 .alert-banner i{flex-shrink:0}
 
+<<<<<<< HEAD
 /* ─── EMPTY STATE ─── */
 .empty-state{
   text-align:center;padding:40px 20px;color:var(--muted);
@@ -1229,6 +1429,8 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
 #confirmBody{padding:12px 22px 6px}
 #confirmBody p{font-size:.88rem;color:var(--mid);line-height:1.6}
 
+=======
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 </style>
 </head>
 <body>
@@ -1239,8 +1441,14 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
 
 <!-- ══════════ SIDEBAR ══════════ -->
 <aside class="sidebar" id="sidebar">
+<<<<<<< HEAD
   <div class="brand">
     <img src="assets/images/logo_white.svg" alt="HopeConnect" class="brand-logo-img">
+=======
+
+  <div class="brand">
+    <div class="brand-logo"><i class="fas fa-hands-holding-heart"></i></div>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
     <div class="brand-text">
       <div class="brand-name">HopeConnect</div>
       <div class="brand-sub">NGO Admin Portal</div>
@@ -1258,17 +1466,30 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     <div class="nav-item" onclick="showPage('donations',this)">
       <i class="fas fa-hand-holding-dollar nav-icon"></i>
       <span class="nav-text">Donations</span>
+<<<<<<< HEAD
       <span class="nav-badge"><?php echo Helpers::e((string)$pendingReview); ?></span>
+=======
+      <span class="nav-badge">12</span>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
     </div>
     <div class="nav-item" onclick="showPage('users',this)">
       <i class="fas fa-users nav-icon"></i>
       <span class="nav-text">Users</span>
+<<<<<<< HEAD
       <span class="nav-badge green"><?php echo Helpers::e((string)$totalAdmins); ?></span>
     </div>
     <div class="nav-item" onclick="showPage('programmes',this)">
       <i class="fas fa-seedling nav-icon"></i>
       <span class="nav-text">Programmes</span>
       <span class="nav-badge amber"><?php echo Helpers::e((string)$publishedProgrammes); ?></span>
+=======
+      <span class="nav-badge green">248</span>
+    </div>
+    <div class="nav-item" onclick="showPage('patients',this)">
+      <i class="fas fa-hospital-user nav-icon"></i>
+      <span class="nav-text">Patients</span>
+      <span class="nav-badge amber">5</span>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
     </div>
     <div class="nav-item" onclick="showPage('partners',this)">
       <i class="fas fa-handshake nav-icon"></i>
@@ -1280,10 +1501,13 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <i class="fas fa-newspaper nav-icon"></i>
       <span class="nav-text">Blog &amp; News</span>
     </div>
+<<<<<<< HEAD
     <div class="nav-item" onclick="showPage('events',this)">
       <i class="fas fa-calendar-days nav-icon"></i>
       <span class="nav-text">Events</span>
     </div>
+=======
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
     <div class="nav-item" onclick="showPage('gallery',this)">
       <i class="fas fa-images nav-icon"></i>
       <span class="nav-text">Gallery</span>
@@ -1293,6 +1517,10 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     <div class="nav-item" onclick="showPage('security',this)">
       <i class="fas fa-shield-halved nav-icon"></i>
       <span class="nav-text">Security</span>
+<<<<<<< HEAD
+=======
+      <span class="nav-badge">3</span>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
     </div>
     <div class="nav-item" onclick="showPage('settings',this)">
       <i class="fas fa-gear nav-icon"></i>
@@ -1301,6 +1529,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
   </nav>
 
   <div class="sidebar-footer">
+<<<<<<< HEAD
     <div class="user-ava"><?php echo Helpers::e($adminInitials); ?></div>
     <div class="user-text">
       <div class="user-name"><?php echo Helpers::e($adminName); ?></div>
@@ -1310,6 +1539,18 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
   <div class="footer-links">
     <a href="<?php echo Helpers::e(Helpers::siteUrl()); ?>" target="_blank">View Site</a>
     <a href="<?php echo Helpers::e(Helpers::adminUrl("logout.php")); ?>" class="danger">Logout</a>
+=======
+    <div class="user-ava">SA</div>
+    <div class="user-text">
+      <div class="user-name">Super Admin</div>
+      <div class="user-role">Administrator</div>
+    </div>
+  </div>
+  <div class="footer-links">
+    <a href="#">Help</a>
+    <a href="#">Privacy</a>
+    <a href="#" class="danger" style="color:#4b5563">Logout</a>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
   </div>
 </aside>
 
@@ -1341,6 +1582,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <button class="tb-btn hide-sm" title="Messages" aria-label="Messages">
         <i class="fas fa-envelope"></i>
       </button>
+<<<<<<< HEAD
       <div class="tb-avatar" title="Profile"><?php echo Helpers::e($adminInitials); ?></div>
     </div>
   </header>
@@ -1350,10 +1592,27 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
   ════════════════════════════════════════════ -->
   <div class="content active" id="page-dashboard">
 
+=======
+      <div class="tb-avatar" title="Profile">SA</div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════
+       DASHBOARD
+  ══════════════════════════════ -->
+  <div class="content active" id="page-dashboard">
+
+    <div class="alert-banner warn">
+      <i class="fas fa-triangle-exclamation"></i>
+      <span><strong>3 security alerts</strong> require your attention — <a href="#" onclick="showPage('security',document.querySelector('[onclick*=security]'))" style="color:inherit;font-weight:700;text-decoration:underline">Review now</a></span>
+    </div>
+
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
     <div class="stats-grid">
       <div class="stat-card t1">
         <div class="stat-top">
           <div class="stat-icon-wrap"><i class="fas fa-dollar-sign"></i></div>
+<<<<<<< HEAD
           <span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i> All Time</span>
         </div>
         <div class="stat-value"><?php echo Helpers::e(Helpers::fmt($totalDonationsAll)); ?></div>
@@ -1386,6 +1645,40 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         <div class="stat-value"><?php echo Helpers::e($activePartners); ?></div>
         <div class="stat-label">Active Partners</div>
         <div class="stat-sub"><i class="far fa-clock" style="margin-right:4px"></i>Supporting our mission</div>
+=======
+          <span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i>18.4%</span>
+        </div>
+        <div class="stat-value">$248,500</div>
+        <div class="stat-label">Total Donations This Year</div>
+        <div class="stat-sub"><i class="far fa-clock" style="margin-right:4px"></i>Updated just now</div>
+      </div>
+      <div class="stat-card t2">
+        <div class="stat-top">
+          <div class="stat-icon-wrap"><i class="fas fa-users"></i></div>
+          <span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i>6.2%</span>
+        </div>
+        <div class="stat-value">2,481</div>
+        <div class="stat-label">Registered Users</div>
+        <div class="stat-sub"><i class="far fa-clock" style="margin-right:4px"></i>+154 this week</div>
+      </div>
+      <div class="stat-card t3">
+        <div class="stat-top">
+          <div class="stat-icon-wrap"><i class="fas fa-hospital-user"></i></div>
+          <span class="stat-trend down"><i class="fas fa-arrow-trend-down"></i>2 today</span>
+        </div>
+        <div class="stat-value">312</div>
+        <div class="stat-label">Active Patients</div>
+        <div class="stat-sub"><i class="far fa-clock" style="margin-right:4px"></i>2 discharged today</div>
+      </div>
+      <div class="stat-card t4">
+        <div class="stat-top">
+          <div class="stat-icon-wrap"><i class="fas fa-handshake"></i></div>
+          <span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i>3 new</span>
+        </div>
+        <div class="stat-value">47</div>
+        <div class="stat-label">Active Partners</div>
+        <div class="stat-sub"><i class="far fa-clock" style="margin-right:4px"></i>+3 this month</div>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
       </div>
     </div>
 
@@ -1394,6 +1687,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         <div class="card-hd">
           <div class="card-hd-left">
             <div class="card-title">Donation Overview</div>
+<<<<<<< HEAD
             <div class="card-sub">Monthly donations (last 12 months)</div>
           </div>
         </div>
@@ -1413,6 +1707,30 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
           </div>
           <div class="chart-legend">
             <div class="legend-item"><div class="legend-dot" style="background:var(--brand)"></div>Donations Received</div>
+=======
+            <div class="card-sub">Monthly donations — 2025</div>
+          </div>
+          <a class="card-link" onclick="showPage('donations',null)"><i class="fas fa-arrow-right"></i> View All</a>
+        </div>
+        <div class="bar-chart-wrap">
+          <div class="bar-chart">
+            <div class="bar-col"><div class="bar-stack"><div class="bar primary" style="height:55%"></div><div class="bar secondary" style="height:38%"></div></div><div class="bar-lbl">Jan</div></div>
+            <div class="bar-col"><div class="bar-stack"><div class="bar primary" style="height:70%"></div><div class="bar secondary" style="height:52%"></div></div><div class="bar-lbl">Feb</div></div>
+            <div class="bar-col"><div class="bar-stack"><div class="bar primary" style="height:45%"></div><div class="bar secondary" style="height:30%"></div></div><div class="bar-lbl">Mar</div></div>
+            <div class="bar-col"><div class="bar-stack"><div class="bar primary" style="height:80%"></div><div class="bar secondary" style="height:65%"></div></div><div class="bar-lbl">Apr</div></div>
+            <div class="bar-col"><div class="bar-stack"><div class="bar primary" style="height:90%"></div><div class="bar secondary" style="height:72%"></div></div><div class="bar-lbl">May</div></div>
+            <div class="bar-col"><div class="bar-stack"><div class="bar primary" style="height:60%"></div><div class="bar secondary" style="height:44%"></div></div><div class="bar-lbl">Jun</div></div>
+            <div class="bar-col"><div class="bar-stack"><div class="bar primary" style="height:75%"></div><div class="bar secondary" style="height:58%"></div></div><div class="bar-lbl">Jul</div></div>
+            <div class="bar-col"><div class="bar-stack"><div class="bar primary" style="height:100%"></div><div class="bar secondary" style="height:80%"></div></div><div class="bar-lbl">Aug</div></div>
+            <div class="bar-col"><div class="bar-stack"><div class="bar primary" style="height:82%"></div><div class="bar secondary" style="height:66%"></div></div><div class="bar-lbl">Sep</div></div>
+            <div class="bar-col"><div class="bar-stack"><div class="bar primary" style="height:68%"></div><div class="bar secondary" style="height:50%"></div></div><div class="bar-lbl">Oct</div></div>
+            <div class="bar-col"><div class="bar-stack"><div class="bar primary" style="height:55%"></div><div class="bar secondary" style="height:40%"></div></div><div class="bar-lbl">Nov</div></div>
+            <div class="bar-col"><div class="bar-stack"><div class="bar primary" style="height:40%"></div><div class="bar secondary" style="height:28%"></div></div><div class="bar-lbl">Dec</div></div>
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--brand)"></div>Received</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--brand-dim)"></div>Disbursed</div>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
           </div>
         </div>
       </div>
@@ -1420,6 +1738,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <div class="card">
         <div class="card-hd">
           <div class="card-hd-left">
+<<<<<<< HEAD
             <div class="card-title">Gateway Distribution</div>
             <div class="card-sub">Payment method breakdown</div>
           </div>
@@ -1457,6 +1776,34 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
           <div class="mini-stat"><div class="v"><?php echo Helpers::e($publishedPosts); ?></div><div class="l">Blog Posts</div></div>
           <div class="mini-stat"><div class="v"><?php echo Helpers::e($publishedEvents); ?></div><div class="l">Events</div></div>
           <div class="mini-stat"><div class="v"><?php echo Helpers::e((int)($publishedProgrammes) + (int)($activePartners)); ?></div><div class="l">Total Items</div></div>
+=======
+            <div class="card-title">Patients by Category</div>
+            <div class="card-sub">Current distribution</div>
+          </div>
+        </div>
+        <div class="donut-wrap">
+          <svg width="110" height="110" viewBox="0 0 110 110" style="flex-shrink:0">
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#e5e7eb" stroke-width="16"/>
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#0f766e" stroke-width="16" stroke-dasharray="100 151" stroke-dashoffset="0" transform="rotate(-90 55 55)"/>
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#fbbf24" stroke-width="16" stroke-dasharray="60 191" stroke-dashoffset="-100" transform="rotate(-90 55 55)"/>
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#dc2626" stroke-width="16" stroke-dasharray="40 211" stroke-dashoffset="-160" transform="rotate(-90 55 55)"/>
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#2563eb" stroke-width="16" stroke-dasharray="51 200" stroke-dashoffset="-200" transform="rotate(-90 55 55)"/>
+            <text x="55" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#0c1220" font-family="Plus Jakarta Sans,sans-serif">312</text>
+            <text x="55" y="63" text-anchor="middle" font-size="8" fill="#6b7280" font-family="Plus Jakarta Sans,sans-serif">patients</text>
+          </svg>
+          <div class="donut-legend">
+            <div class="dl-item"><div class="dl-dot" style="background:#0f766e"></div><span class="dl-lbl">Medical Aid</span><span class="dl-val">40%</span></div>
+            <div class="dl-item"><div class="dl-dot" style="background:#fbbf24"></div><span class="dl-lbl">Nutrition</span><span class="dl-val">24%</span></div>
+            <div class="dl-item"><div class="dl-dot" style="background:#dc2626"></div><span class="dl-lbl">Mental Health</span><span class="dl-val">16%</span></div>
+            <div class="dl-item"><div class="dl-dot" style="background:#2563eb"></div><span class="dl-lbl">Emergency</span><span class="dl-val">20%</span></div>
+          </div>
+        </div>
+        <div class="mini-grid">
+          <div class="mini-stat"><div class="v">89%</div><div class="l">Recovery Rate</div></div>
+          <div class="mini-stat"><div class="v">14d</div><div class="l">Avg. Stay</div></div>
+          <div class="mini-stat"><div class="v">97</div><div class="l">Discharged</div></div>
+          <div class="mini-stat"><div class="v">6</div><div class="l">Critical</div></div>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
         </div>
       </div>
     </div>
@@ -1466,6 +1813,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         <div class="card-hd">
           <div class="card-hd-left">
             <div class="card-title">Recent Donations</div>
+<<<<<<< HEAD
             <div class="card-sub">Latest transactions</div>
           </div>
           <a class="card-link" onclick="showPage('donations',null)"><i class="fas fa-arrow-right"></i> View All</a>
@@ -1491,11 +1839,50 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         <?php else: ?>
         <div class="empty-state"><i class="fas fa-inbox"></i><p>No donations yet</p><div class="sub">When donors contribute, their transactions will show here</div></div>
         <?php endif; ?>
+=======
+            <div class="card-sub">Last 24 hours</div>
+          </div>
+          <a class="card-link" onclick="showPage('donations',null)"><i class="fas fa-arrow-right"></i> View All</a>
+        </div>
+        <div class="feed-list">
+          <div class="feed-row">
+            <div class="feed-ava" style="background:#0f766e">AM</div>
+            <div class="feed-info"><div class="feed-name">Amara Osei</div><div class="feed-sub"><i class="fas fa-credit-card" style="margin-right:3px"></i>One-time · Credit Card</div></div>
+            <span class="badge success"><i class="fas fa-check"></i>Completed</span>
+            <div class="feed-amt">$500</div>
+          </div>
+          <div class="feed-row">
+            <div class="feed-ava" style="background:#2563eb">KC</div>
+            <div class="feed-info"><div class="feed-name">Kwame Asante</div><div class="feed-sub"><i class="fas fa-building-columns" style="margin-right:3px"></i>Monthly · Bank Transfer</div></div>
+            <span class="badge success"><i class="fas fa-check"></i>Completed</span>
+            <div class="feed-amt">$1,200</div>
+          </div>
+          <div class="feed-row">
+            <div class="feed-ava" style="background:#d97706">FN</div>
+            <div class="feed-info"><div class="feed-name">Fatima Njoku</div><div class="feed-sub"><i class="fas fa-mobile-screen" style="margin-right:3px"></i>One-time · Mobile Money</div></div>
+            <span class="badge warning"><i class="fas fa-clock"></i>Pending</span>
+            <div class="feed-amt">$250</div>
+          </div>
+          <div class="feed-row">
+            <div class="feed-ava" style="background:#7c3aed">EM</div>
+            <div class="feed-info"><div class="feed-name">Emmanuel Mensah</div><div class="feed-sub"><i class="fas fa-building-columns" style="margin-right:3px"></i>Annual · Wire Transfer</div></div>
+            <span class="badge success"><i class="fas fa-check"></i>Completed</span>
+            <div class="feed-amt">$5,000</div>
+          </div>
+          <div class="feed-row">
+            <div class="feed-ava" style="background:#dc2626">CI</div>
+            <div class="feed-info"><div class="feed-name">Corporate: Intex Ltd</div><div class="feed-sub"><i class="fas fa-building-columns" style="margin-right:3px"></i>One-time · Bank Transfer</div></div>
+            <span class="badge danger"><i class="fas fa-xmark"></i>Failed</span>
+            <div class="feed-amt">$10,000</div>
+          </div>
+        </div>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
       </div>
 
       <div class="card">
         <div class="card-hd">
           <div class="card-hd-left">
+<<<<<<< HEAD
             <div class="card-title">Recent Activity</div>
             <div class="card-sub">Latest updates across the platform</div>
           </div>
@@ -1516,11 +1903,45 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         <?php else: ?>
         <div class="empty-state"><i class="fas fa-clock"></i><p>No recent activity</p></div>
         <?php endif; ?>
+=======
+            <div class="card-title">Patient Admissions</div>
+            <div class="card-sub">Today's status</div>
+          </div>
+        </div>
+        <div class="ps-list">
+          <div class="ps-row">
+            <div class="ps-bar" style="background:#0f766e"></div>
+            <div class="ps-info"><div class="ps-name">Chidinma A. — F/28</div><div class="ps-detail"><i class="fas fa-bed" style="margin-right:3px"></i>Medical Aid · Ward B</div></div>
+            <span class="badge teal">Stable</span>
+          </div>
+          <div class="ps-row">
+            <div class="ps-bar" style="background:#dc2626"></div>
+            <div class="ps-info"><div class="ps-name">Musa Ibrahim — M/45</div><div class="ps-detail"><i class="fas fa-heart-pulse" style="margin-right:3px"></i>Emergency · ICU</div></div>
+            <span class="badge danger">Critical</span>
+          </div>
+          <div class="ps-row">
+            <div class="ps-bar" style="background:#fbbf24"></div>
+            <div class="ps-info"><div class="ps-name">Grace Eze — F/12</div><div class="ps-detail"><i class="fas fa-apple-alt" style="margin-right:3px"></i>Nutrition · Ward A</div></div>
+            <span class="badge warning">Monitoring</span>
+          </div>
+          <div class="ps-row">
+            <div class="ps-bar" style="background:#2563eb"></div>
+            <div class="ps-info"><div class="ps-name">Tunde Bakare — M/33</div><div class="ps-detail"><i class="fas fa-brain" style="margin-right:3px"></i>Mental Health · Clinic C</div></div>
+            <span class="badge info">In Session</span>
+          </div>
+          <div class="ps-row">
+            <div class="ps-bar" style="background:#059669"></div>
+            <div class="ps-info"><div class="ps-name">Adaeze Nwosu — F/19</div><div class="ps-detail"><i class="fas fa-bed" style="margin-right:3px"></i>Medical Aid · Ward B</div></div>
+            <span class="badge success">Discharged</span>
+          </div>
+        </div>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
       </div>
     </div>
 
   </div>
 
+<<<<<<< HEAD
   <!-- ════════════════════════════════════════════
        DONATIONS
   ════════════════════════════════════════════ -->
@@ -1541,6 +1962,55 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <div class="stat-card t3">
         <div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-circle-xmark"></i></div><span class="stat-trend down"><i class="fas fa-arrow-down"></i><?php echo Helpers::e($failedCount); ?> txns</span></div>
         <div class="stat-value"><?php echo Helpers::e($failedCount); ?></div><div class="stat-label">Failed / Reversed</div>
+=======
+  <!-- ══════════════════════════════
+       DONATIONS
+  ══════════════════════════════ -->
+  <div class="content" id="page-donations">
+    <div class="stats-grid">
+      <div class="stat-card t1">
+        <div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-dollar-sign"></i></div><span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i>18.4%</span></div>
+        <div class="stat-value">$248.5K</div><div class="stat-label">Total Raised</div>
+      </div>
+      <div class="stat-card t4">
+        <div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-receipt"></i></div><span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i>54 this week</span></div>
+        <div class="stat-value">1,842</div><div class="stat-label">Total Transactions</div>
+      </div>
+      <div class="stat-card t2">
+        <div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-hourglass-half"></i></div><span class="stat-trend neutral">Needs action</span></div>
+        <div class="stat-value">12</div><div class="stat-label">Pending Review</div>
+      </div>
+      <div class="stat-card t3">
+        <div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-circle-xmark"></i></div><span class="stat-trend down"><i class="fas fa-arrow-down"></i>3 txns</span></div>
+        <div class="stat-value">$3,200</div><div class="stat-label">Failed / Reversed</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-hd">
+        <div class="card-hd-left"><div class="card-title">Active Campaigns</div></div>
+        <button class="btn-primary"><i class="fas fa-plus"></i> New Campaign</button>
+      </div>
+      <div class="campaign-grid">
+        <div class="campaign-card">
+          <div class="cmp-top"><div><div class="cmp-name">Medical Equipment Fund</div><div class="cmp-date"><i class="far fa-calendar" style="margin-right:3px"></i>Ends Dec 31, 2025</div></div><span class="badge success">Active</span></div>
+          <div class="cmp-nums"><span>$42,000 raised</span><span>$60,000 goal</span></div>
+          <div class="prog-wrap"><div class="prog-bar" style="width:70%"></div></div>
+          <div class="cmp-pct" style="color:var(--brand)">70% funded</div>
+        </div>
+        <div class="campaign-card">
+          <div class="cmp-top"><div><div class="cmp-name">Child Nutrition Program</div><div class="cmp-date"><i class="far fa-calendar" style="margin-right:3px"></i>Ends Mar 15, 2026</div></div><span class="badge success">Active</span></div>
+          <div class="cmp-nums"><span>$18,500 raised</span><span>$25,000 goal</span></div>
+          <div class="prog-wrap"><div class="prog-bar" style="width:74%"></div></div>
+          <div class="cmp-pct" style="color:var(--brand)">74% funded</div>
+        </div>
+        <div class="campaign-card">
+          <div class="cmp-top"><div><div class="cmp-name">Emergency Relief 2025</div><div class="cmp-date"><i class="far fa-clock" style="margin-right:3px"></i>Ongoing</div></div><span class="badge warning">Urgent</span></div>
+          <div class="cmp-nums"><span>$8,200 raised</span><span>$50,000 goal</span></div>
+          <div class="prog-wrap"><div class="prog-bar urgent" style="width:16%"></div></div>
+          <div class="cmp-pct" style="color:var(--rose)">16% funded</div>
+        </div>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
       </div>
     </div>
 
@@ -1554,6 +2024,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       </div>
       <div style="overflow-x:auto">
         <table class="data-table">
+<<<<<<< HEAD
           <thead><tr><th>Donor</th><th>Amount</th><th>Gateway</th><th>Reference</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody>
             <?php
@@ -1575,18 +2046,72 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
             <?php else: ?>
               <tr><td colspan="7"><div class="empty-state"><i class="fas fa-inbox"></i><p>No donation records</p></div></td></tr>
             <?php endif; ?>
+=======
+          <thead>
+            <tr><th>Donor</th><th>Amount</th><th>Campaign</th><th>Method</th><th>Date</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="cell-user"><div class="cell-ava" style="background:#0f766e">AM</div><div><span class="cell-name">Amara Osei</span><span class="cell-sub">amara@email.com</span></div></div></td>
+              <td><strong>$500.00</strong></td><td>Medical Equipment</td>
+              <td><span class="badge info"><i class="fas fa-credit-card"></i>Card</span></td>
+              <td class="mono">May 7, 2025</td>
+              <td><span class="badge success"><i class="fas fa-check"></i>Completed</span></td>
+              <td><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button></div></td>
+            </tr>
+            <tr>
+              <td><div class="cell-user"><div class="cell-ava" style="background:#2563eb">KC</div><div><span class="cell-name">Kwame Asante</span><span class="cell-sub">kwame@corp.com</span></div></div></td>
+              <td><strong>$1,200.00</strong></td><td>Child Nutrition</td>
+              <td><span class="badge neutral"><i class="fas fa-building-columns"></i>Bank</span></td>
+              <td class="mono">May 7, 2025</td>
+              <td><span class="badge success"><i class="fas fa-check"></i>Completed</span></td>
+              <td><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button></div></td>
+            </tr>
+            <tr>
+              <td><div class="cell-user"><div class="cell-ava" style="background:#d97706">FN</div><div><span class="cell-name">Fatima Njoku</span><span class="cell-sub">f.njoku@mail.ng</span></div></div></td>
+              <td><strong>$250.00</strong></td><td>Emergency Relief</td>
+              <td><span class="badge violet"><i class="fas fa-mobile-screen"></i>Mobile</span></td>
+              <td class="mono">May 6, 2025</td>
+              <td><span class="badge warning"><i class="fas fa-clock"></i>Pending</span></td>
+              <td><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button><button class="action-btn del"><i class="fas fa-trash"></i></button></div></td>
+            </tr>
+            <tr>
+              <td><div class="cell-user"><div class="cell-ava" style="background:#7c3aed">EM</div><div><span class="cell-name">Emmanuel Mensah</span><span class="cell-sub">e.mensah@org.gh</span></div></div></td>
+              <td><strong>$5,000.00</strong></td><td>Medical Equipment</td>
+              <td><span class="badge neutral"><i class="fas fa-building-columns"></i>Wire</span></td>
+              <td class="mono">May 5, 2025</td>
+              <td><span class="badge success"><i class="fas fa-check"></i>Completed</span></td>
+              <td><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button></div></td>
+            </tr>
+            <tr>
+              <td><div class="cell-user"><div class="cell-ava" style="background:#dc2626">CI</div><div><span class="cell-name">Intex Ltd</span><span class="cell-sub">giving@intex.com</span></div></div></td>
+              <td><strong>$10,000.00</strong></td><td>General Fund</td>
+              <td><span class="badge neutral"><i class="fas fa-building-columns"></i>Bank</span></td>
+              <td class="mono">May 4, 2025</td>
+              <td><span class="badge danger"><i class="fas fa-xmark"></i>Failed</span></td>
+              <td><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button><button class="action-btn del"><i class="fas fa-trash"></i></button></div></td>
+            </tr>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
           </tbody>
         </table>
       </div>
       <div class="pagination">
+<<<<<<< HEAD
         <span class="page-info">Showing <?php echo Helpers::e(min(count($allDonations), 20)); ?> of <?php echo Helpers::e($totalTxCount); ?> entries</span>
         <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
         <button class="page-btn on">1</button>
+=======
+        <span class="page-info">Showing 1–5 of 1,842 entries</span>
+        <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+        <button class="page-btn on">1</button><button class="page-btn">2</button><button class="page-btn">3</button>
+        <button class="page-btn">…</button><button class="page-btn">368</button>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
         <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
       </div>
     </div>
   </div>
 
+<<<<<<< HEAD
   <!-- ════════════════════════════════════════════
        USERS
   ════════════════════════════════════════════ -->
@@ -1596,12 +2121,24 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <div class="stat-card t4"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-user-check"></i></div><span class="stat-trend up"><?php echo Helpers::e($totalAdmins > 0 ? round(($activeAdmins/$totalAdmins)*100) : 0); ?>%</span></div><div class="stat-value"><?php echo Helpers::e($activeAdmins); ?></div><div class="stat-label">Active</div></div>
       <div class="stat-card t2"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-user-clock"></i></div><span class="stat-trend neutral">Inactive</span></div><div class="stat-value"><?php echo Helpers::e(max(0, $totalAdmins - $activeAdmins - $suspendedAdmins)); ?></div><div class="stat-label">Inactive</div></div>
       <div class="stat-card t3"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-user-slash"></i></div><span class="stat-trend down"><i class="fas fa-arrow-down"></i><?php echo Helpers::e($suspendedAdmins); ?></span></div><div class="stat-value"><?php echo Helpers::e($suspendedAdmins); ?></div><div class="stat-label">Suspended</div></div>
+=======
+  <!-- ══════════════════════════════
+       USERS
+  ══════════════════════════════ -->
+  <div class="content" id="page-users">
+    <div class="stats-grid">
+      <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-users"></i></div><span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i>6.2%</span></div><div class="stat-value">2,481</div><div class="stat-label">Total Users</div></div>
+      <div class="stat-card t4"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-user-check"></i></div><span class="stat-trend up">84.8%</span></div><div class="stat-value">2,104</div><div class="stat-label">Verified</div></div>
+      <div class="stat-card t2"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-user-clock"></i></div><span class="stat-trend neutral">10% of total</span></div><div class="stat-value">248</div><div class="stat-label">Pending Verification</div></div>
+      <div class="stat-card t3"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-user-slash"></i></div><span class="stat-trend down"><i class="fas fa-arrow-down"></i>2 this week</span></div><div class="stat-value">129</div><div class="stat-label">Suspended</div></div>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
     </div>
     <div class="card">
       <div class="toolbar">
         <div class="search-box"><i class="fas fa-search"></i><input placeholder="Search users…"/></div>
         <button class="filter-btn"><i class="fas fa-tag"></i> Role</button>
         <button class="filter-btn"><i class="fas fa-circle-half-stroke"></i> Status</button>
+<<<<<<< HEAD
         <button class="btn-primary ml"><i class="fas fa-user-plus"></i> Add User</button>
       </div>
       <div style="overflow-x:auto">
@@ -1814,10 +2351,303 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
   <!-- ════════════════════════════════════════════
        GALLERY
   ════════════════════════════════════════════ -->
+=======
+        <button class="filter-btn"><i class="far fa-calendar"></i> Joined</button>
+        <button class="btn-primary ml"><i class="fas fa-user-plus"></i> Add User</button>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn on">All Users</button>
+        <button class="tab-btn">Admins</button>
+        <button class="tab-btn">Volunteers</button>
+        <button class="tab-btn">Donors</button>
+        <button class="tab-btn">Staff</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>User</th><th>Role</th><th>Location</th><th>Joined</th><th>Last Active</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="cell-user"><div class="cell-ava" style="background:#0f766e">SA</div><div><span class="cell-name">Super Admin</span><span class="cell-sub">admin@hopeconnect.org</span></div></div></td>
+              <td><span class="badge danger"><i class="fas fa-crown"></i>Super Admin</span></td>
+              <td><i class="fas fa-location-dot" style="color:var(--soft);margin-right:4px"></i>Lagos, NG</td>
+              <td class="mono">Jan 1, 2023</td><td class="mono">Just now</td>
+              <td><span class="badge success"><i class="fas fa-circle"></i>Online</span></td>
+              <td><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button></div></td>
+            </tr>
+            <tr>
+              <td><div class="cell-user"><div class="cell-ava" style="background:#7c3aed">AK</div><div><span class="cell-name">Aisha Kamara</span><span class="cell-sub">a.kamara@hopeconnect.org</span></div></div></td>
+              <td><span class="badge violet"><i class="fas fa-shield"></i>Admin</span></td>
+              <td><i class="fas fa-location-dot" style="color:var(--soft);margin-right:4px"></i>Accra, GH</td>
+              <td class="mono">Mar 12, 2023</td><td class="mono">2h ago</td>
+              <td><span class="badge success"><i class="fas fa-circle"></i>Online</span></td>
+              <td><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button><button class="action-btn del"><i class="fas fa-trash"></i></button></div></td>
+            </tr>
+            <tr>
+              <td><div class="cell-user"><div class="cell-ava" style="background:#2563eb">OT</div><div><span class="cell-name">Oluwaseun Taiwo</span><span class="cell-sub">o.taiwo@volunteer.org</span></div></div></td>
+              <td><span class="badge info"><i class="fas fa-person-digging"></i>Volunteer</span></td>
+              <td><i class="fas fa-location-dot" style="color:var(--soft);margin-right:4px"></i>Abuja, NG</td>
+              <td class="mono">Jun 5, 2024</td><td class="mono">1d ago</td>
+              <td><span class="badge teal"><i class="fas fa-circle"></i>Active</span></td>
+              <td><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button><button class="action-btn del"><i class="fas fa-trash"></i></button></div></td>
+            </tr>
+            <tr>
+              <td><div class="cell-user"><div class="cell-ava" style="background:#d97706">MB</div><div><span class="cell-name">Miriam Boateng</span><span class="cell-sub">m.boateng@email.com</span></div></div></td>
+              <td><span class="badge neutral"><i class="fas fa-heart"></i>Donor</span></td>
+              <td><i class="fas fa-location-dot" style="color:var(--soft);margin-right:4px"></i>Kumasi, GH</td>
+              <td class="mono">Sep 18, 2024</td><td class="mono">5d ago</td>
+              <td><span class="badge warning"><i class="fas fa-circle"></i>Away</span></td>
+              <td><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button><button class="action-btn del"><i class="fas fa-trash"></i></button></div></td>
+            </tr>
+            <tr>
+              <td><div class="cell-user"><div class="cell-ava" style="background:#dc2626">XY</div><div><span class="cell-name">Xavier Yeboah</span><span class="cell-sub">x.yeboah@staff.org</span></div></div></td>
+              <td><span class="badge teal"><i class="fas fa-id-badge"></i>Staff</span></td>
+              <td><i class="fas fa-location-dot" style="color:var(--soft);margin-right:4px"></i>Nairobi, KE</td>
+              <td class="mono">Feb 2, 2025</td><td class="mono">3w ago</td>
+              <td><span class="badge danger"><i class="fas fa-ban"></i>Suspended</span></td>
+              <td><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button><button class="action-btn del"><i class="fas fa-trash"></i></button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span class="page-info">Showing 1–5 of 2,481 users</span>
+        <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+        <button class="page-btn on">1</button><button class="page-btn">2</button><button class="page-btn">3</button>
+        <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       PATIENTS
+  ══════════════════════════════ -->
+  <div class="content" id="page-patients">
+    <div class="stats-grid">
+      <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-hospital-user"></i></div><span class="stat-trend neutral">Active</span></div><div class="stat-value">312</div><div class="stat-label">Total Active Patients</div></div>
+      <div class="stat-card t3"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-triangle-exclamation"></i></div><span class="stat-trend down">Urgent</span></div><div class="stat-value">6</div><div class="stat-label">Critical Cases</div></div>
+      <div class="stat-card t4"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-circle-check"></i></div><span class="stat-trend up">This month</span></div><div class="stat-value">97</div><div class="stat-label">Discharged (Month)</div></div>
+      <div class="stat-card t2"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-clipboard-list"></i></div><span class="stat-trend neutral">Queued</span></div><div class="stat-value">42</div><div class="stat-label">Awaiting Admission</div></div>
+    </div>
+    <div class="card">
+      <div class="toolbar">
+        <div class="search-box"><i class="fas fa-search"></i><input placeholder="Search patients…"/></div>
+        <button class="filter-btn"><i class="fas fa-bed"></i> Ward</button>
+        <button class="filter-btn"><i class="fas fa-stethoscope"></i> Category</button>
+        <button class="filter-btn"><i class="fas fa-circle-half-stroke"></i> Status</button>
+        <button class="btn-primary ml"><i class="fas fa-user-plus"></i> Admit Patient</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>Patient ID</th><th>Name</th><th>Age/Sex</th><th>Category</th><th>Ward</th><th>Admitted</th><th>Status</th><th>Assigned To</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="mono">#PT-0042</span></td>
+              <td><div class="cell-user"><div class="cell-ava" style="background:#0f766e">CA</div><div><span class="cell-name">Chidinma Agu</span></div></div></td>
+              <td>28 / F</td><td><span class="badge teal"><i class="fas fa-kit-medical"></i>Medical Aid</span></td>
+              <td>Ward B</td><td class="mono">May 1, 2025</td>
+              <td><span class="badge success">Stable</span></td>
+              <td style="color:var(--muted)">Dr. Obi</td>
+              <td><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button></div></td>
+            </tr>
+            <tr>
+              <td><span class="mono">#PT-0067</span></td>
+              <td><div class="cell-user"><div class="cell-ava" style="background:#dc2626">MI</div><div><span class="cell-name">Musa Ibrahim</span></div></div></td>
+              <td>45 / M</td><td><span class="badge danger"><i class="fas fa-siren"></i>Emergency</span></td>
+              <td>ICU</td><td class="mono">May 7, 2025</td>
+              <td><span class="badge danger">Critical</span></td>
+              <td style="color:var(--muted)">Dr. Afolabi</td>
+              <td><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button></div></td>
+            </tr>
+            <tr>
+              <td><span class="mono">#PT-0091</span></td>
+              <td><div class="cell-user"><div class="cell-ava" style="background:#fbbf24">GE</div><div><span class="cell-name">Grace Eze</span></div></div></td>
+              <td>12 / F</td><td><span class="badge warning"><i class="fas fa-apple-whole"></i>Nutrition</span></td>
+              <td>Ward A</td><td class="mono">Apr 22, 2025</td>
+              <td><span class="badge warning">Monitoring</span></td>
+              <td style="color:var(--muted)">Nurse Bello</td>
+              <td><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button></div></td>
+            </tr>
+            <tr>
+              <td><span class="mono">#PT-0112</span></td>
+              <td><div class="cell-user"><div class="cell-ava" style="background:#2563eb">TB</div><div><span class="cell-name">Tunde Bakare</span></div></div></td>
+              <td>33 / M</td><td><span class="badge info"><i class="fas fa-brain"></i>Mental Health</span></td>
+              <td>Clinic C</td><td class="mono">Mar 15, 2025</td>
+              <td><span class="badge info">In Session</span></td>
+              <td style="color:var(--muted)">Dr. Uche</td>
+              <td><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span class="page-info">Showing 1–4 of 312 patients</span>
+        <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+        <button class="page-btn on">1</button><button class="page-btn">2</button>
+        <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       PARTNERS
+  ══════════════════════════════ -->
+  <div class="content" id="page-partners">
+    <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-handshake"></i></div><span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i>+3</span></div><div class="stat-value">47</div><div class="stat-label">Active Partners</div></div>
+      <div class="stat-card t4"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-earth-africa"></i></div></div><div class="stat-value">18</div><div class="stat-label">Countries Covered</div></div>
+      <div class="stat-card t2"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-sack-dollar"></i></div></div><div class="stat-value">$1.2M</div><div class="stat-label">Partner Contributions</div></div>
+    </div>
+    <div class="card">
+      <div class="section-hd">
+        <div><h2>All Partners</h2><p>Organizations supporting HopeConnect</p></div>
+        <button class="btn-primary"><i class="fas fa-plus"></i> Add Partner</button>
+      </div>
+      <div class="partners-grid">
+        <div class="partner-card">
+          <div class="partner-logo"><i class="fas fa-building-columns"></i></div>
+          <div class="partner-info"><div class="partner-name">UNICEF West Africa</div><div class="partner-type">International Organization</div><div class="partner-since"><i class="far fa-calendar" style="margin-right:3px"></i>Since 2021 · $480,000 contributed</div></div>
+          <span class="badge success">Active</span>
+        </div>
+        <div class="partner-card">
+          <div class="partner-logo"><i class="fas fa-hospital"></i></div>
+          <div class="partner-info"><div class="partner-name">Lagos State Hospital</div><div class="partner-type">Healthcare Facility</div><div class="partner-since"><i class="far fa-calendar" style="margin-right:3px"></i>Since 2022 · Medical resources</div></div>
+          <span class="badge success">Active</span>
+        </div>
+        <div class="partner-card">
+          <div class="partner-logo"><i class="fas fa-landmark"></i></div>
+          <div class="partner-info"><div class="partner-name">First Bank Foundation</div><div class="partner-type">Financial Institution</div><div class="partner-since"><i class="far fa-calendar" style="margin-right:3px"></i>Since 2023 · $250,000/yr</div></div>
+          <span class="badge success">Active</span>
+        </div>
+        <div class="partner-card">
+          <div class="partner-logo"><i class="fas fa-leaf"></i></div>
+          <div class="partner-info"><div class="partner-name">Green Earth NGO</div><div class="partner-type">Environmental Organization</div><div class="partner-since"><i class="far fa-calendar" style="margin-right:3px"></i>Since 2024 · Joint programs</div></div>
+          <span class="badge teal">Active</span>
+        </div>
+        <div class="partner-card">
+          <div class="partner-logo"><i class="fas fa-graduation-cap"></i></div>
+          <div class="partner-info"><div class="partner-name">EduAfrica Trust</div><div class="partner-type">Education Nonprofit</div><div class="partner-since"><i class="far fa-calendar" style="margin-right:3px"></i>Since 2023 · Scholarship fund</div></div>
+          <span class="badge warning">Renewal</span>
+        </div>
+        <div class="partner-card">
+          <div class="partner-logo"><i class="fas fa-plane"></i></div>
+          <div class="partner-info"><div class="partner-name">Air Peace Foundation</div><div class="partner-type">Corporate CSR</div><div class="partner-since"><i class="far fa-calendar" style="margin-right:3px"></i>Since 2024 · Logistics support</div></div>
+          <span class="badge success">Active</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       BLOG
+  ══════════════════════════════ -->
+  <div class="content" id="page-blog">
+    <div class="section-hd">
+      <div><h2>Blog &amp; News Management</h2><p>Create, manage and publish posts</p></div>
+      <button class="btn-primary"><i class="fas fa-pen-to-square"></i> New Post</button>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn on">All Posts</button>
+      <button class="tab-btn">Published</button>
+      <button class="tab-btn">Drafts</button>
+      <button class="tab-btn">Scheduled</button>
+      <button class="tab-btn">Archived</button>
+    </div>
+    <div class="blog-grid">
+      <div class="blog-card">
+        <div class="blog-thumb" style="background:linear-gradient(135deg,var(--brand-bg),var(--brand-dim))"><i class="fas fa-earth-africa" style="color:var(--brand);font-size:2.5rem"></i></div>
+        <div class="blog-body">
+          <div class="blog-tag"><i class="fas fa-kit-medical" style="margin-right:3px"></i>Healthcare</div>
+          <div class="blog-title">How We Treated 200 Children in Remote Communities This Quarter</div>
+          <div class="blog-excerpt">Our medical teams reached the most isolated villages, providing essential care to over 200 children...</div>
+          <div class="blog-meta">
+            <span><i class="fas fa-user"></i>Admin</span>
+            <span><i class="far fa-calendar"></i>May 6, 2025</span>
+            <span><i class="fas fa-eye"></i>1.2k</span>
+            <span class="badge success" style="margin-left:auto">Published</span>
+          </div>
+        </div>
+      </div>
+      <div class="blog-card">
+        <div class="blog-thumb" style="background:linear-gradient(135deg,var(--amber-bg),#fde68a)"><i class="fas fa-apple-whole" style="color:var(--amber);font-size:2.5rem"></i></div>
+        <div class="blog-body">
+          <div class="blog-tag"><i class="fas fa-apple-whole" style="margin-right:3px"></i>Nutrition</div>
+          <div class="blog-title">Launching Our New Child Nutrition Program in 5 States</div>
+          <div class="blog-excerpt">Malnutrition affects millions of children across West Africa. Here's how our new program addresses root causes...</div>
+          <div class="blog-meta">
+            <span><i class="fas fa-user"></i>Aisha K.</span>
+            <span><i class="far fa-calendar"></i>May 3, 2025</span>
+            <span><i class="fas fa-eye"></i>845</span>
+            <span class="badge success" style="margin-left:auto">Published</span>
+          </div>
+        </div>
+      </div>
+      <div class="blog-card">
+        <div class="blog-thumb" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe)"><i class="fas fa-brain" style="color:#7c3aed;font-size:2.5rem"></i></div>
+        <div class="blog-body">
+          <div class="blog-tag"><i class="fas fa-brain" style="margin-right:3px"></i>Mental Health</div>
+          <div class="blog-title">Breaking the Stigma: Mental Health Outreach in Urban Areas</div>
+          <div class="blog-excerpt">Our counselors are working to bring mental health support to communities where it was once taboo...</div>
+          <div class="blog-meta">
+            <span><i class="fas fa-user"></i>Dr. Uche</span>
+            <span><i class="far fa-calendar"></i>Apr 28, 2025</span>
+            <span><i class="fas fa-eye"></i>622</span>
+            <span class="badge warning" style="margin-left:auto">Draft</span>
+          </div>
+        </div>
+      </div>
+      <div class="blog-card">
+        <div class="blog-thumb" style="background:linear-gradient(135deg,#fee2e2,#fecaca)"><i class="fas fa-house-flood-water" style="color:#dc2626;font-size:2.5rem"></i></div>
+        <div class="blog-body">
+          <div class="blog-tag"><i class="fas fa-siren" style="margin-right:3px"></i>Emergency</div>
+          <div class="blog-title">Flood Response 2025: How Your Donations Made a Difference</div>
+          <div class="blog-excerpt">When floods devastated three communities in April, your generosity enabled us to respond within hours...</div>
+          <div class="blog-meta">
+            <span><i class="fas fa-user"></i>Admin</span>
+            <span><i class="far fa-calendar"></i>Apr 20, 2025</span>
+            <span><i class="fas fa-eye"></i>3.4k</span>
+            <span class="badge success" style="margin-left:auto">Published</span>
+          </div>
+        </div>
+      </div>
+      <div class="blog-card">
+        <div class="blog-thumb" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe)"><i class="fas fa-graduation-cap" style="color:#2563eb;font-size:2.5rem"></i></div>
+        <div class="blog-body">
+          <div class="blog-tag"><i class="fas fa-graduation-cap" style="margin-right:3px"></i>Education</div>
+          <div class="blog-title">50 Scholarships Awarded — Meet This Year's Recipients</div>
+          <div class="blog-excerpt">This year we surpassed our scholarship target, awarding 50 full bursaries to exceptional students...</div>
+          <div class="blog-meta">
+            <span><i class="fas fa-user"></i>Olumide S.</span>
+            <span><i class="far fa-calendar"></i>May 10 (Sched.)</span>
+            <span class="badge info" style="margin-left:auto">Scheduled</span>
+          </div>
+        </div>
+      </div>
+      <div class="blog-card">
+        <div class="blog-thumb" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0)"><i class="fas fa-handshake" style="color:#059669;font-size:2.5rem"></i></div>
+        <div class="blog-body">
+          <div class="blog-tag"><i class="fas fa-handshake" style="margin-right:3px"></i>Partnerships</div>
+          <div class="blog-title">New Partnership with UNICEF West Africa Announced</div>
+          <div class="blog-excerpt">We are proud to announce a landmark partnership that will expand our reach to 3 new countries...</div>
+          <div class="blog-meta">
+            <span><i class="fas fa-user"></i>Admin</span>
+            <span><i class="far fa-calendar"></i>Apr 14, 2025</span>
+            <span><i class="fas fa-eye"></i>2.1k</span>
+            <span class="badge success" style="margin-left:auto">Published</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       GALLERY
+  ══════════════════════════════ -->
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
   <div class="content" id="page-gallery">
     <div class="section-hd">
       <div><h2>Media Gallery</h2><p>Photos and videos from our programs</p></div>
       <div style="display:flex;gap:8px">
+<<<<<<< HEAD
         <button class="btn-primary" onclick="openModal('gallery')"><i class="fas fa-upload"></i> Upload Media</button>
       </div>
     </div>
@@ -1856,10 +2686,99 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <div class="stat-card t4"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-shield-halved"></i></div><span class="stat-trend up">Secure</span></div><div class="stat-value"><?php echo Helpers::e(count($recentLogins)); ?></div><div class="stat-label">Recent Logins</div></div>
       <div class="stat-card t2"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-key"></i></div></div><div class="stat-value"><?php echo Helpers::e($totalAdmins); ?></div><div class="stat-label">Admin Accounts</div></div>
       <div class="stat-card t5"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-clock"></i></div></div><div class="stat-value"><?php echo Helpers::e(date("h:i A")); ?></div><div class="stat-label">Server Time</div></div>
+=======
+        <button class="btn-secondary"><i class="fas fa-folder-plus"></i> New Album</button>
+        <button class="btn-primary"><i class="fas fa-upload"></i> Upload Media</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn on">All Media</button>
+      <button class="tab-btn">Healthcare</button>
+      <button class="tab-btn">Nutrition</button>
+      <button class="tab-btn">Events</button>
+      <button class="tab-btn">Videos</button>
+    </div>
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <div class="g-thumb" style="background:linear-gradient(135deg,#0f766e,#14b8a6)"><i class="fas fa-hospital" style="color:rgba(255,255,255,.8)"></i></div>
+        <div class="g-overlay">
+          <div class="g-actions"><button class="g-btn"><i class="fas fa-pen"></i></button><button class="g-btn"><i class="fas fa-trash"></i></button></div>
+          <div class="g-caption">Medical Camp — March 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="g-thumb" style="background:linear-gradient(135deg,#d97706,#fbbf24)"><i class="fas fa-apple-whole" style="color:rgba(255,255,255,.8)"></i></div>
+        <div class="g-overlay">
+          <div class="g-actions"><button class="g-btn"><i class="fas fa-pen"></i></button><button class="g-btn"><i class="fas fa-trash"></i></button></div>
+          <div class="g-caption">Nutrition Drive — Kano</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="g-thumb" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6)"><i class="fas fa-graduation-cap" style="color:rgba(255,255,255,.8)"></i></div>
+        <div class="g-overlay">
+          <div class="g-actions"><button class="g-btn"><i class="fas fa-pen"></i></button><button class="g-btn"><i class="fas fa-trash"></i></button></div>
+          <div class="g-caption">Scholarship Ceremony 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="g-thumb" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)"><i class="fas fa-handshake" style="color:rgba(255,255,255,.8)"></i></div>
+        <div class="g-overlay">
+          <div class="g-actions"><button class="g-btn"><i class="fas fa-pen"></i></button><button class="g-btn"><i class="fas fa-trash"></i></button></div>
+          <div class="g-caption">UNICEF Partnership Signing</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="g-thumb" style="background:linear-gradient(135deg,#dc2626,#f87171)"><i class="fas fa-truck-medical" style="color:rgba(255,255,255,.8)"></i></div>
+        <div class="g-overlay">
+          <div class="g-actions"><button class="g-btn"><i class="fas fa-pen"></i></button><button class="g-btn"><i class="fas fa-trash"></i></button></div>
+          <div class="g-caption">Flood Response — April 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="g-thumb" style="background:linear-gradient(135deg,#059669,#34d399)"><i class="fas fa-seedling" style="color:rgba(255,255,255,.8)"></i></div>
+        <div class="g-overlay">
+          <div class="g-actions"><button class="g-btn"><i class="fas fa-pen"></i></button><button class="g-btn"><i class="fas fa-trash"></i></button></div>
+          <div class="g-caption">Community Garden Project</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="g-thumb" style="background:linear-gradient(135deg,#0e7490,#22d3ee)"><i class="fas fa-droplet" style="color:rgba(255,255,255,.8)"></i></div>
+        <div class="g-overlay">
+          <div class="g-actions"><button class="g-btn"><i class="fas fa-pen"></i></button><button class="g-btn"><i class="fas fa-trash"></i></button></div>
+          <div class="g-caption">Clean Water Initiative</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="g-thumb" style="background:linear-gradient(135deg,#92400e,#fbbf24)"><i class="fas fa-star" style="color:rgba(255,255,255,.8)"></i></div>
+        <div class="g-overlay">
+          <div class="g-actions"><button class="g-btn"><i class="fas fa-pen"></i></button><button class="g-btn"><i class="fas fa-trash"></i></button></div>
+          <div class="g-caption">Annual Gala 2024</div>
+        </div>
+      </div>
+    </div>
+    <div class="pagination" style="margin-top:18px">
+      <span class="page-info">Showing 1–8 of 246 media files</span>
+      <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+      <button class="page-btn on">1</button><button class="page-btn">2</button><button class="page-btn">3</button>
+      <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SECURITY
+  ══════════════════════════════ -->
+  <div class="content" id="page-security">
+    <div class="stats-grid">
+      <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-server"></i></div><span class="stat-trend up">Healthy</span></div><div class="stat-value">99.8%</div><div class="stat-label">System Uptime</div></div>
+      <div class="stat-card t3"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-bell"></i></div><span class="stat-trend down">Review needed</span></div><div class="stat-value">3</div><div class="stat-label">Active Alerts</div></div>
+      <div class="stat-card t4"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-shield-halved"></i></div><span class="stat-trend up">This month</span></div><div class="stat-value">1,248</div><div class="stat-label">Blocked Attempts</div></div>
+      <div class="stat-card t2"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-key"></i></div></div><div class="stat-value">18</div><div class="stat-label">Active Sessions</div></div>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
     </div>
     <div class="security-grid">
       <div class="card">
         <div class="card-hd">
+<<<<<<< HEAD
           <div class="card-hd-left"><div class="card-title"><i class="fas fa-history" style="color:var(--brand);margin-right:6px"></i>Admin Login Activity</div></div>
           <span class="badge success"><i class="fas fa-circle-check"></i>Monitored</span>
         </div>
@@ -1879,6 +2798,66 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         <?php else: ?>
         <div class="empty-state"><i class="fas fa-shield"></i><p>No login records</p></div>
         <?php endif; ?>
+=======
+          <div class="card-hd-left"><div class="card-title"><i class="fas fa-bell" style="color:var(--rose);margin-right:6px"></i>Security Alerts</div></div>
+          <span class="badge danger">3 Active</span>
+        </div>
+        <div class="activity-list">
+          <div class="act-row">
+            <div class="act-icon danger"><i class="fas fa-triangle-exclamation"></i></div>
+            <div class="act-body"><span class="act-title">Multiple Failed Login Attempts</span><span class="act-desc">IP: 197.210.84.12 — 14 attempts in 5 minutes</span></div>
+            <div class="act-time">2m ago</div>
+          </div>
+          <div class="act-row">
+            <div class="act-icon warn"><i class="fas fa-eye"></i></div>
+            <div class="act-body"><span class="act-title">Unusual Admin Access</span><span class="act-desc">Admin accessed from new device in Kenya</span></div>
+            <div class="act-time">1h ago</div>
+          </div>
+          <div class="act-row">
+            <div class="act-icon warn"><i class="fas fa-gauge-high"></i></div>
+            <div class="act-body"><span class="act-title">API Rate Limit Exceeded</span><span class="act-desc">Donations API — 500 req/min exceeded</span></div>
+            <div class="act-time">3h ago</div>
+          </div>
+          <div class="act-row">
+            <div class="act-icon info"><i class="fas fa-certificate"></i></div>
+            <div class="act-body"><span class="act-title">SSL Certificate Renewal</span><span class="act-desc">Certificate expires in 14 days — auto-renew on</span></div>
+            <div class="act-time">1d ago</div>
+          </div>
+          <div class="act-row">
+            <div class="act-icon login"><i class="fas fa-fire-flame-simple"></i></div>
+            <div class="act-body"><span class="act-title">Firewall Rules Updated</span><span class="act-desc">IP blocklist refreshed — 48 IPs added</span></div>
+            <div class="act-time">2d ago</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-title"><i class="fas fa-key" style="color:var(--amber);margin-right:6px"></i>Recent Login Activity</div>
+        </div>
+        <div class="activity-list">
+          <div class="act-row">
+            <div class="act-icon login"><i class="fas fa-check"></i></div>
+            <div class="act-body"><span class="act-title">Super Admin — Lagos, NG</span><span class="act-desc"><i class="fab fa-chrome" style="margin-right:3px"></i>Chrome · Windows · 197.210.10.4</span></div>
+            <div class="act-time">Just now</div>
+          </div>
+          <div class="act-row">
+            <div class="act-icon login"><i class="fas fa-check"></i></div>
+            <div class="act-body"><span class="act-title">Aisha Kamara — Accra, GH</span><span class="act-desc"><i class="fab fa-safari" style="margin-right:3px"></i>Safari · macOS · 154.68.22.1</span></div>
+            <div class="act-time">2h ago</div>
+          </div>
+          <div class="act-row">
+            <div class="act-icon danger"><i class="fas fa-xmark"></i></div>
+            <div class="act-body"><span class="act-title">Unknown User — Failed Login</span><span class="act-desc"><i class="fab fa-firefox" style="margin-right:3px"></i>Firefox · Linux · 185.220.101.4</span></div>
+            <div class="act-time">4h ago</div>
+          </div>
+          <div class="act-row">
+            <div class="act-icon login"><i class="fas fa-check"></i></div>
+            <div class="act-body"><span class="act-title">Olumide Taiwo — Abuja, NG</span><span class="act-desc"><i class="fab fa-android" style="margin-right:3px"></i>Chrome · Android · 105.112.4.21</span></div>
+            <div class="act-time">1d ago</div>
+          </div>
+        </div>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
       </div>
 
       <div class="card">
@@ -1887,6 +2866,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
           <span class="badge success"><i class="fas fa-circle-check"></i>All Systems Go</span>
         </div>
         <div class="sys-grid">
+<<<<<<< HEAD
           <div class="sys-stat"><div class="sys-val"><?php echo Helpers::e(round(memory_get_usage(true) / 1024 / 1024, 1)); ?> MB</div><div class="sys-lbl">PHP Memory</div></div>
           <div class="sys-stat"><div class="sys-val"><?php echo Helpers::e(phpversion()); ?></div><div class="sys-lbl">PHP Version</div></div>
           <div class="sys-stat"><div class="sys-val"><?php echo Helpers::e($dbAvail ? "Connected" : "Offline"); ?></div><div class="sys-lbl">Database</div></div>
@@ -1895,14 +2875,51 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         <div style="margin-top:16px;padding:13px;background:var(--brand-bg);border-radius:9px;border:1px solid var(--brand-dim)">
           <div style="font-size:.8rem;font-weight:700;color:var(--brand);margin-bottom:3px"><i class="fas fa-lock" style="margin-right:5px"></i>Security Status</div>
           <div style="font-size:.75rem;color:var(--mid)">All admin accounts are active. <?php echo Helpers::e($totalAdmins); ?> total administrators.</div>
+=======
+          <div class="sys-stat"><div class="sys-val">62%</div><div class="sys-lbl">CPU Usage</div></div>
+          <div class="sys-stat"><div class="sys-val">4.2 GB</div><div class="sys-lbl">RAM (of 8 GB)</div></div>
+          <div class="sys-stat"><div class="sys-val">248 GB</div><div class="sys-lbl">Storage Used</div></div>
+          <div class="sys-stat"><div class="sys-val">24ms</div><div class="sys-lbl">Avg Response</div></div>
+          <div class="sys-stat"><div class="sys-val">TLS 1.3</div><div class="sys-lbl">Encryption</div></div>
+          <div class="sys-stat"><div class="sys-val">v3.4.1</div><div class="sys-lbl">App Version</div></div>
+        </div>
+        <div style="margin-top:16px;padding:13px;background:var(--brand-bg);border-radius:9px;border:1px solid var(--brand-dim)">
+          <div style="font-size:.8rem;font-weight:700;color:var(--brand);margin-bottom:3px"><i class="fas fa-lock" style="margin-right:5px"></i>2-Factor Authentication</div>
+          <div style="font-size:.75rem;color:var(--mid)">Enabled for all admin accounts. Last audit: Apr 30, 2025.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-title"><i class="fas fa-shield-halved" style="color:var(--violet);margin-right:6px"></i>Roles &amp; Permissions</div>
+          <button class="btn-secondary"><i class="fas fa-pen"></i> Edit Roles</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table" style="font-size:.76rem">
+            <thead><tr><th>Role</th><th>Users</th><th>Donations</th><th>Patients</th><th>Security</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge danger">Super Admin</span></td><td><i class="fas fa-check" style="color:var(--brand)"></i> Full</td><td><i class="fas fa-check" style="color:var(--brand)"></i> Full</td><td><i class="fas fa-check" style="color:var(--brand)"></i> Full</td><td><i class="fas fa-check" style="color:var(--brand)"></i> Full</td></tr>
+              <tr><td><span class="badge violet">Admin</span></td><td><i class="fas fa-check" style="color:var(--brand)"></i> Full</td><td><i class="fas fa-check" style="color:var(--brand)"></i> Full</td><td><i class="fas fa-check" style="color:var(--brand)"></i> Full</td><td><i class="fas fa-eye" style="color:var(--blue)"></i> View</td></tr>
+              <tr><td><span class="badge info">Staff</span></td><td><i class="fas fa-eye" style="color:var(--blue)"></i> View</td><td><i class="fas fa-eye" style="color:var(--blue)"></i> View</td><td><i class="fas fa-check" style="color:var(--brand)"></i> Full</td><td><i class="fas fa-xmark" style="color:var(--soft)"></i> None</td></tr>
+              <tr><td><span class="badge neutral">Volunteer</span></td><td><i class="fas fa-xmark" style="color:var(--soft)"></i> None</td><td><i class="fas fa-xmark" style="color:var(--soft)"></i> None</td><td><i class="fas fa-eye" style="color:var(--blue)"></i> View</td><td><i class="fas fa-xmark" style="color:var(--soft)"></i> None</td></tr>
+              <tr><td><span class="badge teal">Donor</span></td><td><i class="fas fa-xmark" style="color:var(--soft)"></i> None</td><td><i class="fas fa-rotate" style="color:var(--amber)"></i> Own</td><td><i class="fas fa-xmark" style="color:var(--soft)"></i> None</td><td><i class="fas fa-xmark" style="color:var(--soft)"></i> None</td></tr>
+            </tbody>
+          </table>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
         </div>
       </div>
     </div>
   </div>
 
+<<<<<<< HEAD
   <!-- ════════════════════════════════════════════
        SETTINGS
   ════════════════════════════════════════════ -->
+=======
+  <!-- ══════════════════════════════
+       SETTINGS
+  ══════════════════════════════ -->
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
   <div class="content" id="page-settings">
     <div class="two-col">
       <div style="display:flex;flex-direction:column;gap:18px">
@@ -1911,6 +2928,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
             <div class="card-hd-left"><div class="card-title"><i class="fas fa-building" style="margin-right:6px;color:var(--muted)"></i>Organization Profile</div></div>
             <button class="btn-primary"><i class="fas fa-floppy-disk"></i> Save</button>
           </div>
+<<<<<<< HEAD
           <div class="form-field">
             <label class="form-label">Organization Name</label>
             <input class="form-input" value="<?php echo Helpers::e($settings["site_name"] ?? "HopeConnect NGO"); ?>"/>
@@ -1923,28 +2941,57 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
             <label class="form-label">Phone</label>
             <input class="form-input" value="<?php echo Helpers::e($settings["contact_phone"] ?? "+234 800 000 0000"); ?>"/>
           </div>
+=======
+          <div class="form-field"><label class="form-label">Organization Name</label><input class="form-input" value="HopeConnect NGO"/></div>
+          <div class="form-field"><label class="form-label">Contact Email</label><input class="form-input" value="info@hopeconnect.org"/></div>
+          <div class="form-field"><label class="form-label">Phone</label><input class="form-input" value="+234 800 000 0000"/></div>
+          <div class="form-field"><label class="form-label">Headquarters</label><input class="form-input" value="14 Victoria Island, Lagos, Nigeria"/></div>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
         </div>
         <div class="card">
           <div class="card-hd"><div class="card-title"><i class="fas fa-credit-card" style="margin-right:6px;color:var(--muted)"></i>Payment Gateways</div></div>
           <div class="gateway-row">
             <div class="gw-left"><div class="gw-icon"><i class="fas fa-bolt" style="color:var(--brand)"></i></div><div><div class="gw-name">Paystack</div><div class="gw-desc">West Africa payments</div></div></div>
+<<<<<<< HEAD
             <span class="badge <?php echo Helpers::e(($settings["paystack_public_key"] ?? "") ? "success" : "warning"); ?>"><i class="fas fa-<?php echo Helpers::e(($settings["paystack_public_key"] ?? "") ? "plug" : "clock"); ?>"></i><?php echo Helpers::e(($settings["paystack_public_key"] ?? "") ? "Connected" : "Not configured"); ?></span>
           </div>
           <div class="gateway-row">
             <div class="gw-left"><div class="gw-icon"><i class="fab fa-stripe-s" style="color:#6772e5"></i></div><div><div class="gw-name">Stripe</div><div class="gw-desc">International cards</div></div></div>
             <span class="badge <?php echo Helpers::e(($settings["stripe_public_key"] ?? "") ? "success" : "warning"); ?>"><i class="fas fa-<?php echo Helpers::e(($settings["stripe_public_key"] ?? "") ? "plug" : "clock"); ?>"></i><?php echo Helpers::e(($settings["stripe_public_key"] ?? "") ? "Connected" : "Not configured"); ?></span>
+=======
+            <span class="badge success"><i class="fas fa-plug"></i>Connected</span>
+          </div>
+          <div class="gateway-row">
+            <div class="gw-left"><div class="gw-icon"><i class="fab fa-stripe-s" style="color:#6772e5"></i></div><div><div class="gw-name">Stripe</div><div class="gw-desc">International cards</div></div></div>
+            <span class="badge success"><i class="fas fa-plug"></i>Connected</span>
+          </div>
+          <div class="gateway-row">
+            <div class="gw-left"><div class="gw-icon"><i class="fas fa-wave-square" style="color:var(--amber)"></i></div><div><div class="gw-name">Flutterwave</div><div class="gw-desc">Mobile money</div></div></div>
+            <span class="badge warning"><i class="fas fa-clock"></i>Pending</span>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
           </div>
         </div>
       </div>
 
       <div style="display:flex;flex-direction:column;gap:18px">
         <div class="card">
+<<<<<<< HEAD
           <div class="card-hd"><div class="card-title"><i class="fas fa-bell" style="margin-right:6px;color:var(--muted)"></i>Notification Preferences</div></div>
+=======
+          <div class="card-hd"><div class="card-title"><i class="fas fa-bell" style="margin-right:6px;color:var(--muted)"></i>Notification Settings</div></div>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
           <div class="notif-row">
             <div><div class="notif-label">New Donation Alerts</div><div class="notif-desc">Get notified for every donation</div></div>
             <div class="toggle-switch"></div>
           </div>
           <div class="notif-row">
+<<<<<<< HEAD
+=======
+            <div><div class="notif-label">Patient Admissions</div><div class="notif-desc">Critical case alerts</div></div>
+            <div class="toggle-switch"></div>
+          </div>
+          <div class="notif-row">
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
             <div><div class="notif-label">Security Alerts</div><div class="notif-desc">Suspicious activity warnings</div></div>
             <div class="toggle-switch"></div>
           </div>
@@ -1954,10 +3001,26 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
           </div>
         </div>
         <div class="card">
+<<<<<<< HEAD
           <div class="card-hd"><div class="card-title"><i class="fas fa-user-circle" style="margin-right:6px;color:var(--muted)"></i>Account</div></div>
           <div class="form-field"><label class="form-label">Your Name</label><input class="form-input" value="<?php echo Helpers::e($adminName); ?>"/></div>
           <div class="form-field"><label class="form-label">Email</label><input class="form-input" value="<?php echo Helpers::e($adminEmail); ?>"/></div>
           <div class="form-field"><label class="form-label">Role</label><input class="form-input" value="<?php echo Helpers::e(ucwords(str_replace("_", " ", $adminRole))); ?>" disabled style="opacity:.6"/></div>
+=======
+          <div class="card-hd"><div class="card-title"><i class="fas fa-globe" style="margin-right:6px;color:var(--muted)"></i>Website Integration</div></div>
+          <div class="form-field">
+            <label class="form-label">Public API Key</label>
+            <div style="display:flex;gap:8px">
+              <input class="form-input" value="pk_live_••••••••••••••••••••" style="font-family:monospace;flex:1"/>
+              <button class="btn-secondary"><i class="fas fa-copy"></i></button>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Webhook URL</label>
+            <input class="form-input" value="https://hopeconnect.org/api/webhook"/>
+          </div>
+          <button class="btn-primary" style="margin-top:4px"><i class="fas fa-rotate"></i> Regenerate Keys</button>
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
         </div>
       </div>
     </div>
@@ -1966,6 +3029,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
 </div><!-- /main -->
 </div><!-- /app -->
 
+<<<<<<< HEAD
 <!-- ═══════ TOAST CONTAINER ═══════ -->
 <div id="toastContainer" class="toast-container"></div>
 
@@ -2011,6 +3075,13 @@ const PAGES = {
   dashboard:'Dashboard',donations:'Donations',users:'Users',
   programmes:'Programmes',partners:'Partners',blog:'Blog & News',
   events:'Events',gallery:'Gallery',security:'Security',settings:'Settings'
+=======
+<script>
+const PAGES = {
+  dashboard:'Dashboard',donations:'Donations',users:'Users',
+  patients:'Patients',partners:'Partners',blog:'Blog & News',
+  gallery:'Gallery',security:'Security',settings:'Settings'
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 };
 
 function showPage(id, el) {
@@ -2026,18 +3097,25 @@ function showPage(id, el) {
   }
   document.getElementById('pageTitle').textContent = PAGES[id] || id;
   document.getElementById('breadSub').textContent = PAGES[id] || id;
+<<<<<<< HEAD
   // Persist current page in URL so refresh stays on the same tab
   const url = new URL(window.location);
   if (url.searchParams.get('page') !== id) {
     url.searchParams.set('page', id);
     window.history.replaceState({page: id}, '', url);
   }
+=======
+  // Close mobile sidebar
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
   if (window.innerWidth < 1024) closeMobile();
 }
 
 let isCollapsed = false;
 let mobileOpen = false;
+<<<<<<< HEAD
 let editId = 0;
+=======
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 
 function toggleSidebar() {
   const sb = document.getElementById('sidebar');
@@ -2060,6 +3138,7 @@ function closeMobile() {
   document.getElementById('overlay').classList.remove('show');
 }
 
+<<<<<<< HEAD
 // ─── MODAL ──────────────────────────────────────
 const MODAL_FORMS = {
   post: {
@@ -2328,6 +3407,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+=======
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 // Tabs
 document.querySelectorAll('.tabs').forEach(group => {
   group.querySelectorAll('.tab-btn').forEach(btn => {
@@ -2338,12 +3419,20 @@ document.querySelectorAll('.tabs').forEach(group => {
   });
 });
 
+<<<<<<< HEAD
 // Toggle switches
+=======
+// Toggle switches (settings)
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 document.querySelectorAll('.toggle-switch').forEach(sw => {
   sw.addEventListener('click', () => sw.classList.toggle('off'));
 });
 
+<<<<<<< HEAD
 // Resize handler
+=======
+// Responsive: reset sidebar on resize
+>>>>>>> 593b0d370d66b70eb994a9fec89ffbfb79cb7a43
 window.addEventListener('resize', () => {
   if (window.innerWidth >= 1024) {
     document.getElementById('sidebar').classList.remove('mobile-open');
