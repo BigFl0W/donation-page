@@ -214,23 +214,22 @@
                                     <i class="charity-gift_box"></i>
                                 </div>
                                 <small>Total Funds Committed</small>
-                                <span class="counter">14,721</span>
+                                <span class="counter">₦ 14,721,500</span>
                             </div>
-
-                            <form class="form-style">
+                            <form class="form-style" action="includes/paystack_initialize.php" method="POST">
                                 <h3 class="h3-sm fw-7 txt-white mb-3">Easy Donation</h3>
                                 <div class="form-group">
                                     <label for="name"><strong>Full Name</strong></label>
-                                    <input type="text" class="form-control form-light" id="name" placeholder="e.g John Doe">
+                                    <input type="text" name="first_name" class="form-control form-light" id="name" placeholder="e.g John Doe" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="email"><strong>Email Address</strong></label>
-                                    <input type="email" class="form-control form-light" id="email" placeholder="e.g example@sitename.com">
+                                    <input type="email" name="email" class="form-control form-light" id="email" placeholder="e.g example@sitename.com" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="state"><strong>Select Causes</strong></label>
-                                    <select class="theme-combo home-charity" id="state" name="state" style="height: 400px">
-                                        <option>Select Causes</option>
+                                    <select class="theme-combo home-charity" id="state" name="cause" style="height: 400px">
+                                        <option value="General">Select Causes</option>
                                         <option value="Charity For Food">Charity For Food</option>
                                         <option value="Charity For Education">Charity For Education</option>
                                         <option value="Charity For Medical">Charity For Medical</option>
@@ -238,57 +237,47 @@
                                         <option value="Charity For Natural Disaster">Charity For Natural Disaster</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
-                                    <div><label for="amount1"><strong>Amount</strong></label></div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input form-light" type="radio" name="Amount" id="amount1" value="option1">
-                                        <label class="form-check-label label-dark" for="amount1">$10</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input form-light" type="radio" name="Amount" id="amount2" value="option2">
-                                        <label class="form-check-label label-dark" for="amount2">$20</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input form-light" type="radio" name="Amount" id="amount3" value="option3">
-                                        <label class="form-check-label label-dark" for="amount3">$30</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input form-light" type="radio" name="Amount" id="amount4" value="option3">
-                                        <label class="form-check-label label-dark" for="amount4">$40</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input form-light" type="radio" name="Amount" id="amount5" value="option3">
-                                        <label class="form-check-label label-dark" for="amount5">$50</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input form-light" type="radio" name="Amount" id="amount6" value="option3">
-                                        <label class="form-check-label label-dark" for="amount6">$100</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input form-light" type="radio" name="Amount" id="amount7" value="option3">
-                                        <label class="form-check-label label-dark" for="amount7">$500</label>
+                                <div class="form-group mb-4">
+                                    <div class="mb-2"><label for="amount1"><strong>Select Amount (₦)</strong></label></div>
+                                    <div class="donation-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                                        <div class="form-check custom-radio">
+                                            <input class="form-check-input" type="radio" name="Amount" id="amount1" value="10000" checked>
+                                            <label class="form-check-label" for="amount1">10,000</label>
+                                        </div>
+                                        <div class="form-check custom-radio">
+                                            <input class="form-check-input" type="radio" name="Amount" id="amount2" value="20000">
+                                            <label class="form-check-label" for="amount2">20,000</label>
+                                        </div>
+                                        <div class="form-check custom-radio">
+                                            <input class="form-check-input" type="radio" name="Amount" id="amount3" value="50000">
+                                            <label class="form-check-label" for="amount3">50,000</label>
+                                        </div>
+                                        <div class="form-check custom-radio">
+                                            <input class="form-check-input" type="radio" name="Amount" id="amount4" value="100000">
+                                            <label class="form-check-label" for="amount4">100,000</label>
+                                        </div>
+                                        <div class="form-check custom-radio">
+                                            <input class="form-check-input" type="radio" name="Amount" id="amount5" value="200000">
+                                            <label class="form-check-label" for="amount5">200,000</label>
+                                        </div>
+                                        <div class="form-check custom-radio">
+                                            <input class="form-check-input" type="radio" name="Amount" id="amount6" value="500000">
+                                            <label class="form-check-label" for="amount6">500,000</label>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" class="form-control form-light" id="custom" placeholder="Custom Amount">
+                                    <input type="number" name="amount_custom" class="form-control form-light" id="custom" placeholder="Custom Amount (₦)">
                                 </div>
-                                <div class="form-group">
-                                    <div><label for="Test_Donation"><strong>Payment Method</strong></label></div>
+                                
+                                <div class="paystack-footer mt-3 text-center">
+                                    <div class="d-inline-flex align-items-center gap-2">
+                                        <i class="icofont-lock txt-white fs-6"></i>
+                                        <span class="txt-white small opacity-75">Secured by Paystack. Cards, Transfer & USSD supported.</span>
+                                    </div>
+                                </div>
 
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input form-light" type="radio" name="Payment_Method" id="Test_Donation" value="option1">
-                                        <label class="form-check-label label-dark" for="Test_Donation">Test Donation</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input form-light" type="radio" name="Payment_Method" id="Offline_Donation" value="option1">
-                                        <label class="form-check-label label-dark" for="Offline_Donation">Offline Donation</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input form-light" type="radio" name="Payment_Method" id="Credit_Card" value="option1">
-                                        <label class="form-check-label label-dark" for="Credit_Card">Credit Card</label>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-default mt-3 btn-block">Donate now</button>
+                                <button type="submit" class="btn btn-default mt-4 btn-block w-100">Donate now</button>
                             </form>
                                 
                         </div>
@@ -504,7 +493,7 @@
                                 <div class="raised-progress">
                                     <div class="skillbar-wrap">
                                         <div class="clearfix">
-                                            $10086 raised of $15000
+                                            ₦ 10,086 raised of ₦ 15,000
                                         </div>
                                         <div class="skillbar" data-percent="67%">
                                             <div class="skillbar-percent">67%</div>
@@ -534,7 +523,7 @@
                                 <div class="raised-progress">
                                     <div class="skillbar-wrap">
                                         <div class="clearfix">
-                                            $10086 raised of $15000
+                                            ₦ 10,086 raised of ₦ 15,000
                                         </div>
                                         <div class="skillbar" data-percent="87%">
                                             <div class="skillbar-percent">87%</div>
@@ -564,7 +553,7 @@
                                 <div class="raised-progress">
                                     <div class="skillbar-wrap">
                                         <div class="clearfix">
-                                            $10086 raised of $15000
+                                            ₦ 10,086 raised of ₦ 15,000
                                         </div>
                                         <div class="skillbar" data-percent="57%">
                                             <div class="skillbar-percent">57%</div>
@@ -594,7 +583,7 @@
                                 <div class="raised-progress">
                                     <div class="skillbar-wrap">
                                         <div class="clearfix">
-                                            $10086 raised of $15000
+                                            ₦ 10,086 raised of ₦ 15,000
                                         </div>
                                         <div class="skillbar" data-percent="80%">
                                             <div class="skillbar-percent">80%</div>
@@ -626,7 +615,7 @@
                                 <div class="raised-progress">
                                     <div class="skillbar-wrap">
                                         <div class="clearfix">
-                                            $10086 raised of $15000
+                                            ₦ 10,086 raised of ₦ 15,000
                                         </div>
                                         <div class="skillbar" data-percent="77%">
                                             <div class="skillbar-percent">77%</div>
