@@ -24,7 +24,10 @@
         <h2 class="fw-bold">Payment Successful!</h2>
         <p class="text-muted">Thank you for your generous donation. Your support makes a real difference.</p>
         
-        <div class="amount"><?php echo htmlspecialchars($_GET['currency'] ?? 'NGN'); ?> <?php echo number_format((float)($_GET['amount'] ?? 0), 2); ?></div>
+        <div class="amount"><?php 
+            $curr = $_GET['currency'] ?? 'NGN';
+            echo ($curr === 'NGN' || $curr === 'NG') ? '₦' : htmlspecialchars($curr);
+        ?> <?php echo number_format((float)($_GET['amount'] ?? 0), 2); ?></div>
         <div class="ref">Ref: <?php echo htmlspecialchars($_GET['ref'] ?? '—'); ?></div>
         
         <a href="../index.php" class="btn-home">Return to Home</a>

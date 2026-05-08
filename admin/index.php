@@ -1972,7 +1972,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
   <div class="content" id="page-donations">
     <div class="stats-grid">
       <div class="stat-card t1">
-        <div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-dollar-sign"></i></div><span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i>All time</span></div>
+        <div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-money-bill-wave"></i></div><span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i>All time</span></div>
         <div class="stat-value"><?php echo Helpers::e(Helpers::fmt($totalDonationsAll)); ?></div><div class="stat-label">Total Raised</div>
       </div>
       <div class="stat-card t4">

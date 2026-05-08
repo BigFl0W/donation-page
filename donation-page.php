@@ -165,33 +165,33 @@
                                     <div class="col-md-8">
                                         <div class="form-group">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input form-light" type="radio" name="amount_radio" id="amount1" value="10" checked>
-                                                <label class="form-check-label label-dark" for="amount1">$10</label>
+                                                <input class="form-check-input form-light" type="radio" name="amount_radio" id="amount1" value="10000" checked>
+                                                <label class="form-check-label label-dark" for="amount1">₦10,000</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input form-light" type="radio" name="amount_radio" id="amount2" value="20">
-                                                <label class="form-check-label label-dark" for="amount2">$20</label>
+                                                <input class="form-check-input form-light" type="radio" name="amount_radio" id="amount2" value="20000">
+                                                <label class="form-check-label label-dark" for="amount2">₦20,000</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input form-light" type="radio" name="amount_radio" id="amount4" value="40">
-                                                <label class="form-check-label label-dark" for="amount4">$40</label>
+                                                <input class="form-check-input form-light" type="radio" name="amount_radio" id="amount4" value="50000">
+                                                <label class="form-check-label label-dark" for="amount4">₦50,000</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input form-light" type="radio" name="amount_radio" id="amount5" value="50">
-                                                <label class="form-check-label label-dark" for="amount5">$50</label>
+                                                <input class="form-check-input form-light" type="radio" name="amount_radio" id="amount5" value="100000">
+                                                <label class="form-check-label label-dark" for="amount5">₦100,000</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input form-light" type="radio" name="amount_radio" id="amount6" value="100">
-                                                <label class="form-check-label label-dark" for="amount6">$100</label>
+                                                <input class="form-check-input form-light" type="radio" name="amount_radio" id="amount6" value="200000">
+                                                <label class="form-check-label label-dark" for="amount6">₦200,000</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input form-light" type="radio" name="amount_radio" id="amount7" value="500">
-                                                <label class="form-check-label label-dark" for="amount7">$500</label>
+                                                <input class="form-check-input form-light" type="radio" name="amount_radio" id="amount7" value="500000">
+                                                <label class="form-check-label label-dark" for="amount7">₦500,000</label>
                                             </div>
                                             <div class="mt-3">
-                                                <input type="number" class="form-control" name="amount_custom" id="custom" placeholder="Custom Amount">
+                                                <input type="number" class="form-control" name="amount_custom" id="custom" placeholder="Custom Amount (₦)">
                                             </div>
-                                            <input type="hidden" name="amount" id="final_amount" value="10">
+                                            <input type="hidden" name="amount" id="final_amount" value="10000">
                                         </div>
                                     </div>
                                     <div class="col-md-4">

@@ -99,15 +99,16 @@ class Helpers
         return mb_strtolower($value, "UTF-8");
     }
 
-    public static function fmt(float $amount, string $currency = "USD"): string
+    public static function fmt(float $amount, string $currency = "NGN"): string
     {
+        $symbol = ($currency === "NGN" || $currency === "NG") ? "₦" : "$";
         if ($amount >= 1_000_000) {
-            return "$" . number_format($amount / 1_000_000, 1) . "M";
+            return $symbol . number_format($amount / 1_000_000, 1) . "M";
         }
         if ($amount >= 1_000) {
-            return "$" . number_format($amount / 1_000, 1) . "K";
+            return $symbol . number_format($amount / 1_000, 1) . "K";
         }
-        return "$" . number_format($amount);
+        return $symbol . number_format($amount);
     }
 
     public static function initls(string $name): string
