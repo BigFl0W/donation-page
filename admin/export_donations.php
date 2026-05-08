@@ -6,7 +6,7 @@ use App\Database;
 use App\Auth;
 
 // Protect the route
-if (!Auth::check()) {
+if (!Auth::isLoggedIn()) {
     die("Unauthorized");
 }
 
@@ -25,12 +25,23 @@ if ($fSearch) {
 }
 
 $sql .= " ORDER BY dt DESC";
-$donations = Database::fetchAll($sql, $p);
+if (!Database::available()) {
+    die("Database unavailable");
+}
+
+$donations = Database::fetchAll($sql, $p) ?: [];
+
+// Clear any previous output buffers
+if (ob_get_level()) ob_end_clean();
 
 header('Content-Type: text/csv; charset=utf-8');
 header('Content-Disposition: attachment; filename=donations_export_' . date('Y-m-d') . '.csv');
 
 $output = fopen('php://output', 'w');
+
+// Add UTF-8 BOM for Excel compatibility
+fputs($output, "\xEF\xBB\xBF");
+
 fputcsv($output, ['Donor Name', 'Donor Email', 'Amount', 'Currency', 'Gateway', 'Reference', 'Status', 'Date']);
 
 foreach ($donations as $row) {
