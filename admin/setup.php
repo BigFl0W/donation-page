@@ -12,6 +12,9 @@ if (Auth::isLoggedIn()) {
 
 $databaseReady = Auth::databaseReady();
 $setupRequired = Auth::setupRequired();
+$brandName = Helpers::brandName("Gracious Charity");
+$brandLogo = Helpers::brandLogoPath("assets/images/logo_dark.svg");
+$brandFavicon = Helpers::brandFaviconPath("assets/images/favicon.ico");
 $error = "";
 $success = "";
 $form = [
@@ -50,8 +53,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $setupRequired) {
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin Setup | Gracious</title>
-    <link rel="shortcut icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <title>Admin Setup | <?php echo Helpers::e($brandName); ?></title>
+    <link rel="shortcut icon" type="image/x-icon" href="../<?php echo Helpers::e($brandFavicon); ?>">
     <link href="../assets/library/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/css/admin.css" rel="stylesheet">
 </head>
@@ -60,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $setupRequired) {
     <div class="admin-auth-shell admin-auth-shell-single">
         <section class="admin-auth-card admin-auth-form-panel">
             <div class="admin-auth-brand admin-auth-brand-center">
-                <img src="../assets/images/logo_dark.svg" alt="Gracious">
+                <img src="../<?php echo Helpers::e($brandLogo); ?>" alt="<?php echo Helpers::e($brandName); ?>">
                 <div>
                     <div class="admin-auth-kicker">Administration</div>
                     <h1 class="admin-auth-title admin-auth-title-dark">Admin Setup</h1>

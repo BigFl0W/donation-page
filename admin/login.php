@@ -15,6 +15,9 @@ if (Auth::setupRequired()) {
 }
 
 $error = "";
+$brandName = Helpers::brandName("Gracious Charity");
+$brandLogo = Helpers::brandLogoPath("assets/images/logo_dark.svg");
+$brandFavicon = Helpers::brandFaviconPath("assets/images/favicon.ico");
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // CSRF
@@ -38,7 +41,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sign In | HopeConnect NGO</title>
+    <title>Sign In | <?php echo Helpers::e($brandName); ?></title>
+    <link rel="shortcut icon" type="image/x-icon" href="../<?php echo Helpers::e($brandFavicon); ?>">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
     <style>
@@ -63,12 +67,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             border:1px solid var(--border);
         }
         .auth-brand{text-align:center;margin-bottom:1.75rem}
-        .brand-icon{
-            width:56px;height:56px;border-radius:16px;
-            background:linear-gradient(135deg,var(--brand-light),var(--brand));
-            display:inline-flex;align-items:center;justify-content:center;
-            color:#fff;font-size:1.4rem;margin-bottom:12px;
-        }
+        .brand-icon{display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px}
+        .brand-icon img{max-width:220px;height:auto;display:block}
         .auth-title{
             font-family:'Instrument Serif',serif;
             font-size:1.6rem;color:var(--dark);line-height:1.2;margin-bottom:4px;
@@ -130,9 +130,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <div class="auth-wrap">
         <div class="auth-card">
             <div class="auth-brand">
-                <div class="brand-icon"><i class="fas fa-hands-holding-heart"></i></div>
+                <div class="brand-icon"><img src="../<?php echo Helpers::e($brandLogo); ?>" alt="<?php echo Helpers::e($brandName); ?>"></div>
                 <div class="auth-title">Welcome Back</div>
-                <div class="auth-sub">Sign in to your admin dashboard</div>
+                <div class="auth-sub">Sign in to manage <?php echo Helpers::e($brandName); ?></div>
             </div>
 
             <?php if ($error !== ""): ?>

@@ -3,7 +3,10 @@ $page_title = $page_title ?? "Explore";
 $page_description = $page_description ?? "Gracious charity platform";
 $meta_keywords = $meta_keywords ?? "";
 $canonical_url = $canonical_url ?? \App\Helpers::siteUrl();
-$share_image = $share_image ?? \App\Helpers::siteUrl("assets/images/logo_dark.svg");
+$brand_name = \App\Helpers::brandName("Gracious Charity");
+$brand_logo = \App\Helpers::brandLogoPath("assets/images/logo_dark.svg");
+$brand_favicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
+$share_image = $share_image ?? \App\Helpers::siteUrl($brand_logo);
 $structured_data = $structured_data ?? "";
 $breadcrumb_title = $breadcrumb_title ?? $page_title;
 $hero_title = $hero_title ?? $page_title;
@@ -18,7 +21,7 @@ $section_url = $section_url ?? "gallery.php";
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo htmlspecialchars($page_title); ?></title>
-    <meta name="author" content="Gracious Charity">
+    <meta name="author" content="<?php echo htmlspecialchars($brand_name); ?>">
     <meta name="description" content="<?php echo htmlspecialchars($page_description); ?>">
     <?php if ($meta_keywords !== ""): ?>
         <meta name="keywords" content="<?php echo htmlspecialchars($meta_keywords); ?>">
@@ -33,7 +36,7 @@ $section_url = $section_url ?? "gallery.php";
     <meta name="twitter:title" content="<?php echo htmlspecialchars($page_title); ?>">
     <meta name="twitter:description" content="<?php echo htmlspecialchars($page_description); ?>">
     <meta name="twitter:image" content="<?php echo htmlspecialchars($share_image); ?>">
-    <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="<?php echo htmlspecialchars($brand_favicon); ?>">
     <link href="assets/library/animate/animate.min.css" rel="stylesheet">
     <link href="assets/library/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/library/icofont/icofont.min.css" rel="stylesheet">
@@ -63,7 +66,7 @@ $section_url = $section_url ?? "gallery.php";
             <div class="container text-nowrap">
                 <div class="d-flex align-items-center w-100 col p-0 logo-brand">
                     <a class="navbar-brand rounded-bottom light-bg" href="index.php">
-                        <img src="assets/images/logo_dark.svg" alt="Gracious">
+                        <img src="<?php echo htmlspecialchars($brand_logo); ?>" alt="<?php echo htmlspecialchars($brand_name); ?>">
                     </a>
                 </div>
                 <div class="d-inline-flex request-btn order-lg-last col-auto p-0 align-items-center">
@@ -79,7 +82,7 @@ $section_url = $section_url ?? "gallery.php";
                 <div class="navbar-collapse">
                     <div class="offcanvas-header">
                         <a href="index.php" class="logo-small">
-                            <img src="assets/images/logo_dark.svg" alt="Gracious">
+                            <img src="<?php echo htmlspecialchars($brand_logo); ?>" alt="<?php echo htmlspecialchars($brand_name); ?>">
                         </a>
                     </div>
                     <div class="offcanvas-body">

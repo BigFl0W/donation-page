@@ -5,6 +5,8 @@ namespace App;
 
 class Helpers
 {
+    private static ?array $settingsCache = null;
+
     public static function appConfig(?string $key = null, mixed $default = null): mixed
     {
         static $config = null;
@@ -44,6 +46,47 @@ class Helpers
     public static function assetUrl(string $path): string
     {
         return self::siteUrl($path);
+    }
+
+    public static function setting(string $key, mixed $default = null): mixed
+    {
+        if (self::$settingsCache === null) {
+            self::$settingsCache = [];
+            if (Database::available() && Database::tableExists("settings")) {
+                $rows = Database::fetchAll("SELECT setting_key, setting_value FROM settings");
+                foreach ($rows as $row) {
+                    $settingKey = (string) ($row["setting_key"] ?? "");
+                    if ($settingKey !== "") {
+                        self::$settingsCache[$settingKey] = $row["setting_value"] ?? null;
+                    }
+                }
+            }
+        }
+
+        return self::$settingsCache[$key] ?? $default;
+    }
+
+    public static function forgetSettingsCache(): void
+    {
+        self::$settingsCache = null;
+    }
+
+    public static function brandName(string $default = "Gracious Charity"): string
+    {
+        $value = (string) self::setting("site_name", $default);
+        return trim($value) !== "" ? $value : $default;
+    }
+
+    public static function brandLogoPath(string $default = "assets/images/logo_dark.svg"): string
+    {
+        $value = (string) self::setting("site_logo", $default);
+        return trim($value) !== "" ? $value : $default;
+    }
+
+    public static function brandFaviconPath(string $default = "assets/images/favicon.ico"): string
+    {
+        $value = (string) self::setting("site_favicon", $default);
+        return trim($value) !== "" ? $value : $default;
     }
 
     public static function slugify(string $value): string

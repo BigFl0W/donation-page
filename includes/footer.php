@@ -1,3 +1,7 @@
+<?php
+$brand_name = \App\Helpers::brandName("Gracious Charity");
+$brand_logo_footer = \App\Helpers::brandLogoPath("assets/images/logo_white.svg");
+?>
     </main>
 
     <footer class="wide-tb-70 pb-0 mb-spacer-md">
@@ -22,7 +26,7 @@
             <div class="row">
                 <div class="col-lg-3 col-md-6">
                     <div class="logo-footer">
-                        <img src="../ets/images/logo_white.svg" alt="Gracious">
+                        <img src="<?php echo htmlspecialchars($brand_logo_footer); ?>" alt="<?php echo htmlspecialchars($brand_name); ?>">
                     </div>
                     <p>We create credible programmes, visible impact, and trusted partnerships that supporters can follow with confidence.</p>
                     <div class="social-icons">
