@@ -41,7 +41,7 @@ class Auth
         }
 
         $user = Database::fetchOne(
-            "SELECT a.id, a.full_name, a.email, a.password_hash, a.status, r.name AS role_name
+            "SELECT a.id, a.full_name, a.email, a.password_hash, a.status, a.avatar, r.name AS role_name
              FROM admins a
              JOIN roles r ON r.id = a.role_id
              WHERE a.email = :email
@@ -57,6 +57,7 @@ class Auth
                 "email" => $user["email"],
                 "role"  => $user["role_name"],
                 "status" => $user["status"],
+                "avatar" => $user["avatar"],
             ];
             Database::execute(
                 "UPDATE admins SET last_login_at = NOW() WHERE id = :id",

@@ -10,9 +10,23 @@ use App\Content;
 Auth::requireLogin();
 
 $admin = Auth::current();
+$dbAvail = Database::available();
+$adminId = $admin["id"] ?? 0;
 $adminName = $admin["name"] ?? "Admin";
 $adminEmail = $admin["email"] ?? "";
 $adminRole = $admin["role"] ?? "admin";
+$adminAvatar = $admin["avatar"] ?? null;
+
+// Re-fetch latest from DB
+if ($dbAvail && $adminId) {
+    $fresh = Database::fetchOne("SELECT avatar, full_name, email FROM admins WHERE id = :id", ["id" => $adminId]);
+    if ($fresh) {
+        $adminAvatar = $fresh["avatar"];
+        $adminName = $fresh["full_name"];
+        $adminEmail = $fresh["email"];
+    }
+}
+
 $adminInitials = "";
 foreach (array_slice(preg_split('/\s+/', trim($adminName)) ?: [], 0, 2) as $p) {
     if ($p !== "") $adminInitials .= strtoupper($p[0]);
@@ -20,7 +34,6 @@ foreach (array_slice(preg_split('/\s+/', trim($adminName)) ?: [], 0, 2) as $p) {
 $adminInitials = $adminInitials ?: "AD";
 
 // ─── DASHBOARD DATA ───────────────────────────────
-$dbAvail = Database::available();
 
 // ─── LOAD SETTINGS FIRST (BEFORE THEY'RE USED) ────────────────────────────────
 $settings = [];
@@ -507,12 +520,62 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
             );
             $settings['contact_phone'] = $contactPhone;
         }
+    }
+
+    // ─── UPDATE PROFILE (PROFESSIONAL) ──────────────────────────────────────
+    if ($action === "update_profile") {
+        $fullName = trim((string) ($_POST["full_name"] ?? ""));
+        $email = trim((string) ($_POST["email"] ?? ""));
+        $password = trim((string) ($_POST["password"] ?? ""));
+        $adminId = (int)($admin["id"] ?? 0);
+
+        if ($fullName !== "" && $email !== "") {
+            $params = ["name" => $fullName, "email" => $email, "id" => $adminId];
+            $sql = "UPDATE admins SET full_name = :name, email = :email";
+
+            if ($password !== "") {
+                $sql .= ", password_hash = :hash";
+                $params["hash"] = password_hash($password, PASSWORD_DEFAULT);
+            }
+
+            // Handle Avatar Upload
+            if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+                $upDir = __DIR__ . "/../assets/uploads/avatars";
+                if (!is_dir($upDir)) @mkdir($upDir, 0755, true);
+                
+                $ext = strtolower(pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION));
+                if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                    $newName = 'ava_' . $adminId . '_' . time() . '.' . $ext;
+                    if (move_uploaded_file($_FILES['avatar']['tmp_name'], $upDir . '/' . $newName)) {
+                        $avaPath = 'assets/uploads/avatars/' . $newName;
+                        $sql .= ", avatar = :avatar";
+                        $params["avatar"] = $avaPath;
+                    }
+                }
+            }
+
+            $sql .= " WHERE id = :id";
+            if (Database::execute($sql, $params)) {
+                $flashMsg = "Profile updated successfully";
+                $flashType = "success";
+                // Refresh local data
+                $adminName = $fullName;
+                $adminEmail = $email;
+                if (isset($params["avatar"])) $adminAvatar = $params["avatar"];
+            } else {
+                $flashMsg = "Failed to update profile";
+                $flashType = "danger";
+            }
+        } else {
+            $flashMsg = "Name and email are required";
+            $flashType = "danger";
+        }
+    }
         
         if ($flashMsg === "" || strpos($flashMsg, "updated") === false) {
             $flashMsg = "Settings updated successfully"; $flashType = "success";
         }
-    }
-
+    
     endif; // !$csrfError
 
     // Redirect to avoid form resubmission (include _page to stay on same tab)
@@ -1370,6 +1433,39 @@ body{
 .notif-label{font-size:.82rem;font-weight:600;color:var(--dark)}
 .notif-desc{font-size:.71rem;color:var(--muted);margin-top:2px}
 
+/* ═══════ PROFILE PAGE ═══════ */
+.profile-card { overflow: hidden; position: relative; padding: 0 !important; }
+.profile-cover {
+  height: 120px; background: linear-gradient(135deg, var(--brand-bg), var(--brand-dim));
+  border-radius: 14px 14px 0 0; position: relative;
+}
+.profile-avatar-container {
+  margin-top: -55px; display: flex; flex-direction: column; align-items: center;
+  position: relative; z-index: 2; margin-bottom: 24px;
+}
+.profile-avatar-wrap {
+  width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--white);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; overflow: hidden;
+  background: var(--brand-gradient); cursor: pointer;
+  transition: transform .2s;
+}
+.profile-avatar-wrap:active { transform: scale(0.95); }
+.profile-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.profile-avatar-wrap .initials {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem; font-weight: 800; color: white;
+}
+.profile-avatar-overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 1.2rem; opacity: 0; transition: opacity .2s;
+}
+.profile-avatar-wrap:hover .profile-avatar-overlay { opacity: 1; }
+.profile-info { text-align: center; margin-top: 10px; }
+.profile-info h3 { font-size: 1.25rem; font-weight: 700; color: var(--dark); margin: 0; }
+.profile-info p { font-size: 0.82rem; color: var(--brand); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+.profile-body { padding: 24px 32px 32px; }
+
 /* ═══════ RESPONSIVE ═══════ */
 .hide-sm{display:block}
 @media(max-width:767px){
@@ -1672,11 +1768,21 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <!-- Profile -->
       <div class="tb-dropdown-wrap">
         <div class="tb-avatar" onclick="toggleDropdown('dd-profile', event)">
-          <?php echo Helpers::e($adminInitials); ?>
+          <?php if ($adminAvatar && file_exists(__DIR__.'/../'.$adminAvatar)): ?>
+            <img src="../<?php echo Helpers::e($adminAvatar); ?>" style="width:100%;height:100%;border-radius:50%;object-fit:cover">
+          <?php else: ?>
+            <?php echo Helpers::e($adminInitials); ?>
+          <?php endif; ?>
         </div>
         <div class="tb-dropdown dd-profile" id="dd-profile">
           <div class="dd-user-info">
-            <div class="user-ava-lg"><?php echo Helpers::e($adminInitials); ?></div>
+            <div class="user-ava-lg">
+              <?php if ($adminAvatar && file_exists(__DIR__.'/../'.$adminAvatar)): ?>
+                <img src="../<?php echo Helpers::e($adminAvatar); ?>" style="width:100%;height:100%;border-radius:50%;object-fit:cover">
+              <?php else: ?>
+                <?php echo Helpers::e($adminInitials); ?>
+              <?php endif; ?>
+            </div>
             <div class="user-name"><?php echo Helpers::e($adminName); ?></div>
             <div class="user-role"><?php echo Helpers::e(strtoupper($adminRole)); ?></div>
           </div>
@@ -2361,42 +2467,50 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
        PROFILE
   ════════════════════════════════════════════ -->
   <div class="content" id="page-profile">
-    <div class="card" style="max-width:650px;margin:0 auto">
-      <div class="card-hd">
-        <div class="card-hd-left">
-          <div class="card-title">My Profile</div>
-          <div class="card-sub">Manage your personal information and security</div>
-        </div>
-      </div>
+    <div class="card profile-card" style="max-width:650px;margin:0 auto">
+      <div class="profile-cover"></div>
       <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
         <input type="hidden" name="_action" value="update_profile">
         <input type="hidden" name="_page" value="profile">
         
-        <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:24px;padding:20px;background:var(--bg);border-radius:14px">
-          <div class="user-ava-lg" style="width:100px;height:100px;font-size:2rem;margin-bottom:12px;background:var(--brand-gradient);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800"><?php echo Helpers::e($adminInitials); ?></div>
-          <div class="user-name" style="font-size:1.1rem;font-weight:700"><?php echo Helpers::e($adminName); ?></div>
-          <div class="user-role" style="font-size:.8rem;color:var(--brand);font-weight:600"><?php echo Helpers::e(strtoupper($adminRole)); ?></div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" name="full_name" class="form-control" value="<?php echo Helpers::e($adminName); ?>" required>
+        <div class="profile-avatar-container">
+          <div class="profile-avatar-wrap" onclick="document.getElementById('avatar-input').click()" title="Click to change avatar">
+            <?php if ($adminAvatar && file_exists(__DIR__.'/../'.$adminAvatar)): ?>
+              <img src="../<?php echo Helpers::e($adminAvatar); ?>" id="avatar-preview">
+            <?php else: ?>
+              <div class="initials" id="avatar-initials"><?php echo Helpers::e($adminInitials); ?></div>
+              <img id="avatar-preview" style="display:none">
+            <?php endif; ?>
+            <div class="profile-avatar-overlay"><i class="fas fa-camera"></i></div>
+            <input type="file" name="avatar" id="avatar-input" style="display:none" accept="image/*" onchange="previewAvatar(this)">
           </div>
-          <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" name="email" class="form-control" value="<?php echo Helpers::e($adminEmail); ?>" required>
+          <div class="profile-info">
+            <h3><?php echo Helpers::e($adminName); ?></h3>
+            <p><?php echo Helpers::e(str_replace('_', ' ', $adminRole)); ?></p>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>New Password (Leave blank to keep current)</label>
-          <input type="password" name="password" class="form-control" placeholder="Minimum 8 characters">
-        </div>
+        <div class="profile-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" name="full_name" class="form-control" value="<?php echo Helpers::e($adminName); ?>" required>
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" name="email" class="form-control" value="<?php echo Helpers::e($adminEmail); ?>" required>
+            </div>
+          </div>
 
-        <div class="modal-footer" style="padding:15px 0 0;border:none">
-          <button type="submit" class="btn-primary"><i class="fas fa-floppy-disk"></i> Update Profile</button>
+          <div class="form-group" style="margin-top:14px">
+            <label>New Password (Leave blank to keep current)</label>
+            <input type="password" name="password" class="form-control" placeholder="Minimum 8 characters">
+          </div>
+
+          <div style="margin-top:28px;display:flex;justify-content:flex-end">
+            <button type="submit" class="btn-primary" style="padding:10px 24px"><i class="fas fa-floppy-disk"></i> Save Changes</button>
+          </div>
         </div>
       </form>
     </div>
@@ -2508,6 +2622,22 @@ const PAGES = {
   events:'Events',gallery:'Gallery',security:'Security',settings:'Settings',
   profile:'My Profile',messages:'Messages'
 };
+
+function previewAvatar(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById('avatar-preview');
+      const initials = document.getElementById('avatar-initials');
+      if (preview) {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      }
+      if (initials) initials.style.display = 'none';
+    }
+    reader.readAsDataURL(input.files[0]);
+  }
+}
 
 function showPage(id, el) {
   const contentAreas = document.querySelectorAll('.content');
