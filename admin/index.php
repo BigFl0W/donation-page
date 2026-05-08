@@ -1669,13 +1669,6 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     </div>
   </nav>
 
-  <div class="sidebar-footer">
-    <div class="user-ava"><?php echo Helpers::e($adminInitials); ?></div>
-    <div class="user-text">
-      <div class="user-name"><?php echo Helpers::e($adminName); ?></div>
-      <div class="user-role"><?php echo Helpers::e(ucwords(str_replace("_", " ", $adminRole))); ?></div>
-    </div>
-  </div>
   <div class="footer-links">
     <a href="<?php echo Helpers::e(Helpers::siteUrl()); ?>" target="_blank">View Site</a>
     <a href="<?php echo Helpers::e(Helpers::adminUrl("logout.php")); ?>" class="danger">Logout</a>
