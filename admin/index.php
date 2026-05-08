@@ -46,6 +46,22 @@ $monthlyDonationData = []; $gatewayMix = [];
 $partnersList = []; $galleryItems = []; $adminUsers = []; $recentLogins = [];
 $programmes = []; $allDonations = [];
 
+// ─── NOTIFICATIONS & MESSAGES (PROFESSIONAL) ───────
+$unreadNotifCount = 0;
+$recentNotifications = [];
+$unreadMsgCount = 0;
+$recentMessages = [];
+
+if ($dbAvail) {
+    // Notifications for current admin
+    $unreadNotifCount = (int)(Database::fetchOne("SELECT COUNT(*) as t FROM admin_notifications WHERE (admin_id IS NULL OR admin_id = ?) AND is_read = 0", [$admin['id']])['t'] ?? 0);
+    $recentNotifications = Database::fetchAll("SELECT * FROM admin_notifications WHERE (admin_id IS NULL OR admin_id = ?) ORDER BY created_at DESC LIMIT 5", [$admin['id']]) ?: [];
+
+    // Messages from contact form
+    $unreadMsgCount = (int)(Database::fetchOne("SELECT COUNT(*) as t FROM contact_messages WHERE status = 'unread'")['t'] ?? 0);
+    $recentMessages = Database::fetchAll("SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT 5") ?: [];
+}
+
 if ($dbAvail) {
     $r = Database::fetchOne("SELECT COALESCE(SUM(amount),0) AS t, COALESCE(MAX(currency),'USD') AS c FROM donations WHERE status='successful' AND YEAR(COALESCE(paid_at,created_at))=YEAR(CURRENT_DATE())");
     if ($r) { $totalDonationsYear = (float)$r["t"]; $totalDonationsCurrency = (string)$r["c"]; }
@@ -842,6 +858,49 @@ body{
   border:2px solid var(--brand-dim);flex-shrink:0;
 }
 
+/* ═══════ DROPDOWNS ═══════ */
+.tb-dropdown-wrap { position: relative; }
+.tb-dropdown {
+  position: absolute; top: calc(100% + 12px); right: 0;
+  width: 320px; background: var(--white); border-radius: 14px;
+  border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+  display: none; flex-direction: column; z-index: 1000;
+  animation: dropdownIn .2s ease; transform-origin: top right;
+}
+.tb-dropdown.active { display: flex; }
+@keyframes dropdownIn { from { opacity: 0; transform: scale(0.95) translateY(-5px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+.dd-header {
+  padding: 14px 18px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.dd-header h4 { font-size: 0.85rem; font-weight: 700; color: var(--dark); margin: 0; }
+.dd-body { max-height: 380px; overflow-y: auto; }
+.dd-item {
+  display: flex; gap: 12px; padding: 12px 18px; text-decoration: none;
+  transition: background .15s; border-bottom: 1px solid var(--surface);
+}
+.dd-item:hover { background: var(--bg); }
+.dd-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; background: var(--surface); color: var(--mid);
+}
+.dd-content { flex: 1; min-width: 0; }
+.dd-title { font-size: 0.82rem; font-weight: 700; color: var(--dark); margin-bottom: 2px; }
+.dd-text { font-size: 0.76rem; color: var(--soft); line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dd-time { font-size: 0.68rem; color: var(--muted); margin-top: 4px; }
+.dd-footer { padding: 12px; text-align: center; border-top: 1px solid var(--border); }
+.dd-footer a { font-size: 0.78rem; font-weight: 600; color: var(--brand); text-decoration: none; }
+
+/* Profile Dropdown Specific */
+.dd-profile { width: 220px; }
+.dd-user-info { padding: 18px; text-align: center; background: var(--bg); border-radius: 14px 14px 0 0; }
+.user-ava-lg { width: 60px; height: 60px; border-radius: 50%; background: var(--brand-gradient); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; font-weight: 800; }
+.dd-link { display: flex; align-items: center; gap: 10px; padding: 10px 18px; font-size: 0.82rem; color: var(--mid); text-decoration: none; transition: all .15s; }
+.dd-link:hover { background: var(--bg); color: var(--dark); }
+.dd-link.danger:hover { background: #fff1f2; color: var(--rose); }
+
 /* ═══════ CONTENT ═══════ */
 .content{flex:1;padding:26px;display:none}
 .content.active{display:block;animation:pageIn .28s ease}
@@ -1548,14 +1607,87 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <input type="text" placeholder="Search anything…" aria-label="Search"/>
     </div>
     <div class="topbar-right">
-      <button class="tb-btn" title="Notifications" aria-label="Notifications">
-        <i class="fas fa-bell"></i>
-        <span class="tb-dot"></span>
-      </button>
-      <button class="tb-btn hide-sm" title="Messages" aria-label="Messages">
-        <i class="fas fa-envelope"></i>
-      </button>
-      <div class="tb-avatar" title="Profile"><?php echo Helpers::e($adminInitials); ?></div>
+      <!-- Notifications -->
+      <div class="tb-dropdown-wrap">
+        <button class="tb-btn" title="Notifications" onclick="toggleDropdown('dd-notifications', event)">
+          <i class="fas fa-bell"></i>
+          <?php if ($unreadNotifCount > 0): ?><span class="tb-dot"></span><?php endif; ?>
+        </button>
+        <div class="tb-dropdown" id="dd-notifications">
+          <div class="dd-header">
+            <h4>Notifications</h4>
+            <span class="badge bg-soft-brand"><?php echo $unreadNotifCount; ?> New</span>
+          </div>
+          <div class="dd-body">
+            <?php if (empty($recentNotifications)): ?>
+              <div class="p-4 text-center text-muted">No notifications yet</div>
+            <?php else: ?>
+              <?php foreach ($recentNotifications as $n): ?>
+                <a href="<?php echo Helpers::e($n['link'] ?: '#'); ?>" class="dd-item">
+                  <div class="dd-icon"><i class="<?php echo Helpers::e($n['icon']); ?>"></i></div>
+                  <div class="dd-content">
+                    <div class="dd-title"><?php echo Helpers::e($n['title']); ?></div>
+                    <div class="dd-text"><?php echo Helpers::e($n['message']); ?></div>
+                    <div class="dd-time"><?php echo date('M d, H:i', strtotime($n['created_at'])); ?></div>
+                  </div>
+                </a>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </div>
+          <div class="dd-footer"><a href="#">View All Notifications</a></div>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="tb-dropdown-wrap">
+        <button class="tb-btn hide-sm" title="Messages" onclick="toggleDropdown('dd-messages', event)">
+          <i class="fas fa-envelope"></i>
+          <?php if ($unreadMsgCount > 0): ?><span class="tb-dot"></span><?php endif; ?>
+        </button>
+        <div class="tb-dropdown" id="dd-messages">
+          <div class="dd-header">
+            <h4>Messages</h4>
+            <span class="badge bg-soft-brand"><?php echo $unreadMsgCount; ?> Unread</span>
+          </div>
+          <div class="dd-body">
+            <?php if (empty($recentMessages)): ?>
+              <div class="p-4 text-center text-muted">No messages yet</div>
+            <?php else: ?>
+              <?php foreach ($recentMessages as $m): ?>
+                <a href="admin/index.php?page=messages&id=<?php echo $m['id']; ?>" class="dd-item">
+                  <div class="dd-icon"><i class="fas fa-user"></i></div>
+                  <div class="dd-content">
+                    <div class="dd-title"><?php echo Helpers::e($m['name']); ?></div>
+                    <div class="dd-text"><?php echo Helpers::e($m['message']); ?></div>
+                    <div class="dd-time"><?php echo date('M d, H:i', strtotime($m['created_at'])); ?></div>
+                  </div>
+                </a>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </div>
+          <div class="dd-footer"><a href="admin/index.php?page=messages">View All Messages</a></div>
+        </div>
+      </div>
+
+      <!-- Profile -->
+      <div class="tb-dropdown-wrap">
+        <div class="tb-avatar" onclick="toggleDropdown('dd-profile', event)">
+          <?php echo Helpers::e($adminInitials); ?>
+        </div>
+        <div class="tb-dropdown dd-profile" id="dd-profile">
+          <div class="dd-user-info">
+            <div class="user-ava-lg"><?php echo Helpers::e($adminInitials); ?></div>
+            <div class="user-name"><?php echo Helpers::e($adminName); ?></div>
+            <div class="user-role"><?php echo Helpers::e(strtoupper($adminRole)); ?></div>
+          </div>
+          <div class="dd-body p-2">
+            <a href="#" class="dd-link" onclick="showPage('profile', this)"><i class="fas fa-user-circle"></i> My Profile</a>
+            <a href="#" class="dd-link" onclick="showPage('settings', this)"><i class="fas fa-cog"></i> Account Settings</a>
+            <div class="border-top my-1"></div>
+            <a href="<?php echo Helpers::e(Helpers::adminUrl("logout.php")); ?>" class="dd-link danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -2225,6 +2357,96 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     </div>
   </div>
 
+  <!-- ════════════════════════════════════════════
+       PROFILE
+  ════════════════════════════════════════════ -->
+  <div class="content" id="page-profile">
+    <div class="card" style="max-width:650px;margin:0 auto">
+      <div class="card-hd">
+        <div class="card-hd-left">
+          <div class="card-title">My Profile</div>
+          <div class="card-sub">Manage your personal information and security</div>
+        </div>
+      </div>
+      <form method="post" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
+        <input type="hidden" name="_action" value="update_profile">
+        <input type="hidden" name="_page" value="profile">
+        
+        <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:24px;padding:20px;background:var(--bg);border-radius:14px">
+          <div class="user-ava-lg" style="width:100px;height:100px;font-size:2rem;margin-bottom:12px;background:var(--brand-gradient);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800"><?php echo Helpers::e($adminInitials); ?></div>
+          <div class="user-name" style="font-size:1.1rem;font-weight:700"><?php echo Helpers::e($adminName); ?></div>
+          <div class="user-role" style="font-size:.8rem;color:var(--brand);font-weight:600"><?php echo Helpers::e(strtoupper($adminRole)); ?></div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="full_name" class="form-control" value="<?php echo Helpers::e($adminName); ?>" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" name="email" class="form-control" value="<?php echo Helpers::e($adminEmail); ?>" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>New Password (Leave blank to keep current)</label>
+          <input type="password" name="password" class="form-control" placeholder="Minimum 8 characters">
+        </div>
+
+        <div class="modal-footer" style="padding:15px 0 0;border:none">
+          <button type="submit" class="btn-primary"><i class="fas fa-floppy-disk"></i> Update Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       MESSAGES
+  ════════════════════════════════════════════ -->
+  <div class="content" id="page-messages">
+    <div class="section-hd">
+      <div><h2>Inbound Messages</h2><p>Contact form inquiries from the website</p></div>
+    </div>
+    <div class="card">
+      <div class="toolbar">
+        <div class="search-box"><i class="fas fa-search"></i><input placeholder="Search messages…"/></div>
+        <button class="filter-btn"><i class="fas fa-circle-half-stroke"></i> Status</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>Sender</th><th>Subject</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <?php if (!empty($recentMessages)): ?>
+              <?php foreach ($recentMessages as $m): ?>
+              <tr>
+                <td data-label="Sender">
+                  <div class="cell-user">
+                    <div class="cell-ava" style="background:var(--brand-bg);color:var(--brand)"><?php echo Helpers::e(substr($m['name'] ?? 'U', 0, 1)); ?></div>
+                    <div><span class="cell-name"><?php echo Helpers::e($m['name'] ?? 'Unknown'); ?></span><span class="cell-sub"><?php echo Helpers::e($m['email'] ?? ''); ?></span></div>
+                  </div>
+                </td>
+                <td data-label="Subject"><strong><?php echo Helpers::e($m['subject'] ?? 'No Subject'); ?></strong><div class="cell-sub"><?php echo Helpers::e(substr($m['message'] ?? '', 0, 40)); ?>…</div></td>
+                <td data-label="Date" class="mono"><?php echo Helpers::e(Helpers::ta($m['created_at'] ?? '')); ?></td>
+                <td data-label="Status"><span class="badge <?php echo ($m['status'] ?? '') === 'unread' ? 'warning' : 'success'; ?>"><?php echo ucfirst($m['status'] ?? 'read'); ?></span></td>
+                <td data-label="Actions">
+                  <div class="action-btns">
+                    <button class="action-btn view" title="Read Message"><i class="fas fa-eye"></i></button>
+                    <button class="action-btn del" title="Delete"><i class="fas fa-trash"></i></button>
+                  </div>
+                </td>
+              </tr>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <tr><td colspan="5"><div class="empty-state"><i class="fas fa-envelope-open"></i><p>No messages yet</p></div></td></tr>
+            <?php endif; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /main -->
 </div><!-- /app -->
 
@@ -2283,28 +2505,50 @@ const CSRF_TOKEN = '<?php echo $_SESSION["_csrf_token"] ?? ""; ?>';
 const PAGES = {
   dashboard:'Dashboard',donations:'Donations',users:'Users',
   programmes:'Programmes',partners:'Partners',blog:'Blog & News',
-  events:'Events',gallery:'Gallery',security:'Security',settings:'Settings'
+  events:'Events',gallery:'Gallery',security:'Security',settings:'Settings',
+  profile:'My Profile',messages:'Messages'
 };
 
 function showPage(id, el) {
-  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+  const contentAreas = document.querySelectorAll('.content');
+  const navItems = document.querySelectorAll('.nav-item');
   const pg = document.getElementById('page-' + id);
-  if (pg) pg.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  
+  if (!pg) return;
+
+  // Clear all and deactivate
+  contentAreas.forEach(c => {
+    c.classList.remove('active');
+    c.style.opacity = '';
+    c.style.transform = '';
+  });
+
+  // Activate target
+  pg.classList.add('active');
+
+  // Nav highlights
+  navItems.forEach(n => n.classList.remove('active'));
   if (el) el.classList.add('active');
   else {
     document.querySelectorAll('.nav-item').forEach(n => {
       if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('active');
     });
   }
-  document.getElementById('pageTitle').textContent = PAGES[id] || id;
-  document.getElementById('breadSub').textContent = PAGES[id] || id;
-  // Persist current page in URL so refresh stays on the same tab
+
+  // Update Page Title & Breadcrumbs
+  const titleEl = document.getElementById('pageTitle');
+  const breadEl = document.getElementById('breadSub');
+  
+  if (titleEl) titleEl.textContent = PAGES[id] || id;
+  if (breadEl) breadEl.textContent = PAGES[id] || id;
+
+  // Persist current page in URL
   const url = new URL(window.location);
   if (url.searchParams.get('page') !== id) {
     url.searchParams.set('page', id);
     window.history.replaceState({page: id}, '', url);
   }
+  
   if (window.innerWidth < 1024) closeMobile();
 }
 
@@ -2614,6 +2858,29 @@ document.querySelectorAll('.tabs').forEach(group => {
 // Toggle switches
 document.querySelectorAll('.toggle-switch').forEach(sw => {
   sw.addEventListener('click', () => sw.classList.toggle('off'));
+});
+
+// Dropdown Toggle (Professional)
+function toggleDropdown(id, event) {
+  if (event) event.stopPropagation();
+  const el = document.getElementById(id);
+  const isOpen = el.classList.contains('active');
+  
+  // Close all other dropdowns
+  document.querySelectorAll('.tb-dropdown').forEach(dd => dd.classList.remove('active'));
+  
+  // Toggle current
+  if (!isOpen) el.classList.add('active');
+}
+
+// Close dropdowns on outside click
+document.addEventListener('click', () => {
+  document.querySelectorAll('.tb-dropdown').forEach(dd => dd.classList.remove('active'));
+});
+
+// Prevent dropdown close when clicking inside it
+document.querySelectorAll('.tb-dropdown').forEach(dd => {
+  dd.addEventListener('click', (e) => e.stopPropagation());
 });
 
 // Resize handler
