@@ -364,6 +364,20 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         } else { $flashMsg = "Invalid request"; $flashType = "danger"; }
     }
 
+    if ($action === "update_donation") {
+        $id = (int) ($_POST["id"] ?? 0);
+        $status = (string) ($_POST["status"] ?? "pending");
+        $paidAt = (string) ($_POST["paid_at"] ?? null);
+        
+        if ($id > 0) {
+            Database::execute(
+                "UPDATE donations SET status = :status, paid_at = :paid_at WHERE id = :id",
+                ["status" => $status, "paid_at" => $paidAt ?: null, "id" => $id]
+            );
+            $flashMsg = "Donation status updated"; $flashType = "success";
+        }
+    }
+
     // ─── BRANDING SETTINGS (LOGO & FAVICON UPLOAD) ───────────────────────────
     if ($action === "save_branding_settings") {
         $siteName = trim((string) ($_POST["site_name"] ?? ""));
@@ -597,6 +611,9 @@ if ($dbAvail && isset($_GET["ajax"]) && $_GET["ajax"] === "get_item") {
     header("Content-Type: application/json");
     $item = null;
     if ($id > 0) {
+        if ($type === "donation") {
+            $item = Database::fetchOne("SELECT * FROM donations WHERE id = :id", ["id" => $id]);
+        }
         if ($type === "post") {
             $item = Database::fetchOne("SELECT * FROM posts WHERE id = :id", ["id" => $id]);
         } elseif ($type === "event") {
@@ -1596,6 +1613,48 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
 #confirmBody p{font-size:.88rem;color:var(--mid);line-height:1.6}
 
 </style>
+    <style>
+      @media print {
+        /* Hide everything by default */
+        body * { visibility: hidden; }
+        
+        /* Show only the print-only statement */
+        #print-statement, #print-statement * { visibility: visible; }
+        #print-statement { 
+            position: absolute; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            padding: 20px;
+            color: #000 !important;
+            background: #fff !important;
+        }
+        
+        /* Professional Statement Layout */
+        .print-header { border-bottom: 2px solid #011B33; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .print-logo { height: 50px; }
+        .print-title { font-size: 24px; font-weight: bold; color: #011B33; margin: 0; text-transform: uppercase; }
+        
+        .print-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; background: #f9fafb; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; }
+        .summary-item { font-size: 14px; }
+        .summary-label { color: #6b7280; font-weight: 600; margin-bottom: 4px; }
+        .summary-value { font-size: 18px; font-weight: 700; }
+        
+        .print-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
+        .print-table th { background: #f3f4f6; color: #374151; font-weight: 700; text-align: left; padding: 10px; border: 1px solid #d1d5db; text-transform: uppercase; }
+        .print-table td { padding: 10px; border: 1px solid #d1d5db; vertical-align: top; }
+        .print-table tr:nth-child(even) { background: #fafafa; }
+        
+        .print-footer { margin-top: 50px; border-top: 1px solid #eee; padding-top: 10px; font-size: 10px; color: #999; text-align: center; }
+        
+        /* Hide UI elements that might sneak in */
+        .toolbar, .stats-grid, .sidebar, .header, .nav-item, .btn-primary, .filter-btn, .action-btns, .pagination, .card-hd { display: none !important; }
+      }
+      
+      /* Hide the print statement on screen */
+      #print-statement { display: none; }
+      @media print { #print-statement { display: block; } }
+    </style>
 </head>
 <body>
 <div class="app">
@@ -1990,19 +2049,56 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     </div>
 
     <div class="card">
-      <div class="toolbar">
-        <div class="search-box"><i class="fas fa-search"></i><input placeholder="Search donations…"/></div>
-        <button class="filter-btn"><i class="far fa-calendar"></i> Date Range</button>
-        <button class="filter-btn"><i class="fas fa-credit-card"></i> Method</button>
-        <button class="filter-btn"><i class="fas fa-circle-half-stroke"></i> Status</button>
-        <button class="btn-primary ml"><i class="fas fa-download"></i> Export CSV</button>
-      </div>
+      <form class="toolbar" method="GET" action="index.php">
+        <input type="hidden" name="page" value="donations">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input name="search" placeholder="Search donors or refs…" value="<?php echo Helpers::e($_GET['search'] ?? ''); ?>"/>
+        </div>
+        
+        <select name="status" class="filter-btn" onchange="this.form.submit()" style="border:1px solid #e5e7eb; padding: 0 10px; border-radius: 8px;">
+            <option value="">All Statuses</option>
+            <option value="successful" <?php echo ($_GET['status'] ?? '') === 'successful' ? 'selected' : ''; ?>>Successful</option>
+            <option value="pending" <?php echo ($_GET['status'] ?? '') === 'pending' ? 'selected' : ''; ?>>Pending</option>
+            <option value="failed" <?php echo ($_GET['status'] ?? '') === 'failed' ? 'selected' : ''; ?>>Failed</option>
+        </select>
+
+        <select name="gateway" class="filter-btn" onchange="this.form.submit()" style="border:1px solid #e5e7eb; padding: 0 10px; border-radius: 8px;">
+            <option value="">All Gateways</option>
+            <option value="paystack" <?php echo ($_GET['gateway'] ?? '') === 'paystack' ? 'selected' : ''; ?>>Paystack</option>
+            <option value="manual" <?php echo ($_GET['gateway'] ?? '') === 'manual' ? 'selected' : ''; ?>>Manual</option>
+        </select>
+
+        <div class="action-btns ml" style="display: flex; gap: 8px;">
+            <a href="export_donations.php?<?php echo http_build_query($_GET); ?>" class="btn-primary" style="background: #059669; padding: 8px 15px; border-radius: 8px; text-decoration: none; color: white; display: flex; align-items: center; gap: 5px;">
+                <i class="fas fa-file-csv"></i> Export CSV
+            </a>
+            <button type="button" onclick="window.print()" class="btn-primary" style="background: #4b5563; padding: 8px 15px; border-radius: 8px; color: white; border: none; display: flex; align-items: center; gap: 5px;">
+                <i class="fas fa-print"></i> Print PDF
+            </button>
+        </div>
+      </form>
       <div style="overflow-x:auto">
         <table class="data-table">
           <thead><tr><th>Donor</th><th>Amount</th><th>Gateway</th><th>Reference</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody>
             <?php
-            $allDonations = $dbAvail ? (Database::fetchAll("SELECT donor_name,amount,currency,gateway,payment_reference,status,COALESCE(paid_at,created_at) AS dt FROM donations ORDER BY dt DESC LIMIT 20") ?: []) : [];
+            $fStatus = $_GET['status'] ?? '';
+            $fGateway = $_GET['gateway'] ?? '';
+            $fSearch = $_GET['search'] ?? '';
+            
+            $sql = "SELECT id, donor_name, donor_email, amount, currency, gateway, payment_reference, status, COALESCE(paid_at,created_at) AS dt FROM donations WHERE 1=1";
+            $p = [];
+            
+            if ($fStatus) { $sql .= " AND status = :st"; $p['st'] = $fStatus; }
+            if ($fGateway) { $sql .= " AND gateway = :gw"; $p['gw'] = $fGateway; }
+            if ($fSearch) { 
+                $sql .= " AND (donor_name LIKE :s OR payment_reference LIKE :s OR donor_email LIKE :s)"; 
+                $p['s'] = "%$fSearch%"; 
+            }
+            
+            $sql .= " ORDER BY dt DESC LIMIT 50";
+            $allDonations = $dbAvail ? (Database::fetchAll($sql, $p) ?: []) : [];
             ?>
             <?php if ($allDonations): ?>
               <?php foreach ($allDonations as $d): ?>
@@ -2014,7 +2110,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
                 <td data-label="Reference" class="mono"><?php echo Helpers::e((string)($d["payment_reference"] ?? "—")); ?></td>
                 <td data-label="Date" class="mono"><?php echo Helpers::e(Helpers::ta($d["dt"] ?? null)); ?></td>
                 <td data-label="Status"><span class="badge <?php echo Helpers::e($st === "successful" ? "success" : ($st === "pending" ? "warning" : ($st === "failed" ? "danger" : "neutral"))); ?>"><i class="fas fa-<?php echo Helpers::e($st === "successful" ? "check" : ($st === "pending" ? "clock" : ($st === "failed" ? "xmark" : "circle"))); ?>"></i><?php echo Helpers::e(ucfirst($st)); ?></span></td>
-                <td data-label="Actions"><div class="action-btns"><button class="action-btn view"><i class="fas fa-eye"></i></button><button class="action-btn edit"><i class="fas fa-pen"></i></button></div></td>
+                <td data-label="Actions"><div class="action-btns"><button class="action-btn view" onclick="openModal('donation',<?php echo (int)$d['id']; ?>)"><i class="fas fa-eye"></i></button><button class="action-btn edit" onclick="openModal('donation',<?php echo (int)$d['id']; ?>)"><i class="fas fa-pen"></i></button></div></td>
               </tr>
               <?php endforeach; ?>
             <?php else: ?>
@@ -2023,7 +2119,75 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
           </tbody>
         </table>
       </div>
-      <div class="pagination">
+      
+      <!-- Professional Print-Only Statement -->
+      <div id="print-statement">
+          <div class="print-header">
+              <div>
+                  <h1 class="print-title">Donation Statement</h1>
+                  <p style="margin:5px 0 0; color:#666;"><?php echo Helpers::e($siteName); ?></p>
+              </div>
+              <img src="../<?php echo Helpers::e($adminBrandLogo); ?>" class="print-logo" alt="Logo">
+          </div>
+
+          <div class="print-summary">
+              <div class="summary-item">
+                  <div class="summary-label">Report Period</div>
+                  <div class="summary-value"><?php echo date('M j, Y'); ?></div>
+              </div>
+              <div class="summary-item">
+                  <div class="summary-label">Total Transactions</div>
+                  <div class="summary-value"><?php echo count($allDonations); ?> Record(s)</div>
+              </div>
+              <div class="summary-item">
+                  <div class="summary-label">Total Amount</div>
+                  <div class="summary-value">
+                      <?php 
+                        $sum = array_sum(array_column($allDonations, 'amount'));
+                        echo Helpers::e(Helpers::fmt($sum)); 
+                      ?>
+                  </div>
+              </div>
+              <div class="summary-item">
+                  <div class="summary-label">Generated By</div>
+                  <div class="summary-value"><?php echo Helpers::e($adminName); ?></div>
+              </div>
+          </div>
+
+          <table class="print-table">
+              <thead>
+                  <tr>
+                      <th>Date</th>
+                      <th>Donor Details</th>
+                      <th>Reference</th>
+                      <th>Gateway</th>
+                      <th>Status</th>
+                      <th style="text-align:right">Amount</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <?php foreach ($allDonations as $d): ?>
+                  <tr>
+                      <td><?php echo date('d M Y, H:i', strtotime($d['dt'])); ?></td>
+                      <td>
+                          <strong><?php echo Helpers::e($d['donor_name']); ?></strong><br>
+                          <small><?php echo Helpers::e($d['donor_email'] ?? '—'); ?></small>
+                      </td>
+                      <td><?php echo Helpers::e($d['payment_reference']); ?></td>
+                      <td><?php echo Helpers::e(ucfirst($d['gateway'])); ?></td>
+                      <td><?php echo Helpers::e(ucfirst($d['status'])); ?></td>
+                      <td style="text-align:right"><strong><?php echo Helpers::e(Helpers::fmt((float)$d['amount'])); ?></strong></td>
+                  </tr>
+                  <?php endforeach; ?>
+              </tbody>
+          </table>
+
+          <div class="print-footer">
+              This is a computer-generated donation statement. Generated on <?php echo date('Y-m-d H:i:s'); ?>.
+          </div>
+      </div>
+
+      <div class="pagination-wrap">
         <span class="page-info">Showing <?php echo Helpers::e(min(count($allDonations), 20)); ?> of <?php echo Helpers::e($totalTxCount); ?> entries</span>
         <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
         <button class="page-btn on">1</button>
@@ -2756,6 +2920,22 @@ const MODAL_FORMS = {
       {name:'media_path',label:'Media URL / Path',type:'text',required:true,placeholder:'/assets/images/uploads/file.jpg'},
       {name:'description',label:'Description',type:'textarea',placeholder:'Optional description…',rows:3},
       {name:'status',label:'Status',type:'select',options:['draft','published']},
+    ]
+  },
+  donation: {
+    title: 'Donation',
+    action: 'update_donation',
+    fields: [
+      {name:'_action',type:'hidden'},
+      {name:'id',type:'hidden'},
+      {name:'donor_name',label:'Donor Name',type:'text',required:true},
+      {name:'donor_email',label:'Email',type:'email',required:true},
+      {name:'amount',label:'Amount',type:'number',required:true},
+      {name:'currency',label:'Currency',type:'text',required:true},
+      {name:'gateway',label:'Gateway',type:'text',required:true},
+      {name:'payment_reference',label:'Reference',type:'text',required:true},
+      {name:'status',label:'Status',type:'select',options:['pending','successful','failed','refunded']},
+      {name:'paid_at',label:'Paid At',type:'datetime-local'},
     ]
   }
 };

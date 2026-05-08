@@ -32,6 +32,16 @@ if ($res['status'] && $res['data']['status'] === 'success') {
         'paid_at' => date("Y-m-d H:i:s", strtotime($data['paid_at']))
     ]);
 
+    // Send Receipt Email
+    Payment::sendReceipt([
+        'donor_name' => $donorName,
+        'donor_email' => $data['customer']['email'],
+        'amount' => $amount,
+        'currency' => $data['currency'],
+        'reference' => $reference,
+        'paid_at' => date("M j, Y H:i", strtotime($data['paid_at']))
+    ]);
+
     // Redirect to success page
     header("Location: success.php?amount=" . $amount . "&currency=" . $data['currency'] . "&ref=" . $reference);
     exit;
