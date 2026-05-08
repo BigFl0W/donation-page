@@ -193,7 +193,9 @@ body.folded #collapse-button::before {
 }
 
 .admin-sidebar-header .brand img {
-    width: 54px;
+    max-width: 100%;
+    height: auto;
+    max-height: 40px;
     flex-shrink: 0;
 }
 

@@ -3,7 +3,7 @@ declare(strict_types=1);
 use App\Helpers;
 
 $currentAdmin = current_admin();
-$pageTitle = $pageTitle ?? "Admin Dashboard";
+$pageTitle = $pageTitle ?? Helpers::brandName();
 $pageDescription = $pageDescription ?? "Manage the donation platform from one place.";
 ?>
 <!doctype html>
@@ -12,7 +12,7 @@ $pageDescription = $pageDescription ?? "Manage the donation platform from one pl
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php echo e($pageTitle); ?> | Admin</title>
+    <title><?php echo e($pageTitle); ?></title>
     <link rel="shortcut icon" type="image/x-icon" href="<?php echo Helpers::e(Helpers::siteUrl(Helpers::brandFaviconPath())); ?>">
     <link href="../assets/library/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/library/icofont/icofont.min.css" rel="stylesheet">
@@ -31,7 +31,7 @@ $pageDescription = $pageDescription ?? "Manage the donation platform from one pl
             <li id="wp-admin-bar-site-name" class="menupop">
                 <a class="ab-item" href="../index.php" target="_blank">
                     <i class="icofont-web"></i>
-                    <span class="ab-label">Gracious Donation</span>
+
                 </a>
             </li>
         </ul>

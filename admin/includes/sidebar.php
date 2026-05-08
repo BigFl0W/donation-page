@@ -1,16 +1,21 @@
 <?php
 
 declare(strict_types=1);
+
+use App\\Helpers;
 ?>
 <aside class="admin-sidebar" id="admin-sidebar">
     <div class="admin-sidebar-header">
+<?php
+        <?php $logoPath = Helpers::brandLogoPath(); ?>
         <div class="brand">
-            <img src="../assets/images/logo_white.svg" alt="Gracious Charity">
-            <div class="brand-copy">
-                <span>Gracious Admin</span>
-                <small>Charity Control Centre</small>
-            </div>
+            <?php if ($logoPath): ?>
+                <img src="<?php echo Helpers::e($logoPath); ?>" alt="">
+            <?php else: ?>
+                <span class="brand-name"><?php echo Helpers::e(Helpers::brandName()); ?></span>
+            <?php endif; ?>
         </div>
+?>
     </div>
 
     <nav class="admin-nav">

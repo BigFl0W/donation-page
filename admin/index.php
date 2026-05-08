@@ -657,6 +657,14 @@ body{
   border-bottom:1px solid rgba(255,255,255,.07);
   flex-shrink:0;
 }
+.brand-logo-img{
+  display:block;
+  width:min(100%, 190px);
+  max-width:190px;
+  height:auto;
+  max-height:72px;
+  object-fit:contain;
+}
 .brand-logo{
   width:38px;height:38px;border-radius:10px;
   background:linear-gradient(135deg,var(--brand-light),var(--brand));
@@ -736,6 +744,25 @@ body{
 .main.collapsed{margin-left:72px}
 @media(max-width:1023px){
   .main,.main.collapsed{margin-left:0}
+  .brand{
+    padding:18px 16px 14px;
+  }
+  .brand-logo-img{
+    width:min(100%, 168px);
+    max-width:168px;
+    max-height:64px;
+  }
+}
+
+@media(max-width:640px){
+  .brand{
+    padding:16px 14px 12px;
+  }
+  .brand-logo-img{
+    width:min(100%, 150px);
+    max-width:150px;
+    max-height:56px;
+  }
 }
 
 /* ═══════ TOPBAR ═══════ */
@@ -1409,11 +1436,14 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
 <!-- ══════════ SIDEBAR ══════════ -->
 <aside class="sidebar" id="sidebar">
   <div class="brand">
-    <img src="../<?php echo Helpers::e($adminBrandLogo); ?>" alt="<?php echo Helpers::e($siteName); ?>" class="brand-logo-img">
-    <div class="brand-text">
-      <div class="brand-name"><?php echo Helpers::e($siteName); ?></div>
-      <div class="brand-sub">Admin Dashboard</div>
-    </div>
+<?php
+      $logoPath = $adminBrandLogo;
+      if ($logoPath && file_exists(__DIR__.'/../'.$logoPath)) {
+          echo '<img src="../'.Helpers::e($logoPath).'" alt="'.Helpers::e($siteName).'" class="brand-logo-img">';
+      } else {
+          echo '<span class="brand-name">'.Helpers::e($siteName).'</span>';
+      }
+?>
   </div>
 
   <nav class="nav-scroll">

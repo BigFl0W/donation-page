@@ -381,7 +381,12 @@ $currentArea = dashboard_svg_area($dashboard["series_current"], 760, 260);
             <i class="icofont-simple-right"></i>
             <span>Dashboard</span>
             <i class="icofont-simple-right"></i>
-            <strong>Gracious Charity Admin</strong>
+            <?php $logoPath = Helpers::brandLogoPath(); ?>
+            <?php if ($logoPath): ?>
+                <strong><?php echo e(Helpers::brandName()); ?></strong>
+            <?php else: ?>
+                <strong><?php echo e(Helpers::brandName()); ?></strong>
+            <?php endif; ?>
         </div>
         <div class="admin-dashboard-tools">
             <label class="admin-dashboard-search">
