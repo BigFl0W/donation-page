@@ -1611,7 +1611,27 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
 .modal-sm{max-width:420px}
 #confirmBody{padding:12px 22px 6px}
 #confirmBody p{font-size:.88rem;color:var(--mid);line-height:1.6}
-
+.toolbar{display:flex;align-items:center;gap:12px;padding:18px;background:#fdfdfd;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.search-box{position:relative;flex:1;min-width:240px}
+.search-box i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.85rem;pointer-events:none}
+.search-box input{width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--border);border-radius:10px;font-size:.85rem;outline:none;transition:all .2s;font-family:inherit}
+.search-box input:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(15,118,110,.08)}
+.filter-select{height:42px;padding:0 35px 0 15px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:.82rem;color:var(--mid);cursor:pointer;transition:all .2s;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.filter-select:hover{border-color:var(--brand-light);color:var(--brand)}
+.ml-auto{margin-left:auto}
+@media(max-width:991px){.ml-auto{margin-left:0;width:100%}.toolbar > *{flex:1 1 100%}}
+.data-table tr:hover td{background:#f8fafb}
+.badge{padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:600;display:inline-flex;align-items:center;gap:5px}
+.badge.success{background:#ecfdf5;color:#059669;border:1px solid #d1fae5}
+.badge.info{background:#eff6ff;color:#2563eb;border:1px solid #dbeafe}
+.badge.warning{background:#fffbeb;color:#d97706;border:1px solid #fef3c7}
+.badge.danger{background:#fef2f2;color:#dc2626;border:1px solid #fee2e2}
+.card{background:var(--white);border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.05),0 1px 2px rgba(0,0,0,.03);border:1px solid var(--border);margin-bottom:20px;overflow:hidden}
+.stat-card{padding:22px;border-radius:15px;background:#fff;border:1px solid var(--border);box-shadow:0 4px 15px rgba(0,0,0,.02);transition:transform .2s}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 10px 25px rgba(0,0,0,.05)}
+.stat-value{font-size:1.4rem;font-weight:800;color:var(--dark);margin-top:12px;letter-spacing:-0.5px}
+.stat-label{font-size:.78rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-top:4px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:25px}
 </style>
     <style>
       @media print {
@@ -2056,24 +2076,24 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
             <input name="search" placeholder="Search donors or refs…" value="<?php echo Helpers::e($_GET['search'] ?? ''); ?>"/>
         </div>
         
-        <select name="status" class="filter-btn" onchange="this.form.submit()" style="border:1px solid #e5e7eb; padding: 0 10px; border-radius: 8px;">
+        <select name="status" class="filter-select" onchange="this.form.submit()">
             <option value="">All Statuses</option>
             <option value="successful" <?php echo ($_GET['status'] ?? '') === 'successful' ? 'selected' : ''; ?>>Successful</option>
             <option value="pending" <?php echo ($_GET['status'] ?? '') === 'pending' ? 'selected' : ''; ?>>Pending</option>
             <option value="failed" <?php echo ($_GET['status'] ?? '') === 'failed' ? 'selected' : ''; ?>>Failed</option>
         </select>
 
-        <select name="gateway" class="filter-btn" onchange="this.form.submit()" style="border:1px solid #e5e7eb; padding: 0 10px; border-radius: 8px;">
+        <select name="gateway" class="filter-select" onchange="this.form.submit()">
             <option value="">All Gateways</option>
             <option value="paystack" <?php echo ($_GET['gateway'] ?? '') === 'paystack' ? 'selected' : ''; ?>>Paystack</option>
             <option value="manual" <?php echo ($_GET['gateway'] ?? '') === 'manual' ? 'selected' : ''; ?>>Manual</option>
         </select>
 
-        <div class="action-btns ml" style="display: flex; gap: 8px;">
-            <a href="export_donations.php?<?php echo http_build_query($_GET); ?>" class="btn-primary" style="background: #059669; padding: 8px 15px; border-radius: 8px; text-decoration: none; color: white; display: flex; align-items: center; gap: 5px;">
+        <div class="action-btns ml-auto" style="display: flex; gap: 8px;">
+            <a href="export_donations.php?<?php echo http_build_query($_GET); ?>" class="btn-primary" style="background: #059669; padding: 10px 18px; border-radius: 10px; text-decoration: none; color: white; display: flex; align-items: center; gap: 7px; font-weight: 600; font-size: 0.85rem;">
                 <i class="fas fa-file-csv"></i> Export CSV
             </a>
-            <button type="button" onclick="window.print()" class="btn-primary" style="background: #4b5563; padding: 8px 15px; border-radius: 8px; color: white; border: none; display: flex; align-items: center; gap: 5px;">
+            <button type="button" onclick="window.print()" class="btn-primary" style="background: #4b5563; padding: 10px 18px; border-radius: 10px; color: white; border: none; display: flex; align-items: center; gap: 7px; font-weight: 600; font-size: 0.85rem;">
                 <i class="fas fa-print"></i> Print PDF
             </button>
         </div>
@@ -2187,7 +2207,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
           </div>
       </div>
 
-      <div class="pagination-wrap">
+      <div class="pagination">
         <span class="page-info">Showing <?php echo Helpers::e(min(count($allDonations), 20)); ?> of <?php echo Helpers::e($totalTxCount); ?> entries</span>
         <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
         <button class="page-btn on">1</button>
