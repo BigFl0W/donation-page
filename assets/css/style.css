@@ -4230,21 +4230,17 @@ footer .social-icons a:hover{
     font-weight: 700;
 }
 .funds-committed .counter{
-    color: var(--secondary-color);
-    font-size: 2.7rem;
-    line-height: 1.2;
-    padding-left: 30px;
+    color: var(--white);
+    font-size: 3.2rem;
+    line-height: 1.1;
+    padding-left: 0;
     position: relative;
-    font-weight: 900;
-    letter-spacing: -2px;
+    font-weight: 800;
+    letter-spacing: -1px;
     font-family: var(--font-heading);
 }
 .funds-committed .counter::after{
-    position: absolute;
-    z-index: 1;
-    content: "$";
-    font-family: var(--font-heading);
-    left: 0;
+    display: none;
 }
 
 .Funds_Committed_Bg {
@@ -4568,12 +4564,18 @@ footer .social-icons a:hover{
     box-shadow: none;
 }
 .home-second-donation-form .funds-committed small{
-    max-width: 100px;
-    line-height: 1.3;
-    margin-right: 10px;
+    max-width: 120px;
+    line-height: 1.2;
+    margin-right: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
 }
 .home-second-donation-form .funds-committed .counter{
-    color: var(--white);   
+    color: var(--white);
+    font-weight: 800;
+    font-size: 3.5rem;
 }
 .home-second-donation-form .gift-icon {
     position: absolute;

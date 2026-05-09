@@ -1,3 +1,7 @@
+<?php
+require_once 'config/autoload.php';
+$totalDonations = \App\Payment::getTotalDonations();
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -213,8 +217,11 @@
                                 <div class="gift-icon">
                                     <i class="charity-gift_box"></i>
                                 </div>
-                                <small>Total Funds Committed</small>
-                                <span class="counter">₦ 14,721,500</span>
+                                <small>Funds Committed</small>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <span class="currency-symbol" style="font-size: 2rem; font-weight: 800; margin-right: 5px; margin-top: 10px;">₦</span>
+                                    <span class="counter"><?php echo number_format($totalDonations); ?></span>
+                                </div>
                             </div>
                             <form class="form-style" action="includes/paystack_initialize.php" method="POST">
                                 <h3 class="h3-sm fw-7 txt-white mb-3">Easy Donation</h3>
@@ -271,9 +278,9 @@
                                 </div>
                                 
                                 <div class="paystack-footer mt-3 text-center">
-                                    <div class="d-inline-flex align-items-center gap-2">
+                                    <div class="d-flex align-items-center justify-content-center gap-2 text-nowrap">
                                         <i class="icofont-lock txt-white fs-6"></i>
-                                        <span class="txt-white small opacity-75">Secured by Paystack. Cards, Transfer & USSD supported.</span>
+                                        <span class="txt-white opacity-75" style="font-size: 12px;">Secured by Paystack. Cards, Transfer & USSD supported.</span>
                                     </div>
                                 </div>
 

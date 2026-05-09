@@ -119,4 +119,12 @@ class Payment
         
         return mail($to, $subject, $message, $headers);
     }
+
+    public static function getTotalDonations(): float
+    {
+        $result = Database::fetchOne(
+            "SELECT SUM(amount) as total FROM donations WHERE status = 'success' OR status = 'paid'"
+        );
+        return (float) ($result['total'] ?? 0);
+    }
 }

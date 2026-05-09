@@ -199,9 +199,9 @@
                                             <div class="mb-2">
                                                 <img src="https://paystack.com/assets/img/v3/logo-blue.svg" alt="Paystack" style="max-width: 100px; cursor: default">
                                             </div>
-                                            <div class="d-flex align-items-center gap-2 justify-content-center">
+                                            <div class="d-flex align-items-center gap-2 justify-content-center text-nowrap">
                                                 <i class="icofont-lock text-muted small"></i>
-                                                <span class="small text-muted">Secured by Paystack. Cards, Transfer & USSD supported.</span>
+                                                <span class="text-muted" style="font-size: 12px;">Secured by Paystack. Cards, Transfer & USSD supported.</span>
                                             </div>
                                         </div>
                                     </div>
