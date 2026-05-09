@@ -335,9 +335,11 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $email = trim((string) ($_POST["email"] ?? ""));
         $role = (string) ($_POST["role"] ?? "admin");
         $status = (string) ($_POST["status"] ?? "active");
-        $password = (string) ($_POST["password"] ?? "");
+        
+        // Automatically generate a random 10-character password
+        $password = bin2hex(random_bytes(5));
 
-        if ($fullName !== "" && $email !== "" && $password !== "") {
+        if ($fullName !== "" && $email !== "") {
             $exists = Database::fetchOne("SELECT id FROM admins WHERE email = :email", ["email" => $email]);
             if (!$exists) {
                 $roleRow = Database::fetchOne("SELECT id FROM roles WHERE name = :name", ["name" => $role]);
@@ -383,7 +385,7 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
 
                 } else { $flashMsg = "Invalid role selected"; $flashType = "danger"; }
             } else { $flashMsg = "An admin with this email already exists"; $flashType = "danger"; }
-        } else { $flashMsg = "Name, email, and password are required"; $flashType = "danger"; }
+        } else { $flashMsg = "Name and email are required"; $flashType = "danger"; }
     }
 
     if ($action === "update_admin") {
@@ -1003,6 +1005,14 @@ body{
   display: none; flex-direction: column; z-index: 1000;
   animation: dropdownIn .2s ease; transform-origin: top right;
 }
+.tb-dropdown.filter-dropdown {
+  width: 160px;
+  top: calc(100% + 8px);
+  left: 0; right: auto;
+  transform-origin: top left;
+  overflow: hidden;
+  padding: 6px 0;
+}
 .tb-dropdown.active { display: flex; }
 @keyframes dropdownIn { from { opacity: 0; transform: scale(0.95) translateY(-5px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
@@ -1013,10 +1023,12 @@ body{
 .dd-header h4 { font-size: 0.85rem; font-weight: 700; color: var(--dark); margin: 0; }
 .dd-body { max-height: 380px; overflow-y: auto; }
 .dd-item {
-  display: flex; gap: 12px; padding: 12px 18px; text-decoration: none;
-  transition: background .15s; border-bottom: 1px solid var(--surface);
+  display: flex; gap: 12px; padding: 10px 18px; text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-bottom: 1px solid var(--surface);
+  color: var(--dark); font-weight: 500; font-size: 0.85rem; align-items: center;
 }
-.dd-item:hover { background: var(--bg); }
+.dd-item:last-child { border-bottom: none; }
+.dd-item:hover { background: var(--brand-bg); color: var(--brand); padding-left: 24px; }
 .dd-icon {
   width: 36px; height: 36px; border-radius: 9px;
   display: flex; align-items: center; justify-content: center;
@@ -2285,8 +2297,24 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     <div class="card">
       <div class="toolbar">
         <div class="search-box"><i class="fas fa-search"></i><input placeholder="Search users…"/></div>
-        <button class="filter-btn"><i class="fas fa-tag"></i> Role</button>
-        <button class="filter-btn"><i class="fas fa-circle-half-stroke"></i> Status</button>
+        <div style="position:relative; display:inline-block;">
+          <button class="filter-btn" onclick="toggleDropdown('filterRoleUser', event)"><i class="fas fa-tag"></i> Role</button>
+          <div id="filterRoleUser" class="tb-dropdown filter-dropdown">
+            <div class="dd-item" style="cursor:pointer" onclick="applyTableFilter(this, 'Role', '')">All Roles</div>
+            <div class="dd-item" style="cursor:pointer" onclick="applyTableFilter(this, 'Role', 'Super Admin')">Super Admin</div>
+            <div class="dd-item" style="cursor:pointer" onclick="applyTableFilter(this, 'Role', 'Admin')">Admin</div>
+            <div class="dd-item" style="cursor:pointer" onclick="applyTableFilter(this, 'Role', 'Editor')">Editor</div>
+          </div>
+        </div>
+        <div style="position:relative; display:inline-block;">
+          <button class="filter-btn" onclick="toggleDropdown('filterStatusUser', event)"><i class="fas fa-circle-half-stroke"></i> Status</button>
+          <div id="filterStatusUser" class="tb-dropdown filter-dropdown">
+            <div class="dd-item" style="cursor:pointer" onclick="applyTableFilter(this, 'Status', '')">All Statuses</div>
+            <div class="dd-item" style="cursor:pointer" onclick="applyTableFilter(this, 'Status', 'Active')">Active</div>
+            <div class="dd-item" style="cursor:pointer" onclick="applyTableFilter(this, 'Status', 'Inactive')">Inactive</div>
+            <div class="dd-item" style="cursor:pointer" onclick="applyTableFilter(this, 'Status', 'Suspended')">Suspended</div>
+          </div>
+        </div>
         <button class="btn-primary ml" onclick="openModal('admin')"><i class="fas fa-user-plus"></i> Add User</button>
       </div>
       <div style="overflow-x:auto">
@@ -3035,6 +3063,12 @@ function openModal(type, id) {
       else if (f.name === 'id') html += '<input type="hidden" name="id" value="' + editId + '"/>';
       continue;
     }
+    
+    // Do not show the password field when creating a new admin (auto-generated)
+    if (f.name === 'password' && !isEdit) {
+      continue;
+    }
+
     html += '<div class="form-group">';
     if (f.label) html += '<label>' + f.label + (f.required ? ' <span style="color:var(--rose)">*</span>' : '') + '</label>';
 
@@ -3176,23 +3210,67 @@ document.addEventListener('DOMContentLoaded', () => {
     window.history.replaceState({}, '', url);
   }
 
-  // ─── TABLE SEARCH ──────────────────────────────
+  // ─── UNIFIED TABLE FILTERING ──────────────────────────────
+  window.applyTableFilter = function(dropdownItem, colName, value) {
+    const btn = dropdownItem.closest('.pos-rel, div').querySelector('.filter-btn');
+    if (btn) {
+      btn.innerHTML = value 
+        ? `<i class="fas fa-filter"></i> ${value}`
+        : `<i class="fas fa-${colName === 'Role' ? 'tag' : 'circle-half-stroke'}"></i> ${colName}`;
+      btn.classList.toggle('on', !!value);
+    }
+    dropdownItem.parentElement.classList.remove('active');
+    
+    const card = dropdownItem.closest('.card');
+    if (!card.dataset.filters) card.dataset.filters = '{}';
+    const filters = JSON.parse(card.dataset.filters);
+    
+    if (value) {
+      filters[colName] = value.toLowerCase();
+    } else {
+      delete filters[colName];
+    }
+    card.dataset.filters = JSON.stringify(filters);
+    
+    updateTableVisibility(card);
+  };
+
+  function updateTableVisibility(card) {
+    const table = card.querySelector('.data-table');
+    if (!table) return;
+    
+    const searchBox = card.querySelector('.search-box input');
+    const q = searchBox ? searchBox.value.toLowerCase() : '';
+    const filters = card.dataset.filters ? JSON.parse(card.dataset.filters) : {};
+    
+    const ths = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+    
+    table.querySelectorAll('tbody tr').forEach(row => {
+      if (row.querySelector('.empty-state')) return;
+      const tds = Array.from(row.querySelectorAll('td'));
+      
+      // Check search match
+      const searchMatch = q === '' || tds.some(td => td.textContent.toLowerCase().includes(q));
+      
+      // Check dropdown filters
+      let filterMatch = true;
+      for (const [colName, val] of Object.entries(filters)) {
+        const colIdx = ths.indexOf(colName);
+        if (colIdx !== -1 && tds[colIdx]) {
+          if (!tds[colIdx].textContent.toLowerCase().includes(val)) {
+            filterMatch = false;
+            break;
+          }
+        }
+      }
+      
+      row.style.display = (searchMatch && filterMatch) ? '' : 'none';
+    });
+  }
+
   document.querySelectorAll('.search-box input').forEach(input => {
     input.addEventListener('input', function () {
-      const q = this.value.toLowerCase();
-      const table = this.closest('.card')?.querySelector('.data-table');
-      if (!table) return;
-      table.querySelectorAll('tbody tr').forEach(row => {
-        const match = Array.from(row.querySelectorAll('td')).some(td => td.textContent.toLowerCase().includes(q));
-        row.style.display = match ? '' : 'none';
-      });
-    });
-  });
-
-  // ─── FILTER BUTTONS ────────────────────────────
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-      this.classList.toggle('on');
+      updateTableVisibility(this.closest('.card'));
     });
   });
 
