@@ -19,12 +19,12 @@ $heroTitleHtml = nl2br(strip_tags((string)($settings['about_hero_title'] ?? 'Bui
 include "includes/header.php"; 
 ?>
 <!-- Premium About Us CSS -->
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
     :root {
-        --about-gold: #d97706;
-        --about-gold-light: #fbbf24;
-        --about-dark: #0f172a;
+        --about-gold: var(--primary-color);
+        --about-gold-light: #f3c96a;
+        --about-dark: var(--bistre-color);
         --about-glass: rgba(255, 255, 255, 0.03);
     }
     body { font-family: 'Plus Jakarta Sans', sans-serif !important; background: #fff; color: #1e293b; overflow-x: hidden; }
@@ -32,16 +32,20 @@ include "includes/header.php";
 
     /* ══════ HERO SECTION ══════ */
     .hero-v3 {
-        position: relative; padding: 120px 0 100px; background: #0c1220; color: #fff; overflow: hidden;
+        position: relative; padding: 120px 0 100px;
+        background:
+            radial-gradient(circle at top right, rgba(255,255,255,0.08) 0%, transparent 24%),
+            linear-gradient(135deg, #8c6515 0%, #a9781f 36%, #bf8a28 100%);
+        color: #fff; overflow: hidden;
     }
     .hero-v3::before {
         content: ''; position: absolute; top: -10%; right: -5%; width: 40%; height: 60%;
-        background: radial-gradient(circle, rgba(217,119,6,0.15) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(49,35,30,0.24) 0%, transparent 70%);
         filter: blur(80px); pointer-events: none;
     }
     .hero-v3 .label {
-        display: inline-block; padding: 8px 16px; background: rgba(217,119,6,0.1);
-        border: 1px solid rgba(217,119,6,0.3); color: var(--about-gold-light);
+        display: inline-block; padding: 8px 16px; background: rgba(49,35,30,0.18);
+        border: 1px solid rgba(255,255,255,0.28); color: #fff7e3;
         border-radius: 99px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase;
         letter-spacing: 2px; margin-bottom: 24px;
     }
@@ -50,7 +54,7 @@ include "includes/header.php";
         line-height: 1; margin-bottom: 30px; font-style: italic; font-weight: 400;
     }
     .hero-v3 p {
-        font-size: 1.2rem; color: #94a3b8; max-width: 600px; line-height: 1.6; margin-bottom: 40px;
+        font-size: 1.2rem; color: rgba(255,247,227,0.9); max-width: 600px; line-height: 1.6; margin-bottom: 40px;
     }
     
     /* ══════ IMAGE COLLAGE ══════ */
@@ -68,15 +72,29 @@ include "includes/header.php";
 
     /* ══════ STATS BAR ══════ */
     .stats-v3 {
-        background: #fff; margin-top: -60px; position: relative; z-index: 20;
-        border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.05);
-        display: grid; grid-template-columns: repeat(4, 1fr); padding: 40px;
-        border: 1px solid #f1f5f9;
+        margin-top: -42px; position: relative; z-index: 20;
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
     }
-    .stat-box { text-align: center; border-right: 1px solid #f1f5f9; }
-    .stat-box:last-child { border-right: none; }
-    .stat-box h2 { font-size: 3rem; font-weight: 800; color: var(--about-dark); margin-bottom: 5px; }
-    .stat-box p { font-size: 0.9rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+    .stat-box {
+        text-align: center;
+        padding: 30px 22px 26px;
+        border-radius: 28px;
+        background: rgba(255, 248, 235, 0.18);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+        box-shadow: 0 18px 40px rgba(49,35,30,0.12);
+    }
+    .stat-box h2 {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(2.6rem, 4vw, 3.4rem);
+        font-weight: 600; color: #fff; margin-bottom: 10px; line-height: 1;
+        letter-spacing: 0.5px;
+    }
+    .stat-box p {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.15rem; color: rgba(255,247,227,0.96); font-weight: 600;
+        text-transform: none; letter-spacing: 0.8px; margin: 0;
+    }
 
     /* ══════ STORY SECTION ══════ */
     .story-section { padding: 120px 0; background: #fff; }
@@ -116,7 +134,7 @@ include "includes/header.php";
         .hero-v3 { text-align: center; }
         .hero-v3 p { margin: 0 auto 40px; }
         .collage-wrap { display: none; }
-        .stats-v3 { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .stats-v3 { grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 40px; }
         .story-grid, .quote-card { grid-template-columns: 1fr; }
         .t-grid { grid-template-columns: 1fr; }
         .t-grid::before { display: none; }
