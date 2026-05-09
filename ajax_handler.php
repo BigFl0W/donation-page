@@ -80,8 +80,8 @@ if ($action === 'verify_payment') {
                     [
                         'title' => 'New Donation Received!',
                         'msg' => "A donation of ₦" . number_format($amount) . " was received from " . $tranx->data->customer->email . " for " . $campaign,
-                        'icon' => 'fas fa-hand-holding-dollar',
-                        'link' => 'admin/index.php?page=donations'
+                        'icon' => 'fas fa-hand-holding-heart',
+                        'link' => '?page=donations'
                     ]
                 );
             } catch (\Exception $e) {

@@ -73,6 +73,13 @@ if ($dbAvail) {
     // Messages from contact form
     $unreadMsgCount = (int)(Database::fetchOne("SELECT COUNT(*) as t FROM contact_messages WHERE status = 'unread'")['t'] ?? 0);
     $recentMessages = Database::fetchAll("SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT 5") ?: [];
+
+    // Mark all as read action
+    if (isset($_GET['action']) && $_GET['action'] === 'mark_notifs_read') {
+        Database::execute("UPDATE admin_notifications SET is_read = 1 WHERE (admin_id IS NULL OR admin_id = ?)", [$adminId]);
+        header("Location: index.php?msg=All notifications marked as read&type=success");
+        exit;
+    }
 }
 
 if ($dbAvail) {
@@ -1211,6 +1218,9 @@ body{
 .dd-footer a { font-size: 0.82rem; font-weight: 700; color: var(--brand); text-decoration: none; transition: all 0.2s; }
 .dd-footer a:hover { letter-spacing: 0.3px; color: var(--brand-dark); }
 
+.dd-link-sm { font-size: 0.72rem; color: var(--brand); font-weight: 600; text-decoration: none; transition: all 0.2s; }
+.dd-link-sm:hover { color: var(--brand-dark); text-decoration: underline; }
+
 /* Profile Dropdown Specific */
 .dd-profile { width: 220px; }
 .dd-user-info { padding: 18px; text-align: center; background: var(--bg); border-radius: 14px 14px 0 0; }
@@ -2041,7 +2051,12 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         <div class="tb-dropdown" id="dd-notifications">
           <div class="dd-header">
             <h4>Notifications</h4>
-            <span class="badge bg-soft-brand"><?php echo $unreadNotifCount; ?> New</span>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span class="badge bg-soft-brand"><?php echo $unreadNotifCount; ?> New</span>
+              <?php if ($unreadNotifCount > 0): ?>
+                <a href="?action=mark_notifs_read" class="dd-link-sm">Mark all as read</a>
+              <?php endif; ?>
+            </div>
           </div>
           <div class="dd-body">
             <?php if (empty($recentNotifications)): ?>

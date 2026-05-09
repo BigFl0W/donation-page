@@ -79,7 +79,7 @@ class Payment
                     'title' => 'New Donation!',
                     'msg' => "A donation of " . ($data['currency'] ?? '₦') . number_format((float)$data['amount']) . " was received from " . $data['donor_name'],
                     'icon' => 'fas fa-hand-holding-heart',
-                    'link' => 'admin/index.php?page=donations'
+                    'link' => '?page=donations'
                 ]
             );
         }
