@@ -113,11 +113,7 @@ class Payment
         </html>
         ";
         
-        $headers = "MIME-Version: 1.0" . "\r\n";
-        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-        $headers .= "From: Gracious Charity <noreply@graciouscharity.org>" . "\r\n";
-        
-        return mail($to, $subject, $message, $headers);
+        return Mailer::send($to, $subject, $message);
     }
 
     public static function getTotalDonations(): float

@@ -10,13 +10,23 @@ spl_autoload_register(function (string $class): void {
     $prefix = "App\\";
     $baseDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . "App" . DIRECTORY_SEPARATOR;
 
-    if (strncmp($class, $prefix, strlen($prefix)) !== 0) return;
+    if (strncmp($class, $prefix, strlen($prefix)) === 0) {
+        $relativeClass = substr($class, strlen($prefix));
+        $file = $baseDir . str_replace("\\", DIRECTORY_SEPARATOR, $relativeClass) . ".php";
+        if (is_file($file)) {
+            require_once $file;
+        }
+        return;
+    }
 
-    $relativeClass = substr($class, strlen($prefix));
-    $file = $baseDir . str_replace("\\", DIRECTORY_SEPARATOR, $relativeClass) . ".php";
-
-    if (is_file($file)) {
-        require_once $file;
+    $pmPrefix = "PHPMailer\\PHPMailer\\";
+    $pmBaseDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . "PHPMailer" . DIRECTORY_SEPARATOR;
+    if (strncmp($class, $pmPrefix, strlen($pmPrefix)) === 0) {
+        $relativeClass = substr($class, strlen($pmPrefix));
+        $file = $pmBaseDir . str_replace("\\", DIRECTORY_SEPARATOR, $relativeClass) . ".php";
+        if (is_file($file)) {
+            require_once $file;
+        }
     }
 });
 

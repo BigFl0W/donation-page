@@ -227,6 +227,16 @@ CREATE TABLE audit_logs (
     CONSTRAINT fk_audit_logs_admin FOREIGN KEY (admin_id) REFERENCES admins(id)
 );
 
+CREATE TABLE contact_messages (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    sender_name VARCHAR(190) NOT NULL,
+    sender_email VARCHAR(190) NOT NULL,
+    subject VARCHAR(255) NULL,
+    message LONGTEXT NOT NULL,
+    status ENUM('unread', 'read', 'replied', 'archived') DEFAULT 'unread',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 INSERT INTO roles (id, name, description) VALUES
 (1, 'super_admin', 'Full access to platform administration'),
 (2, 'admin', 'Manage content, donations, and operations'),

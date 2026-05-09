@@ -379,10 +379,7 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                     </body>
                     </html>
                     ";
-                    $headers = "MIME-Version: 1.0\r\n";
-                    $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-                    $headers .= "From: Gracious Charity <noreply@graciouscharity.org>\r\n";
-                    @mail($email, $subject, $message, $headers);
+                    \App\Mailer::send($email, $subject, $message);
 
                 } else { $flashMsg = "Invalid role selected"; $flashType = "danger"; }
             } else { $flashMsg = "An admin with this email already exists"; $flashType = "danger"; }
