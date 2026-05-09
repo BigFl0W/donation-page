@@ -105,10 +105,11 @@ $recentCauses = \App\Database::fetchAll("SELECT * FROM programmes WHERE status =
                                                         <li class="nav-item dropdown">
                                 <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="gallery.php">Photo & Video Gallery</a></li>
-                                    <li><a class="dropdown-item" href="partners-sponsors.php">Partners & Sponsors</a></li>
-                                    <li><a class="dropdown-item" href="projects-programmes.php">Projects & Programmes</a></li>
-                                    <li><a class="dropdown-item" href="faqs.php">FAQs</a></li>
+                                    <li><a class="dropdown-item" href="gallery">Photo & Video Gallery</a></li>
+                                    <li><a class="dropdown-item" href="partners-sponsors">Partners & Sponsors</a></li>
+                                    <li><a class="dropdown-item" href="causes-projects">Our Causes</a></li>
+                                    <li><a class="dropdown-item" href="causes-projects">Projects & Programmes</a></li>
+                                    <li><a class="dropdown-item" href="faqs">FAQs</a></li>
                                 </ul>
                             </li>
                                                         <li class="nav-item">

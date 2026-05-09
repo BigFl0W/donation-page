@@ -93,10 +93,11 @@ $section_url = $section_url ?? "gallery.php";
                             <li class="nav-item dropdown">
                                 <a class="nav-link has-children" href="gallery.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="gallery.php">Photo &amp; Video Gallery</a></li>
-                                    <li><a class="dropdown-item" href="partners-sponsors.php">Partners &amp; Sponsors</a></li>
-                                    <li><a class="dropdown-item" href="causes.php">Causes &amp; Projects</a></li>
-                                    <li><a class="dropdown-item" href="faqs.php">FAQs</a></li>
+                                    <li><a class="dropdown-item" href="gallery">Photo &amp; Video Gallery</a></li>
+                                    <li><a class="dropdown-item" href="partners-sponsors">Partners &amp; Sponsors</a></li>
+                                    <li><a class="dropdown-item" href="causes-projects">Our Causes</a></li>
+                                    <li><a class="dropdown-item" href="causes-projects">Projects &amp; Programmes</a></li>
+                                    <li><a class="dropdown-item" href="faqs">FAQs</a></li>
                                 </ul>
                             </li>
                             <li class="nav-item">
