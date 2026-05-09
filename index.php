@@ -248,27 +248,27 @@ $totalDonations = \App\Payment::getTotalDonations();
                                     <div class="mb-2"><label for="amount1"><strong>Select Amount (₦)</strong></label></div>
                                     <div class="donation-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
                                         <div class="form-check custom-radio">
-                                            <input class="form-check-input" type="radio" name="Amount" id="amount1" value="10000" checked>
+                                            <input class="form-check-input" type="radio" name="amount_radio" id="amount1" value="10000" checked>
                                             <label class="form-check-label" for="amount1">10,000</label>
                                         </div>
                                         <div class="form-check custom-radio">
-                                            <input class="form-check-input" type="radio" name="Amount" id="amount2" value="20000">
+                                            <input class="form-check-input" type="radio" name="amount_radio" id="amount2" value="20000">
                                             <label class="form-check-label" for="amount2">20,000</label>
                                         </div>
                                         <div class="form-check custom-radio">
-                                            <input class="form-check-input" type="radio" name="Amount" id="amount3" value="50000">
+                                            <input class="form-check-input" type="radio" name="amount_radio" id="amount3" value="50000">
                                             <label class="form-check-label" for="amount3">50,000</label>
                                         </div>
                                         <div class="form-check custom-radio">
-                                            <input class="form-check-input" type="radio" name="Amount" id="amount4" value="100000">
+                                            <input class="form-check-input" type="radio" name="amount_radio" id="amount4" value="100000">
                                             <label class="form-check-label" for="amount4">100,000</label>
                                         </div>
                                         <div class="form-check custom-radio">
-                                            <input class="form-check-input" type="radio" name="Amount" id="amount5" value="200000">
+                                            <input class="form-check-input" type="radio" name="amount_radio" id="amount5" value="200000">
                                             <label class="form-check-label" for="amount5">200,000</label>
                                         </div>
                                         <div class="form-check custom-radio">
-                                            <input class="form-check-input" type="radio" name="Amount" id="amount6" value="500000">
+                                            <input class="form-check-input" type="radio" name="amount_radio" id="amount6" value="500000">
                                             <label class="form-check-label" for="amount6">500,000</label>
                                         </div>
                                     </div>
@@ -276,6 +276,7 @@ $totalDonations = \App\Payment::getTotalDonations();
                                 <div class="form-group">
                                     <input type="number" name="amount_custom" class="form-control form-light" id="custom" placeholder="Custom Amount (₦)">
                                 </div>
+                                <input type="hidden" name="amount" id="final_amount" value="10000">
                                 
                                 <div class="paystack-footer mt-3 text-center">
                                     <div class="d-flex align-items-center justify-content-center gap-2 text-nowrap">
@@ -286,6 +287,35 @@ $totalDonations = \App\Payment::getTotalDonations();
 
                                 <button type="submit" class="btn btn-default mt-4 btn-block w-100">Donate now</button>
                             </form>
+                            
+                            <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const finalAmount = document.getElementById('final_amount');
+                                const customInput = document.getElementById('custom');
+                                const radios = document.querySelectorAll('input[name="amount_radio"]');
+
+                                radios.forEach(radio => {
+                                    radio.addEventListener('change', function() {
+                                        finalAmount.value = this.value;
+                                        customInput.value = '';
+                                    });
+                                });
+
+                                customInput.addEventListener('input', function() {
+                                    if (this.value) {
+                                        finalAmount.value = this.value;
+                                        radios.forEach(r => r.checked = false);
+                                    } else {
+                                        // Default back to first radio if custom is cleared
+                                        const first = document.getElementById('amount1');
+                                        if(first) {
+                                            first.checked = true;
+                                            finalAmount.value = first.value;
+                                        }
+                                    }
+                                });
+                            });
+                            </script>
                                 
                         </div>
                     </div> 
