@@ -151,7 +151,7 @@ if ($dbAvail) {
     $recentActivity = array_slice($merged, 0, 5);
 
     // Partners list
-    $partnersList = Database::fetchAll("SELECT name,partner_type,description,status,created_at FROM partners WHERE status='published' ORDER BY created_at DESC LIMIT 6") ?: [];
+    $partnersList = Database::fetchAll("SELECT * FROM partners ORDER BY sort_order ASC, created_at DESC") ?: [];
 
     // Gallery items
     $galleryItems = Database::fetchAll("SELECT title,media_type,description,created_at FROM gallery_items WHERE status='published' ORDER BY created_at DESC LIMIT 8") ?: [];
@@ -407,6 +407,72 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
     if ($action === "delete_gallery") {
         $id = (int) ($_POST["id"] ?? 0);
         if ($id > 0) { Database::execute("DELETE FROM gallery_items WHERE id=:id", ["id" => $id]); $flashMsg = "Gallery item deleted"; $flashType = "success"; }
+    }
+
+    if ($action === "create_partner") {
+        $name = trim((string) ($_POST["name"] ?? ""));
+        $type = (string) ($_POST["partner_type"] ?? "partner");
+        $tier = (string) ($_POST["tier"] ?? "General");
+        $website = (string) ($_POST["website_url"] ?? "");
+        $status = (string) ($_POST["status"] ?? "draft");
+        $desc = (string) ($_POST["description"] ?? "");
+
+        $logoPath = "";
+        if (isset($_FILES["logo_path"]) && $_FILES["logo_path"]["error"] === UPLOAD_ERR_OK) {
+            $fname = time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($_FILES["logo_path"]["name"]));
+            $dest = __DIR__ . "/../assets/images/clients/" . $fname;
+            if (!is_dir(dirname($dest))) mkdir(dirname($dest), 0777, true);
+            if (move_uploaded_file($_FILES["logo_path"]["tmp_name"], $dest)) {
+                $logoPath = "assets/images/clients/" . $fname;
+            }
+        }
+
+        if ($name !== "") {
+            Database::execute(
+                "INSERT INTO partners (name,partner_type,logo_path,website_url,description,tier,status,created_at)
+                 VALUES (:name,:type,:logo,:web,:desc,:tier,:status,NOW())",
+                ["name" => $name, "type" => $type, "logo" => $logoPath, "web" => $website, "desc" => $desc, "tier" => $tier, "status" => $status]
+            );
+            $flashMsg = "Partner added successfully"; $flashType = "success";
+        } else { $flashMsg = "Name is required"; $flashType = "danger"; }
+    }
+
+    if ($action === "edit_partner") {
+        $id = (int) ($_POST["id"] ?? 0);
+        $name = trim((string) ($_POST["name"] ?? ""));
+        $type = (string) ($_POST["partner_type"] ?? "partner");
+        $tier = (string) ($_POST["tier"] ?? "General");
+        $website = (string) ($_POST["website_url"] ?? "");
+        $status = (string) ($_POST["status"] ?? "draft");
+        $desc = (string) ($_POST["description"] ?? "");
+
+        $logoPath = "";
+        if (isset($_FILES["logo_path"]) && $_FILES["logo_path"]["error"] === UPLOAD_ERR_OK) {
+            $fname = time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($_FILES["logo_path"]["name"]));
+            $dest = __DIR__ . "/../assets/images/clients/" . $fname;
+            if (!is_dir(dirname($dest))) mkdir(dirname($dest), 0777, true);
+            if (move_uploaded_file($_FILES["logo_path"]["tmp_name"], $dest)) {
+                $logoPath = "assets/images/clients/" . $fname;
+            }
+        }
+
+        if ($name !== "" && $id > 0) {
+            if ($logoPath === "") {
+                $existing = Database::fetchOne("SELECT logo_path FROM partners WHERE id = :id", ["id" => $id]);
+                if ($existing) $logoPath = $existing["logo_path"];
+            }
+            Database::execute(
+                "UPDATE partners SET name=:name,partner_type=:type,logo_path=:logo,website_url=:web,description=:desc,tier=:tier,status=:status
+                 WHERE id=:id",
+                ["name" => $name, "type" => $type, "logo" => $logoPath, "web" => $website, "desc" => $desc, "tier" => $tier, "status" => $status, "id" => $id]
+            );
+            $flashMsg = "Partner updated successfully"; $flashType = "success";
+        } else { $flashMsg = "Invalid request"; $flashType = "danger"; }
+    }
+
+    if ($action === "delete_partner") {
+        $id = (int) ($_POST["id"] ?? 0);
+        if ($id > 0) { Database::execute("DELETE FROM partners WHERE id=:id", ["id" => $id]); $flashMsg = "Partner removed"; $flashType = "success"; }
     }
 
     if ($action === "create_admin") {
@@ -2561,19 +2627,39 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     <div class="card">
       <div class="section-hd">
         <div><h2>Partner Organizations</h2><p>Organizations supporting our mission</p></div>
-        <button class="btn-primary"><i class="fas fa-plus"></i> Add Partner</button>
+        <button class="btn-primary" onclick="openModal('partner')"><i class="fas fa-plus"></i> Add Partner</button>
       </div>
       <?php if ($partnersList): ?>
       <div class="partners-grid">
         <?php foreach ($partnersList as $p): ?>
+        <?php 
+          $logo = $p["logo_path"] ?: "";
+          $status = (string)($p["status"] ?? "draft");
+        ?>
         <div class="partner-card">
-          <div class="partner-logo"><i class="fas fa-building-columns"></i></div>
+          <div class="partner-logo" style="background:#f8f9fa; border:1px solid #eee; overflow:hidden;">
+            <?php if ($logo): ?>
+              <img src="../<?php echo Helpers::e($logo); ?>" style="max-width:100%; max-height:100%; object-fit:contain;">
+            <?php else: ?>
+              <i class="fas fa-building-columns"></i>
+            <?php endif; ?>
+          </div>
           <div class="partner-info">
             <div class="partner-name"><?php echo Helpers::e($p["name"] ?? "Partner"); ?></div>
-            <div class="partner-type"><?php echo Helpers::e(ucfirst((string)($p["partner_type"] ?? "partner"))); ?></div>
+            <div class="partner-type"><?php echo Helpers::e(ucfirst((string)($p["partner_type"] ?? "partner"))); ?> • <?php echo Helpers::e($p["tier"] ?? "General"); ?></div>
             <div class="partner-since"><i class="far fa-calendar" style="margin-right:3px"></i>Added <?php echo Helpers::e(date("M Y", strtotime($p["created_at"] ?? "now"))); ?></div>
           </div>
-          <span class="badge success">Active</span>
+          <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+             <span class="badge <?php echo $status === "published" ? "success" : "warning"; ?>"><?php echo ucfirst($status); ?></span>
+             <div class="action-btns">
+                <button class="action-btn edit" onclick="editPartner(<?php echo htmlspecialchars(json_encode($p)); ?>)" title="Edit"><i class="fas fa-pen"></i></button>
+                <form method="POST" style="display:inline;" onsubmit="return confirm('Delete this partner?')">
+                    <input type="hidden" name="_action" value="delete_partner">
+                    <input type="hidden" name="id" value="<?php echo $p['id']; ?>">
+                    <button class="action-btn del" type="submit" title="Delete"><i class="fas fa-trash"></i></button>
+                </form>
+             </div>
+          </div>
         </div>
         <?php endforeach; ?>
       </div>
@@ -3217,8 +3303,36 @@ const MODAL_FORMS = {
       {name:'status',label:'Status',type:'select',options:['pending','successful','failed','refunded']},
       {name:'paid_at',label:'Paid At',type:'datetime-local'},
     ]
+  },
+  partner: {
+    title: 'Partner / Sponsor',
+    action: 'create_partner',
+    fields: [
+      {name:'_action',type:'hidden'},
+      {name:'id',type:'hidden'},
+      {name:'name',label:'Organization Name',type:'text',required:true,placeholder:'e.g. Google Org'},
+      {name:'partner_type',label:'Type',type:'select',options:['partner','sponsor']},
+      {name:'tier',label:'Tier',type:'select',options:['Lead Sponsors','Programme Partners','Community Sponsors','General']},
+      {name:'logo_path',label:'Logo File (Upload from device)',type:'file'},
+      {name:'website_url',label:'Website URL',type:'url',placeholder:'https://...'},
+      {name:'status',label:'Status',type:'select',options:['draft','published']},
+      {name:'description',label:'Brief Note',type:'textarea',rows:3},
+    ]
   }
 };
+
+function editPartner(p) {
+  openModal('partner');
+  const form = document.getElementById('modalForm');
+  form.elements['_action'].value = 'edit_partner';
+  form.elements['id'].value = p.id;
+  form.elements['name'].value = p.name;
+  form.elements['partner_type'].value = p.partner_type;
+  form.elements['tier'].value = p.tier;
+  form.elements['website_url'].value = p.website_url;
+  form.elements['status'].value = p.status;
+  form.elements['description'].value = p.description;
+}
 
 function openModal(type, id) {
   editId = id || 0;
