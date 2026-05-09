@@ -72,6 +72,18 @@ if ($action === 'verify_payment') {
                         'ref' => $reference
                     ]
                 );
+
+                // Send Notification to Admin
+                \App\Database::execute(
+                    "INSERT INTO admin_notifications (title, message, icon, link, created_at)
+                     VALUES (:title, :msg, :icon, :link, NOW())",
+                    [
+                        'title' => 'New Donation Received!',
+                        'msg' => "A donation of ₦" . number_format($amount) . " was received from " . $tranx->data->customer->email . " for " . $campaign,
+                        'icon' => 'fas fa-hand-holding-dollar',
+                        'link' => 'admin/index.php?page=donations'
+                    ]
+                );
             } catch (\Exception $e) {
                 // Ignore error if insert fails
             }

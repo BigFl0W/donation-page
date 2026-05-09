@@ -55,7 +55,7 @@ class Payment
 
     public static function recordDonation(array $data): bool
     {
-        return Database::execute(
+        $success = Database::execute(
             "INSERT INTO donations (donor_name, donor_email, amount, currency, gateway, payment_reference, status, metadata, paid_at, created_at)
              VALUES (:name, :email, :amount, :currency, 'paystack', :ref, :status, :meta, :paid_at, NOW())
              ON DUPLICATE KEY UPDATE status = VALUES(status), paid_at = VALUES(paid_at)",
@@ -70,6 +70,21 @@ class Payment
                 'paid_at' => $data['paid_at'] ?? null
             ]
         );
+
+        if ($success && ($data['status'] === 'success' || $data['status'] === 'successful')) {
+            Database::execute(
+                "INSERT INTO admin_notifications (title, message, icon, link, created_at)
+                 VALUES (:title, :msg, :icon, :link, NOW())",
+                [
+                    'title' => 'New Donation!',
+                    'msg' => "A donation of " . ($data['currency'] ?? '₦') . number_format((float)$data['amount']) . " was received from " . $data['donor_name'],
+                    'icon' => 'fas fa-hand-holding-heart',
+                    'link' => 'admin/index.php?page=donations'
+                ]
+            );
+        }
+
+        return $success;
     }
 
     public static function sendReceipt(array $donation): bool
