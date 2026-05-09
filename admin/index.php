@@ -117,8 +117,11 @@ if ($dbAvail) {
     $r = Database::fetchOne("SELECT COUNT(*) AS t FROM partners WHERE status='published'");
     if ($r) $activePartners = (int)$r["t"];
 
-    $r = Database::fetchOne("SELECT COUNT(*) AS t FROM programmes WHERE status='published'");
+    $r = Database::fetchOne("SELECT COUNT(*) AS t FROM programmes WHERE status='published' AND (goal_amount = 0 OR raised_amount < goal_amount)");
     if ($r) $publishedProgrammes = (int)$r["t"];
+
+    $r = Database::fetchOne("SELECT COUNT(*) AS t FROM programmes WHERE status='completed' OR (goal_amount > 0 AND raised_amount >= goal_amount)");
+    $completedProgrammes = (int)($r["t"] ?? 0);
 
     // Monthly donation chart data (last 12 months)
     $rawMonthly = Database::fetchAll("SELECT DATE_FORMAT(COALESCE(paid_at,created_at),'%Y-%m') AS mo, SUM(amount) AS total FROM donations WHERE status='successful' AND COALESCE(paid_at,created_at)>=DATE_SUB(CURRENT_DATE(),INTERVAL 12 MONTH) GROUP BY mo ORDER BY mo ASC") ?: [];
@@ -2042,7 +2045,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     <div class="stats-grid">
       <div class="stat-card t1">
         <div class="stat-top">
-          <div class="stat-icon-wrap"><i class="fas fa-dollar-sign"></i></div>
+          <div class="stat-icon-wrap"><i class="fas fa-naira-sign"></i></div>
           <span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i> All Time</span>
         </div>
         <div class="stat-value"><?php echo Helpers::e(Helpers::fmt($totalDonationsAll)); ?></div>
@@ -2065,7 +2068,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         </div>
         <div class="stat-value"><?php echo Helpers::e($publishedProgrammes); ?></div>
         <div class="stat-label">Active Causes</div>
-        <div class="stat-sub"><i class="far fa-clock" style="margin-right:4px"></i>Published causes</div>
+        <div class="stat-sub"><i class="fas fa-check-circle" style="margin-right:4px"></i><?php echo $completedProgrammes; ?> Completed projects</div>
       </div>
       <div class="stat-card t5">
         <div class="stat-top">
@@ -2449,8 +2452,20 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
   <div class="content" id="page-programmes">
     <?php
     $programmes = $dbAvail ? (Database::fetchAll("SELECT id,title,category,summary,status,featured_image,goal_amount,raised_amount,start_date,end_date FROM programmes ORDER BY created_at DESC LIMIT 12") ?: []) : [];
-    $programmesPublished = count(array_filter($programmes, fn($p) => ($p["status"] ?? "") === "published"));
-    $programmesCompleted = count(array_filter($programmes, fn($p) => ($p["status"] ?? "") === "completed"));
+    
+    // Improved logic: A cause is completed if status is 'completed' OR goal is reached
+    $programmesCompleted = count(array_filter($programmes, function($p) {
+        $goal = (float)($p["goal_amount"] ?? 0);
+        $raised = (float)($p["raised_amount"] ?? 0);
+        return ($p["status"] ?? "") === "completed" || ($goal > 0 && $raised >= $goal);
+    }));
+    
+    // Active causes are published ones that haven't reached their goal yet
+    $programmesPublished = count(array_filter($programmes, function($p) {
+        $goal = (float)($p["goal_amount"] ?? 0);
+        $raised = (float)($p["raised_amount"] ?? 0);
+        return ($p["status"] ?? "") === "published" && ($goal == 0 || $raised < $goal);
+    }));
     ?>
     <div class="stats-grid">
       <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-seedling"></i></div><span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i>Running</span></div><div class="stat-value"><?php echo Helpers::e($programmesPublished); ?></div><div class="stat-label">Active Causes</div></div>
@@ -2492,7 +2507,16 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
               <div class="cmp-name"><?php echo Helpers::e($p["title"] ?? "Untitled"); ?></div>
               <div class="cmp-date"><?php echo Helpers::e($p["category"] ?? "General"); ?> • <?php echo Helpers::e($p["start_date"] ? date("M j, Y", strtotime($p["start_date"])) : "TBD"); ?></div>
             </div>
-            <span class="badge <?php echo Helpers::e($pStatus === "published" ? "success" : ($pStatus === "completed" ? "info" : ($pStatus === "draft" ? "warning" : "neutral"))); ?>"><?php echo Helpers::e(ucfirst($pStatus)); ?></span>
+          <?php 
+            $displayStatus = $pStatus;
+            $statusClass = ($pStatus === "published" ? "success" : ($pStatus === "completed" ? "info" : ($pStatus === "draft" ? "warning" : "neutral")));
+            
+            if ($pStatus === "published" && $goal > 0 && $raised >= $goal) {
+                $displayStatus = "completed";
+                $statusClass = "info";
+            }
+          ?>
+          <span class="badge <?php echo Helpers::e($statusClass); ?>"><?php echo Helpers::e(ucfirst($displayStatus)); ?></span>
           </div>
           
           <div class="cmp-nums">
