@@ -2,6 +2,13 @@
 require_once 'config/autoload.php';
 $totalDonations = \App\Payment::getTotalDonations();
 $recentCauses = \App\Database::fetchAll("SELECT * FROM programmes WHERE status = 'published' ORDER BY created_at DESC LIMIT 4");
+$homeAboutSettings = [];
+$rawHomeAbout = \App\Database::fetchAll("SELECT setting_key, setting_value FROM settings WHERE setting_key LIKE 'about_%'");
+foreach ($rawHomeAbout as $settingRow) {
+    $homeAboutSettings[$settingRow['setting_key']] = $settingRow['setting_value'];
+}
+$homeAboutTitleHtml = nl2br(strip_tags((string)($homeAboutSettings['about_hero_title'] ?? 'Building Hope, Restoring Dignity.'), '<br><i><em><strong><span>'));
+$homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are dedicated to creating a world where everyone has the opportunity to thrive.'));
 ?>
 <!doctype html>
 <html lang="en">
@@ -36,6 +43,141 @@ $recentCauses = \App\Database::fetchAll("SELECT * FROM programmes WHERE status =
     <link href="assets/css/style.css" rel="stylesheet">
     <!-- Home SLider CSS -->
     <link rel="stylesheet" href="assets/css/home-main.css">
+    <style>
+        .home-about-summary {
+            background: linear-gradient(180deg, #fffdf8 0%, #ffffff 100%);
+        }
+        .home-about-summary .summary-copy {
+            padding-left: 30px;
+        }
+        .home-about-summary .summary-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 24px;
+            color: var(--secondary-color);
+            font-family: var(--font-heading);
+            font-style: italic;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .home-about-summary .summary-kicker::before {
+            content: "";
+            width: 50px;
+            height: 2px;
+            background: var(--secondary-color);
+            display: block;
+        }
+        .home-about-summary .summary-title {
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(3rem, 5vw, 4.6rem);
+            line-height: 0.98;
+            font-style: italic;
+            color: var(--primary-color);
+            margin-bottom: 28px;
+        }
+        .home-about-summary .summary-text {
+            font-size: 1.12rem;
+            line-height: 1.8;
+            color: #58627f;
+            max-width: 580px;
+            margin-bottom: 30px;
+        }
+        .home-about-summary .summary-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--secondary-color);
+            font-weight: 700;
+            letter-spacing: 0.4px;
+        }
+        .home-about-summary .summary-link i {
+            transition: transform 0.25s ease;
+        }
+        .home-about-summary .summary-link:hover i {
+            transform: translateX(4px);
+        }
+        .home-about-summary .summary-collage {
+            position: relative;
+            min-height: 660px;
+        }
+        .home-about-summary .summary-card {
+            position: absolute;
+            overflow: hidden;
+            border-radius: 30px;
+            background: #fff;
+            box-shadow: 0 32px 80px rgba(49,35,30,0.12);
+            border: 1px solid rgba(71,119,99,0.08);
+        }
+        .home-about-summary .summary-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .home-about-summary .summary-card.main {
+            width: 72%;
+            height: 540px;
+            left: 0;
+            top: 0;
+        }
+        .home-about-summary .summary-card.secondary {
+            width: 36%;
+            height: 260px;
+            right: 0;
+            top: 72px;
+            transform: rotate(4deg);
+        }
+        .home-about-summary .summary-card.accent {
+            width: 48%;
+            height: 280px;
+            right: 10%;
+            bottom: 0;
+            transform: rotate(-3deg);
+        }
+        @media (max-width: 991px) {
+            .home-about-summary .summary-copy {
+                padding-left: 0;
+                margin-top: 50px;
+            }
+            .home-about-summary .summary-collage {
+                min-height: 520px;
+            }
+            .home-about-summary .summary-card.main {
+                width: 78%;
+                height: 420px;
+            }
+            .home-about-summary .summary-card.secondary {
+                width: 40%;
+                height: 210px;
+            }
+            .home-about-summary .summary-card.accent {
+                width: 54%;
+                height: 220px;
+                right: 4%;
+            }
+        }
+        @media (max-width: 767px) {
+            .home-about-summary .summary-collage {
+                min-height: auto;
+                display: grid;
+                gap: 18px;
+            }
+            .home-about-summary .summary-card,
+            .home-about-summary .summary-card.main,
+            .home-about-summary .summary-card.secondary,
+            .home-about-summary .summary-card.accent {
+                position: relative;
+                width: 100%;
+                height: 240px;
+                inset: auto;
+                transform: none;
+            }
+            .home-about-summary .summary-title {
+                font-size: 2.7rem;
+            }
+        }
+    </style>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -750,39 +892,38 @@ $recentCauses = \App\Database::fetchAll("SELECT * FROM programmes WHERE status =
         <!-- Images Gallery Style End -->
 
         <!-- About Us Style Start -->
-        <section class="wide-tb-100 bg-white shadow">
+        <section class="wide-tb-100 home-about-summary">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-7 col-md-12">
-                        <div class="text-center">
-                            <img src="assets/images/about_img.png" alt="">
+                        <div class="summary-collage">
+                            <div class="summary-card main">
+                                <img src="<?php echo \App\Helpers::e($homeAboutSettings['about_img_1'] ?? 'assets/images/about_img.png'); ?>" alt="About us main image">
+                            </div>
+                            <div class="summary-card secondary">
+                                <img src="<?php echo \App\Helpers::e($homeAboutSettings['about_img_2'] ?? ($homeAboutSettings['about_img_1'] ?? 'assets/images/about_img_2.jpg')); ?>" alt="About us supporting image">
+                            </div>
+                            <div class="summary-card accent">
+                                <img src="<?php echo \App\Helpers::e($homeAboutSettings['about_img_3'] ?? ($homeAboutSettings['about_img_2'] ?? 'assets/images/about_img_2.jpg')); ?>" alt="About us community image">
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-5 col-md-12">
-                        <h1 class="heading-main">
-                            <small>About Us</small>
-                            Step Forward Serve The Huminity Reach Out & Help
-                        </h1>
-
-                        <p>The secret to happiness lies in helping others. Never underestimate the difference YOU can make in the lives of the poor, the abused and the helpless. Spread sunshine in their lives no matter what the weather may be.</p>
-
-                        <div class="icon-box-1 my-4">
-                            <i class="charity-volunteer_people"></i>
-                            <div class="text">
-                                <h3>Work As An Intern</h3>
-                                <p>Sed quia consequuntur agni dolores eos qui ratoluptatem sequi nesciun porquis</p>
-                            </div>
-                        </div>    
-                        
-                        <div class="d-flex">
-                            <a class="btn btn-default me-3" href="become-volunteers.php">Join Now</a>
-                            <div class="about-phone">
-                                <i data-feather="phone-call"></i>
-                                Conatct Us <br> +1234567899
-                            </div>
+                        <div class="summary-copy">
+                            <div class="summary-kicker"><?php echo \App\Helpers::e($homeAboutSettings['about_hero_label'] ?? 'About Us'); ?></div>
+                            <h2 class="summary-title"><?php echo $homeAboutTitleHtml; ?></h2>
+                            <p class="summary-text">
+                                <?php
+                                $homeSummary = mb_strlen($homeAboutDesc) > 210
+                                    ? rtrim(mb_substr($homeAboutDesc, 0, 210)) . '...'
+                                    : $homeAboutDesc;
+                                echo \App\Helpers::e($homeSummary);
+                                ?>
+                            </p>
+                            <a class="summary-link" href="about-us.php">
+                                Discover our story <i data-feather="arrow-right"></i>
+                            </a>
                         </div>
-
-
                     </div>
                 </div>
             </div>
