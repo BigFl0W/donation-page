@@ -330,6 +330,65 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         if ($id > 0) { Database::execute("DELETE FROM gallery_items WHERE id=:id", ["id" => $id]); $flashMsg = "Gallery item deleted"; $flashType = "success"; }
     }
 
+    if ($action === "create_admin") {
+        $fullName = trim((string) ($_POST["full_name"] ?? ""));
+        $email = trim((string) ($_POST["email"] ?? ""));
+        $role = (string) ($_POST["role"] ?? "admin");
+        $status = (string) ($_POST["status"] ?? "active");
+        $password = (string) ($_POST["password"] ?? "");
+
+        if ($fullName !== "" && $email !== "" && $password !== "") {
+            $exists = Database::fetchOne("SELECT id FROM admins WHERE email = :email", ["email" => $email]);
+            if (!$exists) {
+                $roleRow = Database::fetchOne("SELECT id FROM roles WHERE name = :name", ["name" => $role]);
+                if ($roleRow) {
+                    Database::execute(
+                        "INSERT INTO admins (full_name, email, role_id, status, password_hash, created_at) VALUES (:name, :email, :role_id, :status, :hash, NOW())",
+                        ["name" => $fullName, "email" => $email, "role_id" => $roleRow["id"], "status" => $status, "hash" => password_hash($password, PASSWORD_DEFAULT)]
+                    );
+                    $flashMsg = "Admin user created successfully"; $flashType = "success";
+
+                    // Send email to the new admin
+                    $subject = "Your Admin Account Details";
+                    $message = "
+                    <html>
+                    <head>
+                        <style>
+                            .email-body { font-family: sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; }
+                            .header { text-align: center; border-bottom: 2px solid #011B33; padding-bottom: 10px; margin-bottom: 20px; }
+                            .footer { font-size: 12px; color: #777; margin-top: 30px; text-align: center; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class='email-body'>
+                            <div class='header'>
+                                <h2>Admin Account Created</h2>
+                            </div>
+                            <p>Hello <strong>{$fullName}</strong>,</p>
+                            <p>An administrative account has been created for you.</p>
+                            <ul>
+                                <li><strong>Role:</strong> ".ucfirst(str_replace('_', ' ', $role))."</li>
+                                <li><strong>Email:</strong> {$email}</li>
+                                <li><strong>Temporary Password:</strong> {$password}</li>
+                            </ul>
+                            <p><strong>Please log in and change your password immediately.</strong></p>
+                            <div class='footer'>
+                                <p>&copy; " . date('Y') . " Gracious Charity. All rights reserved.</p>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                    ";
+                    $headers = "MIME-Version: 1.0\r\n";
+                    $headers .= "Content-type:text/html;charset=UTF-8\r\n";
+                    $headers .= "From: Gracious Charity <noreply@graciouscharity.org>\r\n";
+                    @mail($email, $subject, $message, $headers);
+
+                } else { $flashMsg = "Invalid role selected"; $flashType = "danger"; }
+            } else { $flashMsg = "An admin with this email already exists"; $flashType = "danger"; }
+        } else { $flashMsg = "Name, email, and password are required"; $flashType = "danger"; }
+    }
+
     if ($action === "update_admin") {
         $id = (int) ($_POST["id"] ?? 0);
         $fullName = trim((string) ($_POST["full_name"] ?? ""));
@@ -2231,7 +2290,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         <div class="search-box"><i class="fas fa-search"></i><input placeholder="Search users…"/></div>
         <button class="filter-btn"><i class="fas fa-tag"></i> Role</button>
         <button class="filter-btn"><i class="fas fa-circle-half-stroke"></i> Status</button>
-        <button class="btn-primary ml"><i class="fas fa-user-plus"></i> Add User</button>
+        <button class="btn-primary ml" onclick="openModal('admin')"><i class="fas fa-user-plus"></i> Add User</button>
       </div>
       <div style="overflow-x:auto">
         <table class="data-table">
