@@ -1,890 +1,214 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <!-- xxx Basics xxx -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <!-- xxx Change With Your Information xxx -->    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
-    <title>Gracious - Charity and Donation HTML Template</title>
-    <meta name="author" content="Mannat Studio">     
-    <meta name="description" content="Gracious is a Responsive HTML5 Template for Charity and NGO related services.">
-    <meta name="keywords" content="Gracious, responsive, html5, charity, charity agency, charity foundation, charity template, church, donate, donation, fundraiser, fundraising, mosque, ngo, non-profit, nonprofit, organization, volunteer">
-    
-    <!-- Favicon -->    
-    <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.ico">
-    <!-- Animate CSSS -->    
-    <link href="assets/library/animate/animate.min.css" rel="stylesheet">
-    <!-- Bootstrap CSS -->
-    <link href="assets/library/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Icofont CSS -->
-    <link href="assets/library/icofont/icofont.min.css" rel="stylesheet">
-    <!-- Owl Carousel CSS -->
-    <link href="assets/library/owlcarousel/css/owl.carousel.min.css" rel="stylesheet">
-    <!-- Select Dropdown CSS -->
-    <link href="assets/library/select2/css/select2.min.css" rel="stylesheet">
-    <!-- Magnific Popup CSS -->
-    <link href="assets/library/magnific-popup/magnific-popup.css" rel="stylesheet">    
-    <!-- Main Theme CSS -->
-    <link href="assets/css/style.css" rel="stylesheet">
+<?php
+require_once __DIR__ . "/config/autoload.php";
+use App\Database;
+use App\Helpers;
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-  <![endif]-->		
-</head>
-<body>
+// Fetch settings
+$settings = [];
+$rawSettings = Database::fetchAll("SELECT setting_key, setting_value FROM settings WHERE setting_key LIKE 'about_%'");
+foreach ($rawSettings as $s) {
+    $settings[$s['setting_key']] = $s['setting_value'];
+}
 
-    <!-- Page loader Start -->
-    <div id="pageloader">   
-        <div class="loader-item">
-            <div class="loader">
-                <div class="circle"></div>
-                <div class="circle"></div>
-                <div class="circle"></div>
-                <div class="circle"></div>
-              </div>
+// Meta for Header
+$page_title = "About Us | " . ($settings['about_hero_label'] ?? 'Our Journey');
+$hero_title = ""; 
+$section_title = "About Us";
+$heroTitleHtml = nl2br(strip_tags((string)($settings['about_hero_title'] ?? 'Building Hope, Restoring Dignity.'), '<br><i><em><strong><span>'));
+
+include "includes/header.php"; 
+?>
+<!-- Premium About Us CSS -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --about-gold: #d97706;
+        --about-gold-light: #fbbf24;
+        --about-dark: #0f172a;
+        --about-glass: rgba(255, 255, 255, 0.03);
+    }
+    body { font-family: 'Plus Jakarta Sans', sans-serif !important; background: #fff; color: #1e293b; overflow-x: hidden; }
+    .breadcrumbs-page-wrap { display: none !important; }
+
+    /* ══════ HERO SECTION ══════ */
+    .hero-v3 {
+        position: relative; padding: 120px 0 100px; background: #0c1220; color: #fff; overflow: hidden;
+    }
+    .hero-v3::before {
+        content: ''; position: absolute; top: -10%; right: -5%; width: 40%; height: 60%;
+        background: radial-gradient(circle, rgba(217,119,6,0.15) 0%, transparent 70%);
+        filter: blur(80px); pointer-events: none;
+    }
+    .hero-v3 .label {
+        display: inline-block; padding: 8px 16px; background: rgba(217,119,6,0.1);
+        border: 1px solid rgba(217,119,6,0.3); color: var(--about-gold-light);
+        border-radius: 99px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase;
+        letter-spacing: 2px; margin-bottom: 24px;
+    }
+    .hero-v3 h1 {
+        font-family: 'Instrument Serif', serif; font-size: clamp(3rem, 8vw, 5rem);
+        line-height: 1; margin-bottom: 30px; font-style: italic; font-weight: 400;
+    }
+    .hero-v3 p {
+        font-size: 1.2rem; color: #94a3b8; max-width: 600px; line-height: 1.6; margin-bottom: 40px;
+    }
+    
+    /* ══════ IMAGE COLLAGE ══════ */
+    .collage-wrap { position: relative; height: 500px; }
+    .c-img {
+        position: absolute; border-radius: 24px; overflow: hidden;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
+        transition: transform 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+    }
+    .c-img img { width: 100%; height: 100%; object-fit: cover; }
+    .c-img.main { width: 350px; height: 450px; left: 10%; top: 0; z-index: 2; transform: rotate(-3deg); }
+    .c-img.sec { width: 280px; height: 350px; right: 5%; top: 50px; z-index: 1; transform: rotate(5deg); }
+    .c-img.float { width: 200px; height: 200px; left: 40%; bottom: 20px; z-index: 3; transform: rotate(10deg); }
+    .c-img:hover { transform: scale(1.05) rotate(0deg); z-index: 10; }
+
+    /* ══════ STATS BAR ══════ */
+    .stats-v3 {
+        background: #fff; margin-top: -60px; position: relative; z-index: 20;
+        border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+        display: grid; grid-template-columns: repeat(4, 1fr); padding: 40px;
+        border: 1px solid #f1f5f9;
+    }
+    .stat-box { text-align: center; border-right: 1px solid #f1f5f9; }
+    .stat-box:last-child { border-right: none; }
+    .stat-box h2 { font-size: 3rem; font-weight: 800; color: var(--about-dark); margin-bottom: 5px; }
+    .stat-box p { font-size: 0.9rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ══════ STORY SECTION ══════ */
+    .story-section { padding: 120px 0; background: #fff; }
+    .story-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 80px; align-items: center; }
+    .story-content h2 { font-family: 'Instrument Serif', serif; font-size: 3.5rem; line-height: 1.1; margin-bottom: 30px; font-style: italic; }
+    .story-content .lead { font-size: 1.25rem; font-weight: 600; color: var(--about-dark); margin-bottom: 25px; line-height: 1.5; }
+    .story-content .text { font-size: 1.05rem; color: #475569; line-height: 1.8; margin-bottom: 40px; }
+
+    /* ══════ QUOTE SECTION ══════ */
+    .quote-v3 { padding: 100px 0; background: #f8fafc; }
+    .quote-card {
+        background: #fff; border-radius: 40px; padding: 60px; display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 60px;
+        box-shadow: 0 40px 100px rgba(0,0,0,0.08); border: 1px solid #fff;
+    }
+    .q-img { border-radius: 30px; overflow: hidden; height: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+    .q-img img { width: 100%; height: 100%; object-fit: cover; }
+    .q-content { display: flex; flex-direction: column; justify-content: center; }
+    .q-icon { font-size: 4rem; color: var(--about-gold); opacity: 0.2; margin-bottom: 20px; }
+    .q-text { font-family: 'Instrument Serif', serif; font-size: 2.2rem; line-height: 1.3; font-style: italic; margin-bottom: 30px; }
+    .q-author h4 { font-weight: 800; font-size: 1.2rem; margin-bottom: 5px; }
+    .q-author p { color: var(--about-gold); font-weight: 700; font-size: 0.9rem; text-transform: uppercase; }
+
+    /* ══════ TIMELINE ══════ */
+    .timeline-v3 { padding: 100px 0; }
+    .t-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; position: relative; }
+    .t-grid::before { content: ''; position: absolute; top: 15px; left: 0; width: 100%; height: 2px; background: #f1f5f9; z-index: 1; }
+    .t-node { position: relative; z-index: 2; padding-top: 50px; }
+    .t-dot { 
+        position: absolute; top: 8px; left: 0; width: 16px; height: 16px; background: #fff; 
+        border: 4px solid var(--about-gold); border-radius: 50%; box-shadow: 0 0 0 5px #fff;
+    }
+    .t-year { display: block; font-weight: 800; font-size: 1.5rem; color: var(--about-dark); margin-bottom: 15px; }
+    .t-node h4 { font-weight: 700; font-size: 1.1rem; margin-bottom: 10px; color: var(--about-dark); }
+    .t-node p { font-size: 0.95rem; color: #64748b; line-height: 1.6; }
+
+    @media (max-width: 991px) {
+        .hero-v3 { text-align: center; }
+        .hero-v3 p { margin: 0 auto 40px; }
+        .collage-wrap { display: none; }
+        .stats-v3 { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .story-grid, .quote-card { grid-template-columns: 1fr; }
+        .t-grid { grid-template-columns: 1fr; }
+        .t-grid::before { display: none; }
+    }
+</style>
+
+<section class="hero-v3">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <span class="label"><?php echo Helpers::e($settings['about_hero_label'] ?? 'Our Journey'); ?></span>
+                <h1><?php echo $heroTitleHtml; ?></h1>
+                <p><?php echo Helpers::e($settings['about_hero_desc'] ?? 'We are dedicated to creating a world where everyone has the opportunity to thrive, regardless of their background or circumstances.'); ?></p>
+            </div>
+            <div class="col-lg-6">
+                <div class="collage-wrap">
+                    <div class="c-img main"><img src="<?php echo Helpers::e($settings['about_img_1'] ?? 'assets/images/about_img.png'); ?>"></div>
+                    <div class="c-img sec"><img src="<?php echo Helpers::e($settings['about_img_2'] ?? 'assets/images/about_img_2.jpg'); ?>"></div>
+                    <div class="c-img float"><img src="<?php echo Helpers::e($settings['about_img_3'] ?? 'assets/images/about_img_2.jpg'); ?>"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-v3">
+            <div class="stat-box">
+                <h2 class="stat-num"><?php echo Helpers::e($settings['about_stat_1_val'] ?? '14+'); ?></h2>
+                <p><?php echo Helpers::e($settings['about_stat_1_label'] ?? 'Years of Service'); ?></p>
+            </div>
+            <div class="stat-box">
+                <h2 class="stat-num"><?php echo Helpers::e($settings['about_stat_2_val'] ?? '50K+'); ?></h2>
+                <p><?php echo Helpers::e($settings['about_stat_2_label'] ?? 'Lives Impacted'); ?></p>
+            </div>
+            <div class="stat-box">
+                <h2 class="stat-num"><?php echo Helpers::e($settings['about_stat_3_val'] ?? '12+'); ?></h2>
+                <p><?php echo Helpers::e($settings['about_stat_3_label'] ?? 'Active Programs'); ?></p>
+            </div>
+            <div class="stat-box">
+                <h2 class="stat-num"><?php echo Helpers::e($settings['about_stat_4_val'] ?? '100%'); ?></h2>
+                <p><?php echo Helpers::e($settings['about_stat_4_label'] ?? 'Direct Giving'); ?></p>
+            </div>
         </div>
     </div>
-    <!-- Page loader End -->
+</section>
 
-    <!-- Header Start -->
-    <header>
-        <!-- Main Navigation Start -->
-        <nav class="navbar navbar-expand-lg header-fullpage">
-            <div class="container text-nowrap">
-                <div class="d-flex align-items-center w-100 col p-0 logo-brand">
-                    <a class="navbar-brand rounded-bottom light-bg" href="index.php">
-                        <img src="assets/images/logo_dark.svg" alt="">
-                    </a> 
-                </div>
-                <!-- Topbar Buttons Start -->
-                <div class="d-inline-flex request-btn order-lg-last col-auto p-0 align-items-center"> 
-                    <a class="btn-outline-primary btn ms-3" href="#" id="search_home"><i data-feather="search"></i></a>
-
-                    <a class="nav-link btn btn-default ms-3 donate-btn" href="donation-page.php">Donate</a>
-
-                    <!-- Toggle Button Start -->
-                    <button class="navbar-toggler x collapsed" type="button" data-bs-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <!-- Toggle Button End -->  
-                </div>
-                <!-- Topbar Buttons End -->
-
-                <div class="navbar-collapse">
-                    <!-- Mobile Logo -->
-                    <div class="offcanvas-header">
-                        <a href="index.php" class="logo-small">
-                            <img src="assets/images/logo_dark.svg" alt="">
-                        </a>                        
-                    </div>
-                    <!-- Mobile Logo -->
-                    <!-- Mobile Menu -->
-                    <div class="offcanvas-body">
-                        <ul class="navbar-nav ms-auto">
-                                                        <li class="nav-item">
-                                <a class="nav-link" href="index.php">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="about-us.php">About Us</a>
-                            </li>
-                            
-                                                        <li class="nav-item dropdown">
-                                <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="gallery.php">Photo & Video Gallery</a></li>
-                                    <li><a class="dropdown-item" href="partners-sponsors.php">Partners & Sponsors</a></li>
-                                    <li><a class="dropdown-item" href="projects-programmes.php">Projects & Programmes</a></li>
-                                    <li><a class="dropdown-item" href="faqs.php">FAQs</a></li>
-                                </ul>
-                            </li>
-                                                        <li class="nav-item">
-                                <a class="nav-link" href="events.php">Events</a>
-                            </li>                        
-                                                        <li class="nav-item">
-                                <a class="nav-link" href="blog.php">Blog</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="contact-us.php">Contact</a>
-                            </li>
-                            
-                        </ul>
-                    </div>
-                    <!-- Mobile Menu -->
-                    <div class="close-nav"></div>
-                    <!-- Main Navigation End -->
-                </div>
+<section class="story-section">
+    <div class="container">
+        <div class="story-grid">
+            <div class="story-img" style="border-radius:40px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,0.1)">
+                <img src="<?php echo Helpers::e($settings['about_story_img'] ?? 'assets/images/about_img.png'); ?>" style="width:100%; height:600px; object-fit:cover">
             </div>
-        </nav>
-        <!-- Main Navigation End -->
-    </header>
-    <!-- Header Start -->
-
-    <!-- Page Breadcrumbs Start -->
-    <section class="breadcrumbs-page-wrap">
-        <div class="bg-fixed pos-rel breadcrumbs-page">
-            <div class="container">
-                <h1>About Us</h1>
-                <nav aria-label="breadcrumb" class="breadcrumb-wrap">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">About Us</li>
-                    </ol>
-                </nav>  
+            <div class="story-content">
+                <h2><?php echo Helpers::e($settings['about_story_title'] ?? 'The Story Behind Our Mission'); ?></h2>
+                <p class="lead"><?php echo Helpers::e($settings['about_story_lead'] ?? 'Founded with a single vision to help those in need, we have grown into a community of thousands.'); ?></p>
+                <p class="text"><?php echo nl2br(Helpers::e($settings['about_story_text'] ?? "Our journey began over a decade ago when a small group of volunteers decided to take action against the growing inequality in their local community.\n\nToday, we operate in multiple regions, providing healthcare, education, and economic empowerment to those who need it most. We believe in transparency, local leadership, and sustainable impact.")); ?></p>
             </div>
         </div>
-    </section>
-    <!-- Page Breadcrumbs End -->
-
-    <!-- Main Body Content Start -->
-    <main id="body-content">
-
-        <!-- About Us Style Start -->
-        <section class="wide-tb-100">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-7 col-md-12">
-                        <div class="text-center">
-                            <img src="assets/images/about_img.png" alt="">
-                        </div>
-                    </div>
-                    <div class="col-lg-5 col-md-12">
-                        <h1 class="heading-main">
-                            <small>About Us</small>
-                            Step Forward Serve The Huminity Reach Out & Help
-                        </h1>
-
-                        <p>The secret to happiness lies in helping others. Never underestimate the difference YOU can make in the lives of the poor, the abused and the helpless. Spread sunshine in their lives no matter what the weather may be.</p>
-
-                        <div class="icon-box-1 my-4">
-                            <i class="charity-volunteer_people"></i>
-                            <div class="text">
-                                <h3>Work As An Intern</h3>
-                                <p>Sed quia consequuntur agni dolores eos qui ratoluptatem sequi nesciun porquis</p>
-                            </div>
-                        </div>    
-                        
-                        <div class="d-flex">
-                            <a class="btn btn-default mr-3" href="become-volunteers.php">Join Now</a>
-                            <div class="about-phone">
-                                <i data-feather="phone-call"></i>
-                                Conatct Us <br> +1234567899
-                            </div>
-                        </div>
-
-
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- About Us Style Start -->
-
-        <!-- Get to Know Us Style Start -->
-        <section class="wide-tb-100 bg-white mb-spacer-md">
-            <div class="container">
-                <div class="row">                    
-                    <div class="col-lg-5 col-md-12">
-                        <h1 class="heading-main">
-                            <small>Get to Know Us</small>
-                            Let Us Come Together To Make a Difference
-                        </h1>
-
-                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
-
-                        <!-- Animated Skillbars Start -->
-                        <div class="skillbar-wrap">
-                            <div class="clearfix">
-                                Food Help
-                            </div>
-                            <div class="skillbar" data-percent="67%">
-                                <div class="skillbar-percent">67%</div>
-                                <div class="skillbar-bar"></div>
-                            </div>             
-                        </div>
-                        <!-- Animated Skillbars Start -->
-
-                        <!-- Animated Skillbars Start -->
-                        <div class="skillbar-wrap">
-                            <div class="clearfix">
-                                Medical Help
-                            </div>
-                            <div class="skillbar" data-percent="85%">
-                                <div class="skillbar-percent">85%</div>
-                                <div class="skillbar-bar"></div>
-                            </div>             
-                        </div>
-                        <!-- Animated Skillbars Start -->
-                    </div>
-                    
-                    <!-- Spacer For Medium -->
-                    <div class="w-100 d-none d-sm-block d-lg-none spacer-60"></div>
-                    <!-- Spacer For Medium -->
-
-                    <div class="col-lg-7 col-md-12">
-                        <!-- Theme Tabbing Style -->
-                        <ul class="nav nav-pills theme-tabbing mb-3" id="pills-tab" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="pills-mission-tab" data-bs-toggle="pill" href="#pills-mission" role="tab" aria-controls="pills-mission" aria-selected="true">Mission</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="pills-vision-tab" data-bs-toggle="pill" href="#pills-vision" role="tab" aria-controls="pills-vision" aria-selected="false">Our Vision</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="pills-history-tab" data-bs-toggle="pill" href="#pills-history" role="tab" aria-controls="pills-history" aria-selected="false">Our History</a>
-                            </li>
-                        </ul>
-                        <div class="tab-content theme-tabbing" id="pills-tabContent">
-                            <div class="tab-pane fade show active" id="pills-mission" role="tabpanel" aria-labelledby="pills-mission-tab">                                
-                                <div class="row align-items-center">
-                                    <div class="col-md-7">
-                                        <div class="about-img-small">
-                                            <img src="assets/images/about_img_2.jpg" class="about-us-2" alt="">
-                                            <div class="since-year">
-                                                <span>Since</span>
-                                                14
-                                                <span class="text-end">Years</span>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-md-5">
-                                        <ul class="list-unstyled icons-listing theme-orange mb-0">
-                                            <li>Nsectetur cing elit.</li>
-                                            <li>Suspe ndisse suscipit sagittis leo.</li>
-                                            <li>Entum estibulum dignissim posuere.</li>
-                                            <li>If you are going to use a passage.</li>
-                                            <li>Lorem Ipsum on the tend to repeat.</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="pills-vision" role="tabpanel" aria-labelledby="pills-vision-tab">
-                                <div class="row align-items-center">
-                                    <div class="col-md-7">
-                                        <div class="about-img-small">
-                                            <img src="assets/images/about_img_2.jpg" class="about-us-2" alt="">
-                                            <div class="since-year">
-                                                <span>Since</span>
-                                                14
-                                                <span class="text-end">Years</span>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-md-5">
-                                        <ul class="list-unstyled icons-listing theme-orange mb-0">
-                                            <li>Nsectetur cing elit.</li>
-                                            <li>Suspe ndisse suscipit sagittis leo.</li>
-                                            <li>Entum estibulum dignissim posuere.</li>
-                                            <li>If you are going to use a passage.</li>
-                                            <li>Lorem Ipsum on the tend to repeat.</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="pills-history" role="tabpanel" aria-labelledby="pills-history-tab">
-                                <div class="row align-items-center">
-                                    <div class="col-md-7">
-                                        <div class="about-img-small">
-                                            <img src="assets/images/about_img_2.jpg" class="about-us-2" alt="">
-                                            <div class="since-year">
-                                                <span>Since</span>
-                                                14
-                                                <span class="text-end">Years</span>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-md-5">
-                                        <ul class="list-unstyled icons-listing theme-orange mb-0">
-                                            <li>Nsectetur cing elit.</li>
-                                            <li>Suspe ndisse suscipit sagittis leo.</li>
-                                            <li>Entum estibulum dignissim posuere.</li>
-                                            <li>If you are going to use a passage.</li>
-                                            <li>Lorem Ipsum on the tend to repeat.</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Theme Tabbing Style -->
-                        
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- Get to Know Us Style End -->
-
-        <!-- Team Member Style Start -->
-        <section class="wide-tb-100 team-bg mb-spacer-md">
-            <div class="container">
-                <div class="row justify-content-between align-items-end">
-                    <div class="col-lg-4 col-md-6">
-                        <h1 class="heading-main">
-                            <small>Team Member</small>
-                            Our Expert Volunteer
-                        </h1>
-                    </div>
-                    <div class="col-lg-8 col-md-6 text-md-end btn-team">
-                        <a href="volunteers.php" class="btn btn-outline-dark">View All Members</a>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <!-- Team Column One -->
-                    <div class="col-12 col-lg-3 col-sm-6">
-                        <div class="team-section-wrap mb-0">
-                            <div class="img green">
-                                <div class="social-icons">
-                                    <a href="#"><i class="icofont-facebook"></i></a>
-                                    <a href="#"><i class="icofont-twitter"></i></a>
-                                    <a href="#"><i class="icofont-instagram"></i></a>
-                                </div>
-                                <img src="assets/images/team/team-1.jpg" alt="" class="rounded-circle">
-                            </div>
-                            <h4>Adams Hobes</h4>
-                            <h5>Volunteer</h5>
-                            <div class="text-md-end">
-                                <a href="#" class="read-more-line"><span>Read More</span></a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Team Column One -->
-
-                    <!-- Team Column One -->
-                    <div class="col-12 col-lg-3 col-sm-6">
-                        <div class="team-section-wrap mb-0">
-                            <div class="img navy-blue">
-                                <div class="social-icons">
-                                    <a href="#"><i class="icofont-facebook"></i></a>
-                                    <a href="#"><i class="icofont-twitter"></i></a>
-                                    <a href="#"><i class="icofont-instagram"></i></a>
-                                </div>
-                                <img src="assets/images/team/team-2.jpg" alt="" class="rounded-circle">
-                            </div>
-                            <h4>Natasha Gamble</h4>
-                            <h5>Volunteer</h5>
-                            <div class="text-md-end">
-                                <a href="#" class="read-more-line"><span>Read More</span></a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Team Column One -->
-
-                    <!-- Spacer For Medium -->
-                    <div class="w-100 d-none d-sm-block d-lg-none spacer-60"></div>
-                    <!-- Spacer For Medium -->
-
-                    <!-- Team Column One -->
-                    <div class="col-12 col-lg-3 col-sm-6">
-                        <div class="team-section-wrap mb-0">
-                            <div class="img orange">
-                                <div class="social-icons">
-                                    <a href="#"><i class="icofont-facebook"></i></a>
-                                    <a href="#"><i class="icofont-twitter"></i></a>
-                                    <a href="#"><i class="icofont-instagram"></i></a>
-                                </div>
-                                <img src="assets/images/team/team-3.jpg" alt="" class="rounded-circle">
-                            </div>
-                            <h4>James Evans</h4>
-                            <h5>Volunteer</h5>
-                            <div class="text-md-end">
-                                <a href="#" class="read-more-line"><span>Read More</span></a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Team Column One -->
-
-                    <!-- Team Column One -->
-                    <div class="col-12 col-lg-3 col-sm-6">
-                        <div class="team-section-wrap mb-0">
-                            <div class="img beige">
-                                <div class="social-icons">
-                                    <a href="#"><i class="icofont-facebook"></i></a>
-                                    <a href="#"><i class="icofont-twitter"></i></a>
-                                    <a href="#"><i class="icofont-instagram"></i></a>
-                                </div>
-                                <img src="assets/images/team/team-4.jpg" alt="" class="rounded-circle">
-                            </div>
-                            <h4>Rick Dalton</h4>
-                            <h5>Volunteer</h5>
-                            <div class="text-md-end">
-                                <a href="#" class="read-more-line"><span>Read More</span></a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Team Column One -->
-                </div>
-            </div>
-        </section>
-        <!-- Team Member Style End -->
-
-        <!-- Faq's Style Start -->
-        <section class="wide-tb-100 pattern-orange pt-0 mb-spacer-md">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-md-12">
-                        
-                        <div class="faqs-wrap pos-rel">
-                            <div class="bg-overlay blue opacity-80"></div>
-                            <div class="row">
-                                <div class="col-12 col-lg-6 col-md-12">
-                                    <h1 class="heading-main light-mode">
-                                        <small>Have Questions</small>
-                                        Frequently Asked Questions
-                                    </h1>
-                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
-                                    <a class="btn btn-default" href="our-faqs.php">Ask It Now</a>
-                                </div>
-        
-                                <!-- Spacer For Medium -->
-                                <div class="w-100 d-none d-sm-block d-lg-none spacer-60"></div>
-                                <!-- Spacer For Medium -->
-        
-                                <div class="col-12 col-lg-6 col-md-12">
-                                    <div class="theme-collapse light">
-                                        <!-- Toggle Links 1 -->
-                                        <div class="toggle arrow-down">
-                                            <span class="icon">
-                                                <i class="icofont-plus"></i>
-                                            </span> Our Philosophy
-                                        </div>
-                                        <!-- Toggle Links 1 -->
-                
-                                        <!-- Toggle Content 1 -->
-                                        <div class="collapse show">
-                                            <div class="content">
-                                                Donec commodo sodales ex, scelerisque laoreet nibh hendrerit id. In aliquet magna nec lobortis maximus. Etiam rhoncus leo a dolor placerat, nec elementum ipsum convall.
-                                            </div>
-                                        </div>
-                                        <!-- Toggle Content 1 -->
-                
-                                        <!-- Toggle Links 2 -->
-                                        <div class="toggle">
-                                            <span class="icon">
-                                                <i class="icofont-plus"></i>
-                                            </span> Our Organization
-                                        </div>
-                                        <!-- Toggle Links 2 -->
-                
-                                        <!-- Toggle Content 2 -->
-                                        <div class="collapse">
-                                            <div class="content">
-                                                Donec commodo sodales ex, scelerisque laoreet nibh hendrerit id. In aliquet magna nec lobortis maximus. Etiam rhoncus leo a dolor placerat, nec elementum ipsum convall.
-                                            </div>
-                                        </div>
-                                        <!-- Toggle Content 2 -->
-                
-                                        <!-- Toggle Links 3 -->
-                                        <div class="toggle">
-                                            <span class="icon">
-                                                <i class="icofont-plus"></i>
-                                            </span> Know More About Adoption
-                                        </div>
-                                        <!-- Toggle Links 3 -->
-                
-                                        <!-- Toggle Content 3 -->
-                                        <div class="collapse">
-                                            <div class="content">
-                                                Donec commodo sodales ex, scelerisque laoreet nibh hendrerit id. In aliquet magna nec lobortis maximus. Etiam rhoncus leo a dolor placerat, nec elementum ipsum convall.
-                                            </div>
-                                        </div>
-                                        <!-- Toggle Content 3 -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row d-flex align-items-center">
-                    <!-- Counter Col Start -->
-                    <div class="col col-12 col-lg-3 col-sm-6">
-                        <div class="counter-style-box">
-                            <div class="counter-txt"><span class="counter">180</span>+</div>
-                            <div>Featured Campaign</div>
-                        </div>
-                    </div>
-                    <!-- Counter Col End -->
-
-                    <!-- Counter Col Start -->
-                    <div class="col col-12 col-lg-3 col-sm-6">
-                        <div class="counter-style-box">               
-                            <div class="counter-txt"><span class="counter">7120</span>+</div>
-                            <div>Money Raised</div>
-                        </div>
-                    </div>
-                    <!-- Counter Col End -->
-
-                    <!-- Spacer For Medium -->
-                    <div class="w-100 d-none d-sm-block d-lg-none spacer-60"></div>
-                    <!-- Spacer For Medium -->
-
-                    <!-- Counter Col Start -->
-                    <div class="col col-12 col-lg-3 col-sm-6">
-                        <div class="counter-style-box">
-                            <div class="counter-txt"><span class="counter">250</span>+</div>
-                            <div>Dedicated Volunteers</div>
-                        </div>
-                    </div>
-                    <!-- Counter Col End -->
-
-                    <!-- Counter Col Start -->
-                    <div class="col col-12 col-lg-3 col-sm-6">
-                        <div class="counter-style-box">     
-                            <div class="counter-txt"><span class="counter">1530</span>+</div>
-                            <div>People Helped Happily</div>
-                        </div>
-                    </div>
-                    <!-- Counter Col End -->
-                </div>
-            </div>
-        </section>
-        <!-- Faq's Style End -->
-
-        <!-- Testimonials Style Start -->
-        <section class="wide-tb-100">
-            <div class="container">
-                <h1 class="heading-main">
-                    <small>Our Testimonials</small>
-                    What People Say
-                </h1>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="owl-carousel owl-theme" id="home-client-testimonials">
-                        
-                            <!-- Client Testimonials Slider Item -->
-                            <div class="item">
-                                <div class="client-testimonial">
-                                    <div class="client-inner-content">
-                                        <i class="charity-quotes"></i>
-                                        <p>Gracious is a nonpro?t organization supported by community leaders, corporate sponsors, churches,
-                                            helpless etc. and concerned citizens</p>
-                                    </div>
-                                    <div class="client-testimonial-icon">
-                                        <img src="assets/images/team_1.jpg" alt="">
-                                        <div class="text">
-                                            <div class="name">Josefin Fashkin</div>
-                                            <div class="post">Senior Activist</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Client Testimonials Slider Item -->
-                        
-                            <!-- Client Testimonials Slider Item -->
-                            <div class="item">
-                                <div class="client-testimonial">
-                                    <div class="client-inner-content">
-                                        <i class="charity-quotes"></i>
-                                        <p>Gracious is a nonpro?t organization supported by community leaders, corporate sponsors, churches,
-                                            helpless etc. and concerned citizens</p>
-                                    </div>
-                                    <div class="client-testimonial-icon">
-                                        <img src="assets/images/team_2.jpg" alt="">
-                                        <div class="text">
-                                            <div class="name">Josefin Fashkin</div>
-                                            <div class="post">Senior Activist</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Client Testimonials Slider Item -->
-                        
-                            <!-- Client Testimonials Slider Item -->
-                            <div class="item">
-                                <div class="client-testimonial">
-                                    <div class="client-inner-content">
-                                        <i class="charity-quotes"></i>
-                                        <p>Gracious is a nonpro?t organization supported by community leaders, corporate sponsors, churches,
-                                            helpless etc. and concerned citizens</p>
-                                    </div>
-                                    <div class="client-testimonial-icon">
-                                        <img src="assets/images/team_3.jpg" alt="">
-                                        <div class="text">
-                                            <div class="name">Josefin Fashkin</div>
-                                            <div class="post">Senior Activist</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Client Testimonials Slider Item -->
-                        
-                            <!-- Client Testimonials Slider Item -->
-                            <div class="item">
-                                <div class="client-testimonial">
-                                    <div class="client-inner-content">
-                                        <i class="charity-quotes"></i>
-                                        <p>Gracious is a nonpro?t organization supported by community leaders, corporate sponsors, churches,
-                                            helpless etc. and concerned citizens</p>
-                                    </div>
-                                    <div class="client-testimonial-icon">
-                                        <img src="assets/images/team_1.jpg" alt="">
-                                        <div class="text">
-                                            <div class="name">Josefin Fashkin</div>
-                                            <div class="post">Senior Activist</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Client Testimonials Slider Item -->
-                        
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- Testimonials Style End -->
-
-        <!-- Callout Style Start -->
-        <section class="wide-tb-150 bg-scroll bg-img-6 pos-rel callout-style-1">
-            <div class="bg-overlay blue opacity-80"></div>
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-7">
-                        <h1 class="heading-main light-mode">
-                            <small>Help Other People</small>
-                            We Dream to Create A Bright Future Of The Underprivileged Children
-                        </h1>
-                    </div>
-                    <div class="col-sm-12 text-md-end">
-                        <a href="donation-page.php" class="btn btn-default">Donate Now</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- Callout Style End -->
-
-        <!-- Our Partners Start -->
-        <section class="wide-tb-100">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-12">
-                        <h1 class="heading-main">
-                            <small>Global Providers</small>
-                            Our World Wide Partner
-                        </h1>
-                    </div>
-                    <div class="col-sm-12">
-                        <div class="owl-carousel owl-theme" id="home-clients">
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client1.png" alt="">
-                                </div>
-                            </div>
-                            <!-- Client Logo -->
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client2.png" alt="">
-                                </div>
-                            </div>
-                            <!-- Client Logo -->
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client3.png" alt="">
-                                </div>
-                            </div>
-                            <!-- Client Logo -->
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client4.png" alt="">
-                                </div>
-                            </div>
-                            <!-- Client Logo -->
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client5.png" alt="">
-                                </div>
-                            </div>
-                            <!-- Client Logo -->
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- Our Partners End -->
-        
-           
-    </main>
-
-    <!-- Main Footer Start -->
-    <footer class="wide-tb-70 pb-0 mb-spacer-md">
-        <div class="container pos-rel">
-            <div class="row">
-                <div class="col-lg-5 col-md-10">
-                    <div class="footer-subscribe">
-                        <h3>Newsletter</h3>
-                        <h2>Get Update Every Week</h2>
-                        <div class="input-wrap">
-                            <input type="text" name="name" placeholder="Enter Your Email">
-                            <button type="submit" class="btn btn-default">Subscribe now</button>
-                        </div>
-                    </div>  
-                </div>
-                <div class="give-us-call">
-                    <i data-feather="phone"></i>
-                    <h4>Give us a call</h4>
-                    <h3>+1234567899</h3>
-                </div>
-            </div>
-            <div class="row">
-                <!-- Column First -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="logo-footer">
-                        <img src="assets/images/logo_white.svg" alt="">
-                    </div>
-                    <p>This is Photoshop�s version of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet</p>
-                    <div class="social-icons">
-                        <ul class="list-unstyled list-group list-group-horizontal">
-                            <li><a href="#"><i class="icofont-facebook"></i></a></li>
-                            <li><a href="#"><i class="icofont-twitter"></i></a></li>
-                            <li><a href="#"><i class="icofont-instagram"></i></a></li>
-                            <li><a href="#"><i class="icofont-behance"></i></a></li>
-                            <li><a href="#"><i class="icofont-youtube-play"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- Column First -->
-
-                <!-- Column Second -->
-                <div class="col-lg-4 col-md-6">
-                    <h3 class="footer-heading">Contact Info</h3>
-
-                    <div class="footer-widget-contact">
-                        <ul class="list-unstyled">
-                            <li>
-                                <div><i data-feather="map-pin"></i> </div>
-                                <div>Envato Pty Ltd, 13/2 Elizabeth St Melbourne VIC 3000, Australia</div>
-                            </li>
-                            <li>
-                                <div><i data-feather="phone"></i> </div>
-                                <div><a href="tel:+1234567899">+1234567899</a></div>
-                            </li>
-                            <li>
-                                <div><i data-feather="mail"></i> </div>
-                                <div><a href="/cdn-cgi/l/email-protection#eb82858d84ab83849b8e998a82988ec5888486"><span class="__cf_email__" data-cfemail="8ae3e4ece5cae2e5faeff8ebe3f9efa4e9e5e7">[email&#160;protected]</span></a></div>
-                            </li>
-                            <li>
-                                <div><i data-feather="clock"></i> </div>
-                                <div>Mon-Fri  /  9:00 AM - 19:00 PM</div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>                
-                <!-- Column Second -->
-
-                <!-- Spacer For Medium -->
-                <div class="w-100 d-none d-md-block d-lg-none spacer-30"></div>
-                <!-- Spacer For Medium -->
-
-                <!-- Column Third -->
-                <div class="col-lg-2 col-md-6">
-                    <h3 class="footer-heading">Explore Us</h3>
-                    <div class="footer-widget-menu">
-                        <ul class="list-unstyled">
-                            <li><a href="#"><i class="icofont-simple-right"></i> <span>About Us</span></a></li>
-                            <li><a href="#"><i class="icofont-simple-right"></i> <span>Our History</span></a></li>
-                            <li><a href="#"><i class="icofont-simple-right"></i> <span>Our Services</span></a></li>
-                            <li><a href="#"><i class="icofont-simple-right"></i> <span>Meet Doctors</span></a></li>
-                            <li><a href="#"><i class="icofont-simple-right"></i> <span>Success History</span></a></li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- Column Third -->
-
-                <!-- Column Fourth -->
-                <div class="col-lg-3 col-md-6">
-                    <h3 class="footer-heading">Photo Gallery</h3>
-                    <ul id="basicuse" class="photo-thumbs"></ul>
-                </div>
-                <!-- Column Fourth -->
-            </div>
-        </div>  
-
-        <div class="copyright-wrap">
-            <div class="container pos-rel">
-                <div class="row text-md-start text-center">
-                    <div class="col-sm-12 col-md-auto copyright-text">
-                        � Copyright <span class="txt-blue">Gracious</span> <span id="yearText"></span>.   |   Created by <a href="https://mannatstudio.com/" target="_blank">MannatStudio</a>
-                    </div>
-                    <div class="col-sm-12 col-md-auto ms-md-auto text-md-end text-center copyright-links">
-                        <a href="#">Terms & Condition</a> | <a href="#">Privacy Policy</a> | <a href="#">Legal</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-    <!-- Main Footer End -->
-
-    <!-- Search Popup Start -->
-    <div class="overlay overlay-hugeinc">    
-        <form class="form-inline mt-2 mt-md-0">
-            <div class="form-inner">
-                <div class="form-inner-div d-inline-flex align-items-center no-gutters">
-                    <div class="col-auto">
-                        <i class="icofont-search"></i>
-                    </div> 
-                    <div class="col">
-                        <input class="form-control w-100 p-0" type="text" placeholder="Search" aria-label="Search">
-                    </div>
-                    <div class="col-auto">
-                        <a href="#" class="overlay-close link-oragne"><i class="icofont-close-line"></i></a>
-                    </div>
-                </div>
-            </div>
-        </form>
     </div>
-    <!-- Search Popup End -->
+</section>
 
-    <!-- Back To Top Start -->
-    <a id="mkdf-back-to-top" href="#" class="off"><i data-feather="corner-right-up"></i></a>
-    <!-- Back To Top End -->
+<section class="quote-v3">
+    <div class="container">
+        <div class="quote-card">
+            <div class="q-img"><img src="<?php echo Helpers::e($settings['about_founder_img'] ?? 'assets/images/user-1.jpg'); ?>"></div>
+            <div class="q-content">
+                <i class="fas fa-quote-left q-icon"></i>
+                <div class="q-text"><?php echo Helpers::e($settings['about_quote_text'] ?? 'The best way to find yourself is to lose yourself in the service of others. We started with a simple vision, and today we are a global family.'); ?></div>
+                <div class="q-author">
+                    <h4><?php echo Helpers::e($settings['about_quote_author'] ?? 'Dr. Sarah Johnson'); ?></h4>
+                    <p><?php echo Helpers::e($settings['about_quote_role'] ?? 'Founder & CEO'); ?></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <!-- Jquery Library JS -->
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="assets/library/jquery/jquery.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="assets/library/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- Feather Icon JS -->
-    <script src="assets/library/feather-icons/feather.min.js"></script>
-    <!-- Owl Carousel JS -->
-    <script src="assets/library/owlcarousel/js/owl.carousel.min.js"></script>
-    <!-- Select2 Dropdown JS -->
-    <script src="assets/library/select2/js/select2.min.js"></script>
-    <!-- Magnific Popup JS -->
-    <script src="assets/library/magnific-popup/jquery.magnific-popup.min.js"></script>
-    <!-- jflickrfeed Images JS -->
-    <script src="assets/library/jflickrfeed/jflickrfeed.min.js"></script>
-    <!-- Way Points JS -->
-    <script src="assets/library/jquery-waypoints/jquery.waypoints.min.js"></script>
-    <!-- Count Down JS -->
-    <script src="assets/library/countdown/jquery.countdown.min.js"></script>
-    <!-- Appear JS -->
-    <script src="assets/library/jquery-appear/jquery.appear.js"></script>
-    <!-- Jquery Easing JS -->
-    <script src="assets/library/jquery-easing/jquery.easing.min.js"></script>
-    <!-- Counter JS -->
-    <script src="assets/library/jquery.counterup/jquery.counterup.min.js"></script>
-    <!-- Form Validation JS -->
-    <script src="assets/library/jquery-validate/jquery.validate.min.js"></script>
-    <!-- Theme Custom -->
-    <script src="assets/js/site-custom.js"></script>
-<script defer="" src="../../beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"64224fc8786846928480d180dfc466bd","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
-</html>
+<section class="timeline-v3">
+    <div class="container">
+        <div style="text-align:center; margin-bottom:80px;">
+            <h2 style="font-family:'Instrument Serif', serif; font-size:3.5rem; font-style:italic;">Our Milestones</h2>
+            <p style="color:#64748b; font-weight:500;">A journey through time and impact.</p>
+        </div>
+        <div class="t-grid">
+            <?php for($i=1; $i<=4; $i++): ?>
+            <div class="t-node">
+                <div class="t-dot"></div>
+                <span class="t-year"><?php echo Helpers::e($settings["about_time_{$i}_year"] ?? (2010 + ($i-1)*4)); ?></span>
+                <h4><?php echo Helpers::e($settings["about_time_{$i}_title"] ?? "Milestone $i"); ?></h4>
+                <p><?php echo Helpers::e($settings["about_time_{$i}_desc"] ?? "Describing the major achievement or milestone reached during this period."); ?></p>
+            </div>
+            <?php endfor; ?>
+        </div>
+    </div>
+</section>
+
+<?php include "includes/footer.php"; ?>

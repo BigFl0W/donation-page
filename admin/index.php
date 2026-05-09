@@ -168,6 +168,13 @@ if ($dbAvail) {
 
     // Security - recent admin logins
     $recentLogins = Database::fetchAll("SELECT full_name,email,last_login_at,status FROM admins ORDER BY last_login_at DESC LIMIT 5") ?: [];
+
+    // About Page Data (v3 Settings Based)
+    $aboutSettings = [];
+    $rawAbout = Database::fetchAll("SELECT setting_key, setting_value FROM settings WHERE setting_key LIKE 'about_%'");
+    foreach ($rawAbout as $s) {
+        $aboutSettings[$s['setting_key']] = $s['setting_value'];
+    }
 }
 
 // ─── HANDLE FORM SUBMISSIONS ───────────────────────
@@ -482,6 +489,45 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         if ($id > 0) { Database::execute("DELETE FROM partners WHERE id=:id", ["id" => $id]); $flashMsg = "Partner removed"; $flashType = "success"; }
     }
 
+    if ($action === "save_about_v3") {
+        $saveOk = true;
+        if (isset($_POST['settings'])) {
+            foreach ($_POST['settings'] as $key => $val) {
+                $saved = Database::execute(
+                    "INSERT INTO settings (setting_group, setting_key, setting_value) 
+                     VALUES ('about', :key, :val) 
+                     ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                    ['key' => 'about_' . $key, 'val' => $val]
+                );
+                if (!$saved) $saveOk = false;
+            }
+        }
+        
+        if (isset($_FILES['images'])) {
+            foreach ($_FILES['images']['name'] as $key => $name) {
+                if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
+                    $fname = "about_" . time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($name));
+                    $dest = __DIR__ . "/../assets/images/about/" . $fname;
+                    if (!is_dir(dirname($dest))) mkdir(dirname($dest), 0777, true);
+                    if (move_uploaded_file($_FILES['images']['tmp_name'][$key], $dest)) {
+                        $path = "assets/images/about/" . $fname;
+                        $saved = Database::execute(
+                            "INSERT INTO settings (setting_group, setting_key, setting_value) 
+                             VALUES ('about', :key, :val) 
+                             ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                            ['key' => 'about_' . $key, 'val' => $path]
+                        );
+                        if (!$saved) $saveOk = false;
+                    }
+                }
+            }
+        }
+        $flashMsg = $saveOk ? "About Page published successfully" : "About Page publish failed. Please try again.";
+        $flashType = $saveOk ? "success" : "danger";
+        header("Location: index.php?msg=" . urlencode($flashMsg) . "&type=" . $flashType . "&page=about");
+        exit;
+    }
+
     if ($action === "create_admin") {
         $fullName = trim((string) ($_POST["full_name"] ?? ""));
         $email = trim((string) ($_POST["email"] ?? ""));
@@ -637,7 +683,7 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                             $logoPath = 'assets/uploads/branding/' . $newLogoName;
                             if ($dbAvail) {
                                 Database::execute(
-                                    "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = :value",
+                                    "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
                                     ['key' => 'brand_logo', 'value' => $logoPath]
                                 );
                             }
@@ -688,7 +734,7 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                             $faviconPath = 'assets/uploads/branding/' . $newFaviconName;
                             if ($dbAvail) {
                                 Database::execute(
-                                    "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = :value",
+                                    "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
                                     ['key' => 'site_favicon', 'value' => $faviconPath]
                                 );
                             }
@@ -722,7 +768,7 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         // Update organization settings in database
         if ($siteName !== "" && $dbAvail) {
             Database::execute(
-                "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = :value",
+                "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
                 ['key' => 'site_name', 'value' => $siteName]
             );
             $settings['site_name'] = $siteName;
@@ -731,7 +777,7 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         
         if ($contactEmail !== "" && $dbAvail) {
             Database::execute(
-                "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = :value",
+                "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
                 ['key' => 'contact_email', 'value' => $contactEmail]
             );
             $settings['contact_email'] = $contactEmail;
@@ -739,7 +785,7 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         
         if ($contactPhone !== "" && $dbAvail) {
             Database::execute(
-                "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = :value",
+                "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
                 ['key' => 'contact_phone', 'value' => $contactPhone]
             );
             $settings['contact_phone'] = $contactPhone;
@@ -1353,6 +1399,20 @@ body{
 
 .donut-legend{display:flex;flex-direction:column;gap:9px;min-width:120px}
 .dl-item{display:flex;align-items:center;gap:8px;font-size:.78rem}
+
+/* ABOUT PAGE SPECIALS */
+.pos-rel { position: relative; }
+.btn-del-abs {
+  position: absolute; top: -8px; right: -8px;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--rose); color: #fff;
+  border: 2px solid #fff; display: flex;
+  align-items: center; justify-content: center;
+  font-size: 0.7rem; cursor: pointer;
+  box-shadow: 0 4px 10px rgba(225,29,72,0.3);
+  transition: all 0.2s; z-index: 5;
+}
+.btn-del-abs:hover { transform: scale(1.15); background: #be123c; }
 .dl-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
 .dl-lbl{color:var(--muted);flex:1}
 .dl-val{font-weight:700;color:var(--dark)}
@@ -1998,6 +2058,10 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     <div class="nav-item" onclick="showPage('events',this)">
       <i class="fas fa-calendar-days nav-icon"></i>
       <span class="nav-text">Events</span>
+    </div>
+    <div class="nav-item" onclick="showPage('about',this)">
+      <i class="fas fa-circle-info nav-icon"></i>
+      <span class="nav-text">About Page</span>
     </div>
     <div class="nav-item" onclick="showPage('gallery',this)">
       <i class="fas fa-images nav-icon"></i>
@@ -2853,8 +2917,202 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
   </div>
 
   <!-- ════════════════════════════════════════════
-       SECURITY
+       ABOUT PAGE
   ════════════════════════════════════════════ -->
+  <div class="content" id="page-about">
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div class="tabs" style="background:var(--surface); border-bottom:1px solid var(--border); padding:0 15px;">
+        <button class="tab-btn on" onclick="switchAboutTab('hero', this)">Hero & Collage</button>
+        <button class="tab-btn" onclick="switchAboutTab('stats', this)">Impact Stats</button>
+        <button class="tab-btn" onclick="switchAboutTab('story', this)">Mission Story</button>
+        <button class="tab-btn" onclick="switchAboutTab('institutional', this)">Founder & Quote</button>
+        <button class="tab-btn" onclick="switchAboutTab('timeline', this)">Our Milestones</button>
+      </div>
+
+      <form id="saveAboutForm" method="POST" enctype="multipart/form-data" style="padding:22px;">
+        <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
+        <input type="hidden" name="_action" value="save_about_v3">
+
+        <div style="margin-bottom:25px; display:flex; justify-content:space-between; align-items:center; background:var(--brand-bg); padding:15px; border-radius:12px; border:1px solid var(--brand-dim);">
+          <div>
+            <h4 style="color:var(--brand); margin:0;">About Page Builder v3.0</h4>
+            <p style="font-size:0.75rem; color:var(--mid); margin:0;">All changes will reflect immediately on the frontend.</p>
+          </div>
+          <button type="submit" class="btn-primary" style="padding:10px 30px; border-radius:10px; font-weight:800; box-shadow:0 10px 20px rgba(15,118,110,0.2);">
+            <i class="fas fa-rocket" style="margin-right:8px;"></i>Publish Changes
+          </button>
+        </div>
+
+        <!-- Pane: Stats -->
+        <div class="about-pane" id="about-pane-stats" style="display:none">
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:15px;">
+            <?php for($i=1; $i<=4; $i++): ?>
+            <div class="card" style="padding:15px; background:var(--surface)">
+              <div class="form-field">
+                <label class="form-label">Stat <?php echo $i; ?> Value</label>
+                <input class="form-input" name="settings[stat_<?php echo $i; ?>_val]" value="<?php echo Helpers::e($aboutSettings["about_stat_{$i}_val"] ?? ''); ?>"/>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Stat <?php echo $i; ?> Label</label>
+                <input class="form-input" name="settings[stat_<?php echo $i; ?>_label]" value="<?php echo Helpers::e($aboutSettings["about_stat_{$i}_label"] ?? ''); ?>"/>
+              </div>
+            </div>
+            <?php endfor; ?>
+          </div>
+        </div>
+
+        <!-- Pane: Timeline -->
+        <div class="about-pane" id="about-pane-timeline" style="display:none">
+          <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:20px;">
+            <?php for($i=1; $i<=4; $i++): ?>
+            <div class="card" style="padding:20px; background:var(--surface)">
+              <div style="display:grid; grid-template-columns:80px 1fr; gap:15px;">
+                <div class="form-field">
+                  <label class="form-label">Year</label>
+                  <input class="form-input" name="settings[time_<?php echo $i; ?>_year]" value="<?php echo Helpers::e($aboutSettings["about_time_{$i}_year"] ?? ''); ?>"/>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Milestone Title</label>
+                  <input class="form-input" name="settings[time_<?php echo $i; ?>_title]" value="<?php echo Helpers::e($aboutSettings["about_time_{$i}_title"] ?? ''); ?>"/>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Description</label>
+                <textarea class="form-input" name="settings[time_<?php echo $i; ?>_desc]" rows="2"><?php echo Helpers::e($aboutSettings["about_time_{$i}_desc"] ?? ''); ?></textarea>
+              </div>
+            </div>
+            <?php endfor; ?>
+          </div>
+        </div>
+
+        <!-- Pane: Hero -->
+        <!-- ... (existing hero pane) ... -->
+
+        <!-- Pane: Hero -->
+        <div class="about-pane active" id="about-pane-hero">
+          <div class="two-col">
+            <div>
+              <div class="form-field">
+                <label class="form-label">Hero Title (Italicized Style)</label>
+                <textarea class="form-input" name="settings[hero_title]" rows="3"><?php echo Helpers::e($aboutSettings['about_hero_title'] ?? ''); ?></textarea>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Section Label</label>
+                <input class="form-input" name="settings[hero_label]" value="<?php echo Helpers::e($aboutSettings['about_hero_label'] ?? ''); ?>"/>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Hero Description</label>
+                <textarea class="form-input" name="settings[hero_desc]" rows="4"><?php echo Helpers::e($aboutSettings['about_hero_desc'] ?? ''); ?></textarea>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Hero Collage Images</label>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <?php for($i=1; $i<=3; $i++): ?>
+                <div class="image-slot">
+                  <div class="slot-preview <?php echo empty($aboutSettings["about_img_{$i}"]) ? 'empty' : ''; ?>">
+                    <?php if(!empty($aboutSettings["about_img_{$i}"])): ?>
+                      <img src="../<?php echo Helpers::e($aboutSettings["about_img_{$i}"]); ?>">
+                    <?php else: ?><i class="fas fa-image"></i><?php endif; ?>
+                  </div>
+                  <input type="file" name="images[img_<?php echo $i; ?>]" class="form-input" style="font-size:0.7rem">
+                </div>
+                <?php endfor; ?>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pane: Story -->
+        <div class="about-pane" id="about-pane-story" style="display:none">
+          <div class="two-col">
+            <div>
+              <div class="form-field">
+                <label class="form-label">Story Heading</label>
+                <input class="form-input" name="settings[story_title]" value="<?php echo Helpers::e($aboutSettings['about_story_title'] ?? ''); ?>"/>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Lead Sentence</label>
+                <textarea class="form-input" name="settings[story_lead]" rows="2"><?php echo Helpers::e($aboutSettings['about_story_lead'] ?? ''); ?></textarea>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Full Story Content</label>
+                <textarea class="form-input" name="settings[story_text]" rows="8"><?php echo Helpers::e($aboutSettings['about_story_text'] ?? ''); ?></textarea>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Story Image</label>
+              <div class="image-slot">
+                <div class="slot-preview <?php echo empty($aboutSettings['about_story_img']) ? 'empty' : ''; ?>" style="height:300px;">
+                  <?php if(!empty($aboutSettings['about_story_img'])): ?>
+                    <img src="../<?php echo Helpers::e($aboutSettings['about_story_img']); ?>">
+                  <?php else: ?><i class="fas fa-image"></i><?php endif; ?>
+                </div>
+                <input type="file" name="images[story_img]" class="form-input">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pane: Institutional -->
+        <div class="about-pane" id="about-pane-institutional" style="display:none">
+          <div class="two-col">
+            <div>
+              <div class="form-field">
+                <label class="form-label">Inspiration Quote</label>
+                <textarea class="form-input" name="settings[quote_text]" rows="5"><?php echo Helpers::e($aboutSettings['about_quote_text'] ?? ''); ?></textarea>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Author Name</label>
+                <input class="form-input" name="settings[quote_author]" value="<?php echo Helpers::e($aboutSettings['about_quote_author'] ?? ''); ?>"/>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Author Role</label>
+                <input class="form-input" name="settings[quote_role]" value="<?php echo Helpers::e($aboutSettings['about_quote_role'] ?? ''); ?>"/>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Founder/Author Photo</label>
+              <div class="image-slot">
+                <div class="slot-preview <?php echo empty($aboutSettings['about_founder_img']) ? 'empty' : ''; ?>" style="height:300px;">
+                  <?php if(!empty($aboutSettings['about_founder_img'])): ?>
+                    <img src="../<?php echo Helpers::e($aboutSettings['about_founder_img']); ?>">
+                  <?php else: ?><i class="fas fa-user-tie"></i><?php endif; ?>
+                </div>
+                <input type="file" name="images[founder_img]" class="form-input">
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    .about-pane.active { display: block !important; animation: fadeIn .3s ease; }
+    .image-slot { display: flex; flex-direction: column; gap: 8px; }
+    .slot-preview { 
+      height: 100px; background: var(--bg); border: 2px dashed var(--border); 
+      border-radius: 12px; position: relative; overflow: hidden;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 0.8rem;
+    }
+    .slot-preview.empty i { font-size: 1.5rem; margin-bottom: 5px; opacity: 0.3; }
+    .slot-preview img { width: 100%; height: 100%; object-fit: cover; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+
+  <script>
+    function switchAboutTab(tab, btn) {
+      document.querySelectorAll('.about-pane').forEach(p => p.style.display = 'none');
+      document.querySelectorAll('.about-pane').forEach(p => p.classList.remove('active'));
+      const pane = document.getElementById('about-pane-' + tab);
+      pane.style.display = 'block';
+      setTimeout(() => pane.classList.add('active'), 10);
+      btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+    }
+  </script>
   <div class="content" id="page-security">
     <div class="stats-grid">
       <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-server"></i></div><span class="stat-trend up">Healthy</span></div><div class="stat-value">99.8%</div><div class="stat-label">System Uptime</div></div>
@@ -3173,7 +3431,7 @@ const PAGES = {
   dashboard:'Dashboard',donations:'Donations',users:'Users',
   programmes:'Programmes',partners:'Partners',blog:'Blog & News',
   events:'Events',gallery:'Gallery',security:'Security',settings:'Settings',
-  profile:'My Profile',messages:'Messages'
+  profile:'My Profile',messages:'Messages', about:'About Page Builder'
 };
 
 function previewAvatar(input) {
@@ -3677,6 +3935,18 @@ document.addEventListener('click', () => {
 document.querySelectorAll('.tb-dropdown').forEach(dd => {
   dd.addEventListener('click', (e) => e.stopPropagation());
 });
+
+function removeImg(key, btn) {
+  if (confirm('Remove this image?')) {
+    const form = document.getElementById('saveAboutForm');
+    const h = document.createElement('input');
+    h.type = 'hidden';
+    h.name = 'remove_images[]';
+    h.value = key;
+    form.appendChild(h);
+    btn.parentElement.style.display = 'none';
+  }
+}
 
 // Resize handler
 window.addEventListener('resize', () => {
