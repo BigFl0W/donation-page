@@ -1146,47 +1146,70 @@ body{
 /* ═══════ DROPDOWNS ═══════ */
 .tb-dropdown-wrap { position: relative; }
 .tb-dropdown {
-  position: absolute; top: calc(100% + 12px); right: 0;
-  width: 320px; background: var(--white); border-radius: 14px;
-  border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+  position: absolute; top: calc(100% + 15px); right: 0;
+  width: 340px; background: var(--white); border-radius: 16px;
+  border: 1px solid var(--border); box-shadow: 0 15px 50px rgba(0,0,0,0.15);
   display: none; flex-direction: column; z-index: 1000;
-  animation: dropdownIn .2s ease; transform-origin: top right;
+  animation: dropdownIn .2s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: top right;
+}
+.tb-dropdown:before {
+  content: ''; position: absolute; top: -7px; right: 12px;
+  width: 14px; height: 14px; background: var(--white);
+  border-left: 1px solid var(--border); border-top: 1px solid var(--border);
+  transform: rotate(45deg); z-index: -1;
 }
 .tb-dropdown.filter-dropdown {
-  width: 160px;
-  top: calc(100% + 8px);
-  left: 0; right: auto;
-  transform-origin: top left;
-  overflow: hidden;
-  padding: 6px 0;
+  width: 180px; top: calc(100% + 10px); left: 0; right: auto;
+  transform-origin: top left; padding: 8px 0;
 }
+.tb-dropdown.filter-dropdown:before { left: 12px; right: auto; }
 .tb-dropdown.active { display: flex; }
-@keyframes dropdownIn { from { opacity: 0; transform: scale(0.95) translateY(-5px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes dropdownIn { 
+  from { opacity: 0; transform: scale(0.95) translateY(-10px); } 
+  to { opacity: 1; transform: scale(1) translateY(0); } 
+}
 
 .dd-header {
-  padding: 14px 18px; border-bottom: 1px solid var(--border);
+  padding: 18px 20px; border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface); border-radius: 16px 16px 0 0;
 }
-.dd-header h4 { font-size: 0.85rem; font-weight: 700; color: var(--dark); margin: 0; }
-.dd-body { max-height: 380px; overflow-y: auto; }
+.dd-header h4 { font-size: 0.9rem; font-weight: 800; color: var(--dark); margin: 0; letter-spacing: -0.2px; }
+.dd-badge { 
+  background: var(--brand); color: #fff; font-size: 0.65rem; font-weight: 700; 
+  padding: 3px 8px; border-radius: 99px; text-transform: uppercase; 
+}
+.dd-body { max-height: 420px; overflow-y: auto; padding: 6px 0; }
 .dd-item {
-  display: flex; gap: 12px; padding: 10px 18px; text-decoration: none;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-bottom: 1px solid var(--surface);
-  color: var(--dark); font-weight: 500; font-size: 0.85rem; align-items: center;
+  display: flex; gap: 14px; padding: 12px 20px; text-decoration: none;
+  transition: all 0.2s ease; border-bottom: 1px solid var(--surface);
+  color: var(--dark); font-size: 0.82rem; align-items: flex-start;
 }
 .dd-item:last-child { border-bottom: none; }
-.dd-item:hover { background: var(--brand-bg); color: var(--brand); padding-left: 24px; }
+.dd-item:hover { background: var(--surface); padding-left: 24px; }
 .dd-icon {
-  width: 36px; height: 36px; border-radius: 9px;
+  width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 0.85rem; background: var(--surface); color: var(--mid);
+  font-size: 0.95rem; background: var(--white); border: 1px solid var(--border);
+  color: var(--mid); transition: all 0.2s;
 }
+.dd-item:hover .dd-icon { background: var(--brand); color: #fff; border-color: var(--brand); transform: scale(1.05); }
 .dd-content { flex: 1; min-width: 0; }
-.dd-title { font-size: 0.82rem; font-weight: 700; color: var(--dark); margin-bottom: 2px; }
-.dd-text { font-size: 0.76rem; color: var(--soft); line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dd-time { font-size: 0.68rem; color: var(--muted); margin-top: 4px; }
-.dd-footer { padding: 12px; text-align: center; border-top: 1px solid var(--border); }
-.dd-footer a { font-size: 0.78rem; font-weight: 600; color: var(--brand); text-decoration: none; }
+.dd-title { font-size: 0.85rem; font-weight: 700; color: var(--dark); margin-bottom: 3px; line-height: 1.2; }
+.dd-text { font-size: 0.78rem; color: var(--mid); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.dd-time { font-size: 0.68rem; color: var(--muted); margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+.dd-time:before { content: '\f017'; font-family: 'Font Awesome 6 Free'; font-weight: 400; font-size: 0.65rem; }
+
+.dd-empty {
+  padding: 40px 20px; text-align: center; color: var(--muted);
+}
+.dd-empty i { font-size: 2.2rem; margin-bottom: 15px; opacity: 0.2; color: var(--brand); display: block; }
+.dd-empty span { display: block; font-size: 0.85rem; font-weight: 600; color: var(--mid); }
+.dd-empty p { font-size: 0.75rem; margin-top: 5px; opacity: 0.7; }
+
+.dd-footer { padding: 14px; text-align: center; border-top: 1px solid var(--border); background: var(--surface); border-radius: 0 0 16px 16px; }
+.dd-footer a { font-size: 0.82rem; font-weight: 700; color: var(--brand); text-decoration: none; transition: all 0.2s; }
+.dd-footer a:hover { letter-spacing: 0.3px; color: var(--brand-dark); }
 
 /* Profile Dropdown Specific */
 .dd-profile { width: 220px; }
@@ -2022,7 +2045,11 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
           </div>
           <div class="dd-body">
             <?php if (empty($recentNotifications)): ?>
-              <div class="p-4 text-center text-muted">No notifications yet</div>
+              <div class="dd-empty">
+                <i class="fas fa-bell-slash"></i>
+                <span>All caught up!</span>
+                <p>No new notifications at the moment.</p>
+              </div>
             <?php else: ?>
               <?php foreach ($recentNotifications as $n): ?>
                 <a href="<?php echo Helpers::e($n['link'] ?: '#'); ?>" class="dd-item">
@@ -2053,7 +2080,11 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
           </div>
           <div class="dd-body">
             <?php if (empty($recentMessages)): ?>
-              <div class="p-4 text-center text-muted">No messages yet</div>
+              <div class="dd-empty">
+                <i class="fas fa-comment-slash"></i>
+                <span>Inbox is empty</span>
+                <p>Wait for donors or partners to reach out.</p>
+              </div>
             <?php else: ?>
               <?php foreach ($recentMessages as $m): ?>
                 <a href="admin/index.php?page=messages&id=<?php echo $m['id']; ?>" class="dd-item">
