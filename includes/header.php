@@ -95,7 +95,7 @@ $section_url = $section_url ?? "gallery.php";
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="gallery.php">Photo &amp; Video Gallery</a></li>
                                     <li><a class="dropdown-item" href="partners-sponsors.php">Partners &amp; Sponsors</a></li>
-                                    <li><a class="dropdown-item" href="projects-programmes.php">Projects &amp; Programmes</a></li>
+                                    <li><a class="dropdown-item" href="causes.php">Causes &amp; Projects</a></li>
                                     <li><a class="dropdown-item" href="faqs.php">FAQs</a></li>
                                 </ul>
                             </li>

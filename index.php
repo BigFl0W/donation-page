@@ -1,7 +1,7 @@
 <?php
 require_once 'config/autoload.php';
 $totalDonations = \App\Payment::getTotalDonations();
-$recentCauses = \App\Database::fetchAll("SELECT * FROM programmes WHERE status = 'published' ORDER BY created_at DESC LIMIT 6");
+$recentCauses = \App\Database::fetchAll("SELECT * FROM programmes WHERE status = 'published' ORDER BY created_at DESC LIMIT 4");
 ?>
 <!doctype html>
 <html lang="en">
@@ -517,7 +517,7 @@ $recentCauses = \App\Database::fetchAll("SELECT * FROM programmes WHERE status =
                         </h1>
                     </div>
                     <div class="col-lg-8 col-md-6 text-md-end btn-team">
-                        <a href="causes.php" class="btn btn-outline-dark">View All Causes</a>
+                        <a href="causes-projects" class="btn btn-outline-dark">View All Causes</a>
                     </div>
                 </div>
 

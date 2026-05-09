@@ -42,7 +42,7 @@ RewriteRule ^volunteer/([a-zA-Z0-9-]+)/?$                        volunteers-sing
 RewriteRule ^become-volunteers/?$                                 become-volunteers.php [L,QSA]
 
 # Programmes & Partners
-RewriteRule ^projects-programmes/?$                               projects-programmes.php [L,QSA]
+RewriteRule ^causes-projects/?$                                  causes.php [L,QSA]
 RewriteRule ^cause/([a-zA-Z0-9-]+)/?$                            causes-single.php?slug=$1 [L,QSA]
 RewriteRule ^partners-sponsors/?$                                 partners-sponsors.php [L,QSA]
 
