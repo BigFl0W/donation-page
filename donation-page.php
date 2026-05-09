@@ -162,7 +162,7 @@
                                 <h3 class="h3-sm fw-5 txt-blue mb-3">Select Your Donation Amount</h3>
 
                                 <div class="row">
-                                    <div class="col-md-8">
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input form-light" type="radio" name="amount_radio" id="amount1" value="10000" checked>
@@ -193,13 +193,8 @@
                                             </div>
                                             <input type="hidden" name="amount" id="final_amount" value="10000">
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="paystack-footer h-100 d-flex flex-column justify-content-center text-center">
-                                            <div class="mb-2">
-                                                <img src="https://paystack.com/assets/img/v3/logo-blue.svg" alt="Paystack" style="max-width: 100px; cursor: default">
-                                            </div>
-                                            <div class="d-flex align-items-center gap-2 justify-content-center text-nowrap">
+                                        <div class="paystack-footer mt-2 mb-4 text-start">
+                                            <div class="d-flex align-items-center gap-2">
                                                 <i class="icofont-lock text-muted small"></i>
                                                 <span class="text-muted" style="font-size: 12px;">Secured by Paystack. Cards, Transfer & USSD supported.</span>
                                             </div>
