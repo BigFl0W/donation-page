@@ -84,9 +84,9 @@ $isVideo = in_array($ext, ['mp4', 'webm', 'ogg', 'mov']);
                             <span class="fw-bold text-primary">Raised: ₦<?php echo number_format($raised); ?></span>
                             <span class="text-muted">Goal: ₦<?php echo number_format($goal); ?></span>
                         </div>
-                        <div class="progress" style="height: 8px; border-radius: 4px; background-color: #f0f0f0;">
+                        <div class="progress" style="height: 10px; border-radius: 20px; background-color: #ebebeb; overflow: hidden; border: 1px solid #e0e0e0;">
                             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" 
-                                 style="width: <?php echo $percent; ?>%; background-color: var(--brand);" 
+                                 style="width: <?php echo $percent; ?>%; background-color: var(--primary-color, #D59B2D) !important; transition: width 1.5s ease-in-out;" 
                                  aria-valuenow="<?php echo $percent; ?>" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                         <div class="mt-2 text-end">
@@ -96,39 +96,52 @@ $isVideo = in_array($ext, ['mp4', 'webm', 'ogg', 'mov']);
                     
                     <!-- Donation Form -->
                     <div class="donation-form-wrap">
-                        <h5 class="mb-3 fw-bold text-dark" style="font-size: 1.1rem;">Make a Donation</h5>
-                        
-                        <div class="mb-3">
-                            <label class="form-label small text-muted mb-2">Select or Enter Amount (₦)</label>
-                            <div class="d-flex flex-wrap gap-2 mb-3">
-                                <button class="btn btn-outline-secondary btn-sm preset-amount flex-fill py-2" data-amount="1000" style="font-size: 0.75rem; border-radius: 8px;">₦1,000</button>
-                                <button class="btn btn-outline-secondary btn-sm preset-amount flex-fill py-2" data-amount="5000" style="font-size: 0.75rem; border-radius: 8px;">₦5,000</button>
-                                <button class="btn btn-outline-secondary btn-sm preset-amount flex-fill py-2" data-amount="10000" style="font-size: 0.75rem; border-radius: 8px;">₦10,000</button>
+                        <?php if ($raised >= $goal): ?>
+                            <div class="goal-achieved-box text-center p-4 rounded-3 shadow-sm" style="background-color: #e8f5e9; border: 1px solid #c8e6c9;">
+                                <div class="mb-3">
+                                    <i class="icofont-check-circled text-success" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="fw-bold text-success mb-2">Goal Achieved!</h5>
+                                <p class="text-muted small mb-0">This project is fully funded. Thank you to everyone who contributed!</p>
+                                <div class="mt-4">
+                                    <a href="causes.php" class="btn btn-outline-success btn-sm px-4 rounded-pill">Explore Other Causes</a>
+                                </div>
                             </div>
-                            <div class="input-group mb-3 border rounded-3 overflow-hidden shadow-sm">
-                                <span class="input-group-text border-0 bg-light fw-bold" style="font-size: 0.85rem;">₦</span>
-                                <input type="number" id="donation_amount" class="form-control border-0" placeholder="Custom Amount" style="font-size: 0.9rem; padding: 12px;">
+                        <?php else: ?>
+                            <h5 class="mb-3 fw-bold text-dark" style="font-size: 1.1rem;">Make a Donation</h5>
+                            
+                            <div class="mb-3">
+                                <label class="form-label small text-muted mb-2">Select or Enter Amount (₦)</label>
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <button class="btn btn-outline-secondary btn-sm preset-amount flex-fill py-2" data-amount="1000" style="font-size: 0.75rem; border-radius: 8px;">₦1,000</button>
+                                    <button class="btn btn-outline-secondary btn-sm preset-amount flex-fill py-2" data-amount="5000" style="font-size: 0.75rem; border-radius: 8px;">₦5,000</button>
+                                    <button class="btn btn-outline-secondary btn-sm preset-amount flex-fill py-2" data-amount="10000" style="font-size: 0.75rem; border-radius: 8px;">₦10,000</button>
+                                </div>
+                                <div class="input-group mb-3 border rounded-3 overflow-hidden shadow-sm">
+                                    <span class="input-group-text border-0 bg-light fw-bold" style="font-size: 0.85rem;">₦</span>
+                                    <input type="number" id="donation_amount" class="form-control border-0" placeholder="Custom Amount" style="font-size: 0.9rem; padding: 12px;">
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label class="form-label small text-muted mb-2">Your Email Address</label>
-                            <div class="input-group border rounded-3 overflow-hidden shadow-sm">
-                                <span class="input-group-text border-0 bg-light"><i class="icofont-envelope text-muted"></i></span>
-                                <input type="email" id="donor_email" class="form-control border-0" placeholder="email@example.com" style="font-size: 0.9rem; padding: 12px;">
+                            
+                            <div class="mb-4">
+                                <label class="form-label small text-muted mb-2">Your Email Address</label>
+                                <div class="input-group border rounded-3 overflow-hidden shadow-sm">
+                                    <span class="input-group-text border-0 bg-light"><i class="icofont-envelope text-muted"></i></span>
+                                    <input type="email" id="donor_email" class="form-control border-0" placeholder="email@example.com" style="font-size: 0.9rem; padding: 12px;">
+                                </div>
                             </div>
-                        </div>
-                        
-                        <button class="btn btn-primary w-100 py-3 fw-bold shadow-sm" id="pay_button" style="border-radius: 12px; font-size: 1rem; transition: all 0.3s ease;">
-                            <i class="icofont-heart me-2"></i>Donate Now
-                        </button>
-                        
-                        <div class="text-center mt-4">
-                            <div class="d-flex align-items-center justify-content-center gap-2 text-muted" style="font-size: 0.7rem; opacity: 0.8;">
-                                <i class="icofont-shield-alt fs-6"></i>
-                                <span>Secured by <strong>Paystack</strong> Payment Gateway</span>
+                            
+                            <button class="btn btn-primary w-100 py-3 fw-bold shadow-sm" id="pay_button" style="border-radius: 12px; font-size: 1rem; transition: all 0.3s ease;">
+                                <i class="icofont-heart me-2"></i>Donate Now
+                            </button>
+                            
+                            <div class="text-center mt-4">
+                                <div class="d-flex align-items-center justify-content-center gap-2 text-muted" style="font-size: 0.7rem; opacity: 0.8;">
+                                    <i class="icofont-shield-alt fs-6"></i>
+                                    <span>Secured by <strong>Paystack</strong> Payment Gateway</span>
+                                </div>
                             </div>
-                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -166,23 +179,24 @@ document.querySelectorAll('.preset-amount').forEach(btn => {
     };
 });
 
-document.getElementById('pay_button').onclick = function(e) {
-    e.preventDefault();
-    const amount = document.getElementById('donation_amount').value;
-    const email = document.getElementById('donor_email').value;
-    
-    if (!amount || amount < 100) {
-        alert('Please enter a valid amount (minimum ₦100)');
-        return;
-    }
-    if (!email) {
-        alert('Please enter your email');
-        return;
-    }
+const payBtn = document.getElementById('pay_button');
+if (payBtn) {
+    payBtn.onclick = function(e) {
+        e.preventDefault();
+        const amount = document.getElementById('donation_amount').value;
+        const email = document.getElementById('donor_email').value;
+        
+        if (!amount || amount < 100) {
+            alert('Please enter a valid amount (minimum ₦100)');
+            return;
+        }
+        if (!email) {
+            alert('Please enter your email');
+            return;
+        }
 
-    // Paystack integration logic will go here
-    // For now, I'll show how to trigger the payment
-    const handler = PaystackPop.setup({
+        // Paystack integration
+        const handler = PaystackPop.setup({
         key: '<?php echo $_ENV['PAYSTACK_PUBLIC_KEY'] ?? ''; ?>',
         email: email,
         amount: amount * 100, // Amount in kobo
@@ -223,7 +237,8 @@ document.getElementById('pay_button').onclick = function(e) {
         }
     });
     handler.openIframe();
-};
+    };
+}
 </script>
 
 <?php require_once 'includes/footer.php'; ?>
