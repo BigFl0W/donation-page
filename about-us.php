@@ -19,7 +19,7 @@ $heroTitleHtml = nl2br(strip_tags((string)($settings['about_hero_title'] ?? 'Bui
 include "includes/header.php"; 
 ?>
 <!-- Premium About Us CSS -->
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Cormorant+Garamond:wght@500;600;700&family=Alegreya+Sans+SC:wght@500;700&display=swap" rel="stylesheet">
 <style>
     :root {
         --about-gold: var(--primary-color);
@@ -91,9 +91,9 @@ include "includes/header.php";
         letter-spacing: 0.5px;
     }
     .stat-box p {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 1.15rem; color: rgba(255,247,227,0.96); font-weight: 600;
-        text-transform: none; letter-spacing: 0.8px; margin: 0;
+        font-family: 'Alegreya Sans SC', sans-serif;
+        font-size: 1rem; color: rgba(255,247,227,0.96); font-weight: 700;
+        text-transform: none; letter-spacing: 1.6px; margin: 0;
     }
 
     /* ══════ STORY SECTION ══════ */
