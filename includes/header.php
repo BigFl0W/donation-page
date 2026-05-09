@@ -20,12 +20,9 @@ $section_url = $section_url ?? "gallery.php";
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="<?php echo htmlspecialchars(\App\Helpers::siteUrl()); ?>/">
     <title><?php echo htmlspecialchars($page_title); ?></title>
     <meta name="author" content="<?php echo htmlspecialchars($brand_name); ?>">
-    <meta name="description" content="<?php echo htmlspecialchars($page_description); ?>">
-    <?php if ($meta_keywords !== ""): ?>
-        <meta name="keywords" content="<?php echo htmlspecialchars($meta_keywords); ?>">
-    <?php endif; ?>
     <link rel="canonical" href="<?php echo htmlspecialchars($canonical_url); ?>">
     <meta property="og:type" content="website">
     <meta property="og:title" content="<?php echo htmlspecialchars($page_title); ?>">

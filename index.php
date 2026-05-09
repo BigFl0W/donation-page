@@ -536,7 +536,7 @@ $recentCauses = \App\Database::fetchAll("SELECT * FROM programmes WHERE status =
                             <div class="item">
                                 <div class="causes-wrap">
                                     <div class="img-wrap">
-                                        <a href="causes-single.php?id=<?php echo $cause['id']; ?>">
+                                        <a href="cause/<?php echo !empty($cause['slug']) ? $cause['slug'] : $cause['id']; ?>">
                                             <?php if ($isVideo): ?>
                                                 <video src="<?php echo htmlspecialchars($image); ?>" autoplay loop muted playsinline style="width: 100%; height: 250px; object-fit: cover; border-radius: 6px 6px 0 0;"></video>
                                             <?php else: ?>
@@ -558,10 +558,10 @@ $recentCauses = \App\Database::fetchAll("SELECT * FROM programmes WHERE status =
 
                                     <div class="content-wrap">
                                         <span class="tag"><?php echo htmlspecialchars($cause['category'] ?? 'General'); ?></span>
-                                        <h3><a href="causes-single.php?id=<?php echo $cause['id']; ?>"><?php echo htmlspecialchars($cause['title']); ?></a></h3>
+                                        <h3><a href="cause/<?php echo !empty($cause['slug']) ? $cause['slug'] : $cause['id']; ?>"><?php echo htmlspecialchars($cause['title']); ?></a></h3>
                                         <p><?php echo htmlspecialchars(substr($cause['summary'] ?? '', 0, 100)); ?><?php if(strlen($cause['summary'] ?? '') > 100) echo '...'; ?></p>
                                         <div class="btn-wrap">
-                                            <a class="btn-primary btn" href="causes-single.php?id=<?php echo $cause['id']; ?>">Donate Now</a>
+                                            <a class="btn-primary btn" href="cause/<?php echo !empty($cause['slug']) ? $cause['slug'] : $cause['id']; ?>">Donate Now</a>
                                         </div>
                                     </div>
                                 </div>

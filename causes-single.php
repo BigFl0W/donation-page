@@ -1,16 +1,32 @@
 <?php
 require_once 'config/autoload.php';
 
-$id = (int)($_GET['id'] ?? 0);
-$cause = \App\Database::fetchOne("SELECT * FROM programmes WHERE id = :id AND status != 'draft'", ['id' => $id]);
+$id = $_GET['id'] ?? '';
+$slug = $_GET['slug'] ?? '';
+
+if (!empty($slug)) {
+    $cause = \App\Database::fetchOne("SELECT * FROM programmes WHERE slug = :slug AND status != 'draft'", ['slug' => $slug]);
+} elseif (!empty($id)) {
+    $cause = \App\Database::fetchOne("SELECT * FROM programmes WHERE id = :id AND status != 'draft'", ['id' => (int)$id]);
+} else {
+    $cause = null;
+}
 
 if (!$cause) {
     header("Location: index.php");
     exit;
 }
 
+// Redirect to pretty URL if accessed via ID or direct PHP filename
+$current_uri = $_SERVER['REQUEST_URI'];
+$pretty_url = "cause/" . ($cause['slug'] ?: $cause['id']);
+if (!empty($id) || strpos($current_uri, 'causes-single.php') !== false) {
+    header("Location: " . \App\Helpers::siteUrl($pretty_url), true, 301);
+    exit;
+}
+
 $page_title = $cause['title'];
-$breadcrumb_title = "Cause Details";
+$breadcrumb_title = $cause['title'];
 $hero_title = $cause['title'];
 $section_title = "Causes & Projects";
 $section_url = "causes.php";
@@ -173,7 +189,7 @@ document.getElementById('pay_button').onclick = function(e) {
         currency: 'NGN',
         ref: 'DON_' + Math.floor((Math.random() * 1000000000) + 1),
         metadata: {
-            cause_id: <?php echo $id; ?>,
+            cause_id: <?php echo $cause['id']; ?>,
             custom_fields: [
                 {
                     display_name: "Cause",
@@ -190,7 +206,7 @@ document.getElementById('pay_button').onclick = function(e) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     reference: response.reference,
-                    cause_id: <?php echo $id; ?>,
+                    cause_id: <?php echo $cause['id']; ?>,
                     amount: amount
                 })
             }).then(res => res.json()).then(data => {
