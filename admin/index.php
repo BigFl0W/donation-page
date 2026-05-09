@@ -232,6 +232,82 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         if ($id > 0) { Database::execute("DELETE FROM posts WHERE id=:id", ["id" => $id]); $flashMsg = "Post deleted"; $flashType = "success"; }
     }
 
+    if ($action === "create_programme") {
+        $title = trim((string) ($_POST["title"] ?? ""));
+        $slug = Helpers::slugify($title);
+        $category = (string) ($_POST["category"] ?? "General");
+        $summary = (string) ($_POST["summary"] ?? "");
+        $content = (string) ($_POST["content"] ?? "");
+        $goalAmount = (float) ($_POST["goal_amount"] ?? 0);
+        $raisedAmount = (float) ($_POST["raised_amount"] ?? 0);
+        $status = (string) ($_POST["status"] ?? "draft");
+
+        $featuredImage = "";
+        if (isset($_FILES["featured_image"]) && $_FILES["featured_image"]["error"] === UPLOAD_ERR_OK) {
+            $name = time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($_FILES["featured_image"]["name"]));
+            $dest = __DIR__ . "/../assets/images/causes/" . $name;
+            if (!is_dir(dirname($dest))) mkdir(dirname($dest), 0777, true);
+            if (move_uploaded_file($_FILES["featured_image"]["tmp_name"], $dest)) {
+                $featuredImage = "assets/images/causes/" . $name;
+            }
+        }
+
+        if ($title !== "") {
+            $exists = Database::fetchOne("SELECT id FROM programmes WHERE slug = :slug", ["slug" => $slug]);
+            if (!$exists) {
+                Database::execute(
+                    "INSERT INTO programmes (title,slug,category,summary,content,featured_image,goal_amount,raised_amount,status,created_at)
+                     VALUES (:title,:slug,:category,:summary,:content,:featured_image,:goal,:raised,:status,NOW())",
+                    ["title" => $title, "slug" => $slug, "category" => $category, "summary" => $summary, 
+                     "content" => $content, "featured_image" => $featuredImage, "goal" => $goalAmount, "raised" => $raisedAmount, "status" => $status]
+                );
+                $flashMsg = "Cause created successfully"; $flashType = "success";
+            } else { $flashMsg = "A cause with this title already exists"; $flashType = "danger"; }
+        } else { $flashMsg = "Title is required"; $flashType = "danger"; }
+    }
+
+    if ($action === "update_programme") {
+        $id = (int) ($_POST["id"] ?? 0);
+        $title = trim((string) ($_POST["title"] ?? ""));
+        $slug = Helpers::slugify($title);
+        $category = (string) ($_POST["category"] ?? "General");
+        $summary = (string) ($_POST["summary"] ?? "");
+        $content = (string) ($_POST["content"] ?? "");
+        $goalAmount = (float) ($_POST["goal_amount"] ?? 0);
+        $raisedAmount = (float) ($_POST["raised_amount"] ?? 0);
+        $status = (string) ($_POST["status"] ?? "draft");
+
+        $featuredImage = "";
+        if (isset($_FILES["featured_image"]) && $_FILES["featured_image"]["error"] === UPLOAD_ERR_OK) {
+            $name = time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($_FILES["featured_image"]["name"]));
+            $dest = __DIR__ . "/../assets/images/causes/" . $name;
+            if (!is_dir(dirname($dest))) mkdir(dirname($dest), 0777, true);
+            if (move_uploaded_file($_FILES["featured_image"]["tmp_name"], $dest)) {
+                $featuredImage = "assets/images/causes/" . $name;
+            }
+        }
+
+        if ($title !== "" && $id > 0) {
+            if ($featuredImage === "") {
+                $existing = Database::fetchOne("SELECT featured_image FROM programmes WHERE id = :id", ["id" => $id]);
+                if ($existing) $featuredImage = $existing["featured_image"];
+            }
+            Database::execute(
+                "UPDATE programmes SET title=:title,slug=:slug,category=:category,summary=:summary,
+                 content=:content,featured_image=:featured_image,goal_amount=:goal,raised_amount=:raised,status=:status
+                 WHERE id=:id",
+                ["title" => $title, "slug" => $slug, "category" => $category, "summary" => $summary, 
+                 "content" => $content, "featured_image" => $featuredImage, "goal" => $goalAmount, "raised" => $raisedAmount, "status" => $status, "id" => $id]
+            );
+            $flashMsg = "Cause updated successfully"; $flashType = "success";
+        } else { $flashMsg = "Invalid request"; $flashType = "danger"; }
+    }
+
+    if ($action === "delete_programme") {
+        $id = (int) ($_POST["id"] ?? 0);
+        if ($id > 0) { Database::execute("DELETE FROM programmes WHERE id=:id", ["id" => $id]); $flashMsg = "Cause deleted"; $flashType = "success"; }
+    }
+
     if ($action === "create_event") {
         $title = trim((string) ($_POST["title"] ?? ""));
         $slug = Helpers::slugify($title);
@@ -681,6 +757,8 @@ if ($dbAvail && isset($_GET["ajax"]) && $_GET["ajax"] === "get_item") {
         } elseif ($type === "admin") {
             $row = Database::fetchOne("SELECT a.id, a.full_name, a.email, a.status, r.name AS role FROM admins a LEFT JOIN roles r ON r.id=a.role_id WHERE a.id = :id", ["id" => $id]);
             if ($row) $item = $row;
+        } elseif ($type === "programme") {
+            $item = Database::fetchOne("SELECT * FROM programmes WHERE id = :id", ["id" => $id]);
         }
     }
     echo json_encode($item);
@@ -1353,15 +1431,34 @@ body{
 @media(max-width:599px){.campaign-grid{grid-template-columns:1fr}}
 
 .campaign-card{
-  border:1px solid var(--border);border-radius:11px;padding:16px;
-  transition:box-shadow .2s;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
-.campaign-card:hover{box-shadow:var(--shadow-md)}
-.cmp-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-.cmp-name{font-size:.84rem;font-weight:700;color:var(--dark)}
-.cmp-date{font-size:.7rem;color:var(--muted);margin-top:2px}
-.cmp-nums{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted);margin-bottom:5px}
-.cmp-pct{font-size:.71rem;font-weight:700;margin-top:4px}
+.campaign-card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+.cmp-media-wrap{
+  height: 140px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  border: 1px solid var(--border);
+}
+.cmp-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.cmp-name{font-size:0.95rem;font-weight:700;color:var(--dark);line-height:1.4}
+.cmp-date{font-size:0.75rem;color:var(--muted);margin-top:3px}
+.cmp-info-row{display:flex; gap:10px; margin-bottom:10px; font-size:0.8rem;}
+.cmp-progress-bar{height:6px; background:#eee; border-radius:3px; margin:8px 0; overflow:hidden;}
+.cmp-progress-fill{height:100%; background:var(--brand); transition: width 0.5s ease;}
+.cmp-footer{display:flex; gap:10px; margin-top:auto; padding-top:15px; border-top:1px solid #f0f0f0;}
+
 
 /* ═══════ PARTNERS ═══════ */
 .partners-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -1783,7 +1880,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     </div>
     <div class="nav-item" onclick="showPage('programmes',this)">
       <i class="fas fa-seedling nav-icon"></i>
-      <span class="nav-text">Programmes</span>
+      <span class="nav-text">Causes & Projects</span>
       <span class="nav-badge amber"><?php echo Helpers::e((string)$publishedProgrammes); ?></span>
     </div>
     <div class="nav-item" onclick="showPage('partners',this)">
@@ -1967,8 +2064,8 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
           <span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i><?php echo Helpers::e($publishedProgrammes); ?> active</span>
         </div>
         <div class="stat-value"><?php echo Helpers::e($publishedProgrammes); ?></div>
-        <div class="stat-label">Active Programmes</div>
-        <div class="stat-sub"><i class="far fa-clock" style="margin-right:4px"></i>Published programmes</div>
+        <div class="stat-label">Active Causes</div>
+        <div class="stat-sub"><i class="far fa-clock" style="margin-right:4px"></i>Published causes</div>
       </div>
       <div class="stat-card t5">
         <div class="stat-top">
@@ -2347,44 +2444,83 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
   </div>
 
   <!-- ════════════════════════════════════════════
-       PROGRAMMES
+       CAUSES & PROJECTS
   ════════════════════════════════════════════ -->
   <div class="content" id="page-programmes">
     <?php
-    $programmes = $dbAvail ? (Database::fetchAll("SELECT title,category,summary,status,start_date,end_date FROM programmes ORDER BY created_at DESC LIMIT 12") ?: []) : [];
+    $programmes = $dbAvail ? (Database::fetchAll("SELECT id,title,category,summary,status,featured_image,goal_amount,raised_amount,start_date,end_date FROM programmes ORDER BY created_at DESC LIMIT 12") ?: []) : [];
     $programmesPublished = count(array_filter($programmes, fn($p) => ($p["status"] ?? "") === "published"));
     $programmesCompleted = count(array_filter($programmes, fn($p) => ($p["status"] ?? "") === "completed"));
     ?>
     <div class="stats-grid">
-      <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-seedling"></i></div><span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i>Running</span></div><div class="stat-value"><?php echo Helpers::e($programmesPublished); ?></div><div class="stat-label">Active Programmes</div></div>
+      <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-seedling"></i></div><span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i>Running</span></div><div class="stat-value"><?php echo Helpers::e($programmesPublished); ?></div><div class="stat-label">Active Causes</div></div>
       <div class="stat-card t4"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-check-circle"></i></div><span class="stat-trend up">Completed</span></div><div class="stat-value"><?php echo Helpers::e($programmesCompleted); ?></div><div class="stat-label">Completed</div></div>
-      <div class="stat-card t2"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-list"></i></div><span class="stat-trend neutral">All</span></div><div class="stat-value"><?php echo Helpers::e(count($programmes)); ?></div><div class="stat-label">Total Programmes</div></div>
+      <div class="stat-card t2"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-list"></i></div><span class="stat-trend neutral">All</span></div><div class="stat-value"><?php echo Helpers::e(count($programmes)); ?></div><div class="stat-label">Total Causes</div></div>
       <div class="stat-card t3"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-hourglass"></i></div><span class="stat-trend neutral">Draft</span></div><div class="stat-value"><?php echo Helpers::e(max(0, count($programmes) - $programmesPublished - $programmesCompleted)); ?></div><div class="stat-label">In Draft</div></div>
     </div>
     <div class="card">
       <div class="section-hd">
-        <div><h2>All Programmes</h2><p>Projects and initiatives managed by the organization</p></div>
-        <button class="btn-primary"><i class="fas fa-plus"></i> New Programme</button>
+        <div><h2>All Causes & Projects</h2><p>Fundraising causes and projects managed by the organization</p></div>
+        <button class="btn-primary" onclick="openModal('programme')"><i class="fas fa-plus"></i> New Cause</button>
       </div>
       <?php if ($programmes): ?>
       <div class="campaign-grid">
         <?php foreach ($programmes as $p): ?>
-        <?php $pStatus = strtolower((string)($p["status"] ?? "draft")); ?>
+        <?php 
+          $pStatus = strtolower((string)($p["status"] ?? "draft")); 
+          $media = $p["featured_image"] ?: "";
+          $ext = strtolower(pathinfo($media, PATHINFO_EXTENSION));
+          $isVid = in_array($ext, ['mp4', 'webm', 'ogg', 'mov']);
+          $goal = (float)($p["goal_amount"] ?? 0);
+          $raised = (float)($p["raised_amount"] ?? 0);
+          $pct = $goal > 0 ? min(100, round(($raised / $goal) * 100)) : 0;
+        ?>
         <div class="campaign-card">
+          <div class="cmp-media-wrap">
+            <?php if ($media): ?>
+              <?php if ($isVid): ?>
+                <video src="../<?php echo Helpers::e($media); ?>" muted style="width:100%; height:100%; object-fit:cover;"></video>
+              <?php else: ?>
+                <img src="../<?php echo Helpers::e($media); ?>" style="width:100%; height:100%; object-fit:cover;">
+              <?php endif; ?>
+            <?php else: ?>
+              <div style="display:flex; align-items:center; justify-content:center; height:100%; color:var(--muted);"><i class="fas fa-image fa-2x"></i></div>
+            <?php endif; ?>
+          </div>
           <div class="cmp-top">
-            <div>
+            <div style="flex:1; margin-right:10px;">
               <div class="cmp-name"><?php echo Helpers::e($p["title"] ?? "Untitled"); ?></div>
-              <div class="cmp-date"><i class="far fa-calendar" style="margin-right:3px"></i><?php echo Helpers::e($p["start_date"] ? date("M j, Y", strtotime($p["start_date"])) : "TBD"); ?></div>
+              <div class="cmp-date"><?php echo Helpers::e($p["category"] ?? "General"); ?> • <?php echo Helpers::e($p["start_date"] ? date("M j, Y", strtotime($p["start_date"])) : "TBD"); ?></div>
             </div>
             <span class="badge <?php echo Helpers::e($pStatus === "published" ? "success" : ($pStatus === "completed" ? "info" : ($pStatus === "draft" ? "warning" : "neutral"))); ?>"><?php echo Helpers::e(ucfirst($pStatus)); ?></span>
           </div>
-          <?php if ($p["category"]): ?><div style="font-size:.72rem;color:var(--muted);margin-bottom:6px"><?php echo Helpers::e($p["category"]); ?></div><?php endif; ?>
-            <?php if ($p["summary"]): ?><div style="font-size:.75rem;color:var(--muted);line-height:1.5"><?php echo Helpers::e(substr($p["summary"], 0, 100)); ?><?php if (strlen($p["summary"] ?? "") > 100): ?>…<?php endif; ?></div><?php endif; ?>
+          
+          <div class="cmp-nums">
+            <span>₦<?php echo number_format($raised); ?></span>
+            <span><?php echo $pct; ?>%</span>
+          </div>
+          <div class="cmp-progress-bar">
+            <div class="cmp-progress-fill" style="width:<?php echo $pct; ?>%"></div>
+          </div>
+          <div style="font-size:0.75rem; color:var(--muted); text-align:right; margin-bottom:12px;">Goal: ₦<?php echo number_format($goal); ?></div>
+
+          <?php if ($p["summary"]): ?>
+            <div style="font-size:.78rem; color:var(--muted); line-height:1.5; margin-bottom:15px;"><?php echo Helpers::e(substr($p["summary"], 0, 85)); ?>...</div>
+          <?php endif; ?>
+
+          <div class="cmp-footer">
+            <button class="btn-secondary" style="padding:6px 14px; font-size:0.78rem;" onclick="openModal('programme', <?php echo $p['id']; ?>)"><i class="fas fa-edit"></i> Edit</button>
+            <form method="post" style="display:inline" onsubmit="return confirm('Delete this cause?');">
+               <input type="hidden" name="_action" value="delete_programme">
+               <input type="hidden" name="id" value="<?php echo $p['id']; ?>">
+               <button class="btn-secondary" style="padding:6px 14px; font-size:0.78rem; color:var(--rose);" type="submit"><i class="fas fa-trash"></i></button>
+            </form>
+          </div>
         </div>
         <?php endforeach; ?>
       </div>
       <?php else: ?>
-      <div class="empty-state"><i class="fas fa-seedling"></i><p>No programmes created yet</p><div class="sub">Create your first programme to start tracking projects</div></div>
+      <div class="empty-state"><i class="fas fa-seedling"></i><p>No causes created yet</p><div class="sub">Create your first cause to start tracking fundraising goals</div></div>
       <?php endif; ?>
     </div>
   </div>
@@ -2836,7 +2972,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <button class="modal-close" onclick="closeModal()"><i class="fas fa-xmark"></i></button>
     </div>
     <div class="spinner hidden" id="modalSpinner"><i class="fas fa-circle-notch fa-spin"></i><span>Loading data…</span></div>
-    <form method="post" id="modalForm">
+    <form method="post" id="modalForm" enctype="multipart/form-data">
       <div class="modal-body" id="modalBody">
       </div>
       <div class="modal-footer">
@@ -2984,6 +3120,22 @@ const MODAL_FORMS = {
       {name:'content',label:'Content',type:'textarea',placeholder:'Write your post content here…',rows:8},
     ]
   },
+  programme: {
+    title: 'Cause',
+    action: 'create_programme',
+    fields: [
+      {name:'_action',type:'hidden'},
+      {name:'id',type:'hidden'},
+      {name:'title',label:'Cause Title',type:'text',required:true,placeholder:'E.g., Save the Oceans'},
+      {name:'category',label:'Category',type:'select',options:['Education','Health','Environment','Poverty','General']},
+      {name:'featured_image',label:'Featured Media (Image/Video)',type:'file'},
+      {name:'goal_amount',label:'Goal Amount (₦)',type:'number',placeholder:'e.g. 50000'},
+      {name:'raised_amount',label:'Raised Amount (₦)',type:'number',placeholder:'e.g. 1000'},
+      {name:'status',label:'Status',type:'select',options:['draft','published','completed']},
+      {name:'summary',label:'Short Summary',type:'textarea',placeholder:'Brief overview of the cause...',rows:3},
+      {name:'content',label:'Full Description',type:'textarea',placeholder:'Detailed explanation...',rows:6},
+    ]
+  },
   event: {
     title: 'Event',
     action: 'create_event',
@@ -3120,6 +3272,8 @@ function fetchModalData(type, id) {
         if (el.type === 'datetime-local') {
           const d = value.replace(' ', 'T');
           el.value = d.substring(0, 16);
+        } else if (el.type === 'file') {
+          // Cannot set file input value, maybe show a label?
         } else {
           el.value = value;
         }

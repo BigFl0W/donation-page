@@ -1,6 +1,7 @@
 <?php
 require_once 'config/autoload.php';
 $totalDonations = \App\Payment::getTotalDonations();
+$recentCauses = \App\Database::fetchAll("SELECT * FROM programmes WHERE status = 'published' ORDER BY created_at DESC LIMIT 6");
 ?>
 <!doctype html>
 <html lang="en">
@@ -516,196 +517,62 @@ $totalDonations = \App\Payment::getTotalDonations();
                         </h1>
                     </div>
                     <div class="col-lg-8 col-md-6 text-md-end btn-team">
-                        <a href="causes-list.php" class="btn btn-outline-dark">View All Causes</a>
+                        <a href="causes.php" class="btn btn-outline-dark">View All Causes</a>
                     </div>
                 </div>
 
                 <div class="owl-carousel owl-theme" id="home-second-causes">
-                        
-                    <!-- Causes Wrap -->
-                    <div class="item">
-                        <div class="causes-wrap">
-                            <div class="img-wrap">
-                                <a href="causes-single.php"><img src="assets/images/causes/causes_img_1.jpg" alt=""></a>
-                                <div class="raised-progress">
-                                    <div class="skillbar-wrap">
-                                        <div class="clearfix">
-                                            ₦ 10,086 raised of ₦ 15,000
+                    <?php if (!empty($recentCauses)): ?>
+                        <?php foreach ($recentCauses as $cause): ?>
+                            <?php 
+                                $goal = (float)$cause['goal_amount'] > 0 ? (float)$cause['goal_amount'] : 1;
+                                $raised = (float)$cause['raised_amount'];
+                                $percent = min(100, round(($raised / $goal) * 100));
+                                $image = !empty($cause['featured_image']) ? $cause['featured_image'] : 'assets/images/causes/causes_img_1.jpg';
+                                $ext = strtolower(pathinfo($image, PATHINFO_EXTENSION));
+                                $isVideo = in_array($ext, ['mp4', 'webm', 'ogg', 'mov']);
+                            ?>
+                            <!-- Causes Wrap -->
+                            <div class="item">
+                                <div class="causes-wrap">
+                                    <div class="img-wrap">
+                                        <a href="causes-single.php?id=<?php echo $cause['id']; ?>">
+                                            <?php if ($isVideo): ?>
+                                                <video src="<?php echo htmlspecialchars($image); ?>" autoplay loop muted playsinline style="width: 100%; height: 250px; object-fit: cover; border-radius: 6px 6px 0 0;"></video>
+                                            <?php else: ?>
+                                                <img src="<?php echo htmlspecialchars($image); ?>" alt="" style="width: 100%; height: 250px; object-fit: cover; border-radius: 6px 6px 0 0;">
+                                            <?php endif; ?>
+                                        </a>
+                                        <div class="raised-progress">
+                                            <div class="skillbar-wrap">
+                                                <div class="clearfix">
+                                                    ₦<?php echo number_format($raised); ?> raised of ₦<?php echo number_format($goal); ?>
+                                                </div>
+                                                <div class="skillbar" data-percent="<?php echo $percent; ?>%">
+                                                    <div class="skillbar-percent"><?php echo $percent; ?>%</div>
+                                                    <div class="skillbar-bar"></div>
+                                                </div>             
+                                            </div>
                                         </div>
-                                        <div class="skillbar" data-percent="67%">
-                                            <div class="skillbar-percent">67%</div>
-                                            <div class="skillbar-bar"></div>
-                                        </div>             
+                                    </div>
+
+                                    <div class="content-wrap">
+                                        <span class="tag"><?php echo htmlspecialchars($cause['category'] ?? 'General'); ?></span>
+                                        <h3><a href="causes-single.php?id=<?php echo $cause['id']; ?>"><?php echo htmlspecialchars($cause['title']); ?></a></h3>
+                                        <p><?php echo htmlspecialchars(substr($cause['summary'] ?? '', 0, 100)); ?><?php if(strlen($cause['summary'] ?? '') > 100) echo '...'; ?></p>
+                                        <div class="btn-wrap">
+                                            <a class="btn-primary btn" href="causes-single.php?id=<?php echo $cause['id']; ?>">Donate Now</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="content-wrap">
-                                <span class="tag">Education</span>
-                                <h3><a href="causes-single.php">Education for Poor Childrens</a></h3>
-                                <p>Inventore veritatis et quasi archit see ecto beatae vitae dicta sunt explaemo enim voluptatem quia</p>
-                                <div class="btn-wrap">
-                                    <a class="btn-primary btn" href="causes-single.php">Donate Now</a>
-                                </div>
-                            </div>
+                            <!-- Causes Wrap -->
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="col-12 text-center" style="padding: 50px 0; color: var(--muted); width: 100%;">
+                            <p>No causes have been published yet. Please check back later.</p>
                         </div>
-                    </div>
-                    <!-- Causes Wrap -->
-                
-                    <!-- Causes Wrap -->
-                    <div class="item">
-                        <div class="causes-wrap">
-                            <div class="img-wrap">
-                                <a href="causes-single.php"><img src="assets/images/causes/causes_img_2.jpg" alt=""></a>
-                                <div class="raised-progress">
-                                    <div class="skillbar-wrap">
-                                        <div class="clearfix">
-                                            ₦ 10,086 raised of ₦ 15,000
-                                        </div>
-                                        <div class="skillbar" data-percent="87%">
-                                            <div class="skillbar-percent">87%</div>
-                                            <div class="skillbar-bar"></div>
-                                        </div>             
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="content-wrap">
-                                <span class="tag">People</span>
-                                <h3><a href="causes-single.php">Help For Homeless People</a></h3>
-                                <p>Inventore veritatis et quasi archit see ecto beatae vitae dicta sunt explaemo enim voluptatem quia</p>
-                                <div class="btn-wrap">
-                                    <a class="btn-primary btn" href="causes-single.php">Donate Now</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Causes Wrap -->
-                
-                    <!-- Causes Wrap -->
-                    <div class="item">
-                        <div class="causes-wrap">
-                            <div class="img-wrap">
-                                <a href="causes-single.php"><img src="assets/images/causes/causes_img_3.jpg" alt=""></a>
-                                <div class="raised-progress">
-                                    <div class="skillbar-wrap">
-                                        <div class="clearfix">
-                                            ₦ 10,086 raised of ₦ 15,000
-                                        </div>
-                                        <div class="skillbar" data-percent="57%">
-                                            <div class="skillbar-percent">57%</div>
-                                            <div class="skillbar-bar"></div>
-                                        </div>             
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="content-wrap">
-                                <span class="tag">Health</span>
-                                <h3><a href="causes-single.php">Supply Water For Good Health</a></h3>
-                                <p>Inventore veritatis et quasi archit see ecto beatae vitae dicta sunt explaemo enim voluptatem quia</p>
-                                <div class="btn-wrap">
-                                    <a class="btn-primary btn" href="causes-single.php">Donate Now</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Causes Wrap -->
-                
-                    <!-- Causes Wrap -->
-                    <div class="item">
-                        <div class="causes-wrap">
-                            <div class="img-wrap">
-                                <a href="causes-single.php"><img src="assets/images/causes/causes_img_4.jpg" alt=""></a>
-                                <div class="raised-progress">
-                                    <div class="skillbar-wrap">
-                                        <div class="clearfix">
-                                            ₦ 10,086 raised of ₦ 15,000
-                                        </div>
-                                        <div class="skillbar" data-percent="80%">
-                                            <div class="skillbar-percent">80%</div>
-                                            <div class="skillbar-bar"></div>
-                                        </div>             
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="content-wrap">
-                                <span class="tag">Education</span>
-                                <h3><a href="causes-single.php">Help For Child Malnutrition</a></h3>
-                                <p>Inventore veritatis et quasi archit see ecto beatae vitae dicta sunt explaemo enim voluptatem quia</p>
-                                <div class="btn-wrap">
-                                    <a class="btn-primary btn" href="causes-single.php">Donate Now</a>
-                                </div>
-                            </div>
-
-                        </div>
-                        
-                    </div>
-                    <!-- Causes Wrap -->
-
-                    <!-- Causes Wrap -->
-                    <div class="item">
-                        <div class="causes-wrap">
-                            <div class="img-wrap">
-                                <a href="causes-single.php"><img src="assets/images/causes/causes_img_5.jpg" alt=""></a>
-                                <div class="raised-progress">
-                                    <div class="skillbar-wrap">
-                                        <div class="clearfix">
-                                            ₦ 10,086 raised of ₦ 15,000
-                                        </div>
-                                        <div class="skillbar" data-percent="77%">
-                                            <div class="skillbar-percent">77%</div>
-                                            <div class="skillbar-bar"></div>
-                                        </div>             
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="content-wrap">
-                                <span class="tag">People</span>
-                                <h3><a href="causes-single.php">Help For Good Food</a></h3>
-                                <p>Inventore veritatis et quasi archit see ecto beatae vitae dicta sunt explaemo enim voluptatem quia</p>
-                                <div class="btn-wrap">
-                                    <a class="btn-primary btn" href="causes-single.php">Donate Now</a>
-                                </div>
-                            </div>
-
-                        </div>                        
-                    </div>
-                    <!-- Causes Wrap -->
-
-                    <!-- Causes Wrap -->
-                    <div class="item">
-                        <div class="causes-wrap">
-                            <div class="img-wrap">
-                                <a href="causes-single.php"><img src="assets/images/causes/causes_img_6.jpg" alt=""></a>
-                                <div class="raised-progress">
-                                    <div class="skillbar-wrap">
-                                        <div class="clearfix">
-                                            $10086 raised of $15000
-                                        </div>
-                                        <div class="skillbar" data-percent="70%">
-                                            <div class="skillbar-percent">70%</div>
-                                            <div class="skillbar-bar"></div>
-                                        </div>             
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="content-wrap">
-                                <span class="tag">Health</span>
-                                <h3><a href="causes-single.php">Help From Natural Disaster</a></h3>
-                                <p>Inventore veritatis et quasi archit see ecto beatae vitae dicta sunt explaemo enim voluptatem quia</p>
-                                <div class="btn-wrap">
-                                    <a class="btn-primary btn" href="causes-single.php">Donate Now</a>
-                                </div>
-                            </div>
-
-                        </div>                   
-                    </div>
-                    <!-- Causes Wrap -->
-                
+                    <?php endif; ?>
                 </div>
             </div>
         </section>

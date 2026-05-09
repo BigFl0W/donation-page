@@ -93,6 +93,8 @@ CREATE TABLE programmes (
     summary TEXT NULL,
     content LONGTEXT NULL,
     featured_image VARCHAR(255) NULL,
+    goal_amount DECIMAL(15,2) DEFAULT 0.00,
+    raised_amount DECIMAL(15,2) DEFAULT 0.00,
     status ENUM('draft', 'published', 'completed') DEFAULT 'draft',
     start_date DATE NULL,
     end_date DATE NULL,

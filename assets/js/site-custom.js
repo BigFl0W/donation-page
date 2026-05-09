@@ -558,14 +558,13 @@ Table of Content
             }
         },
 
-        // Carousel Home Second Causes
         carousel_home_second_causes: function () {
             if ($('#home-second-causes').length) {
-
-                $("#home-second-causes").owlCarousel({
+                var $owl = $("#home-second-causes");
+                $owl.owlCarousel({
                     items: 1,
                     margin: 30,
-                    loop: true,
+                    loop: false,
                     nav: false,
                     slideBy: 1,
                     dots: true,
@@ -587,12 +586,10 @@ Table of Content
                         },
                         1000: {
                             items: 3,
-                            loop: true,
-                            slideBy: 3,
+                            loop: false,
                         }
                     }
                 });
-
             }
         },
 
