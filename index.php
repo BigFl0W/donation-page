@@ -2,6 +2,14 @@
 require_once 'config/autoload.php';
 $totalDonations = \App\Payment::getTotalDonations();
 $recentCauses = \App\Database::fetchAll("SELECT * FROM programmes WHERE status = 'published' ORDER BY created_at DESC LIMIT 4");
+$homeEvents = \App\Database::fetchAll(
+    "SELECT e.*, COALESCE(a.full_name, 'Events Desk') AS organizer
+     FROM events e
+     LEFT JOIN admins a ON a.id = e.created_by
+     WHERE e.status = 'published'
+     ORDER BY COALESCE(e.event_start, e.created_at) DESC
+     LIMIT 3"
+) ?: [];
 $homeAboutSettings = [];
 $rawHomeAbout = \App\Database::fetchAll("SELECT setting_key, setting_value FROM settings WHERE setting_key LIKE 'about_%'");
 foreach ($rawHomeAbout as $settingRow) {
@@ -942,145 +950,38 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
                     </div>
                     
                 </div>
-                
+                <?php if ($homeEvents): ?>
                 <div class="owl-carousel owl-theme" id="home-second-events">
-                        
-                    <!-- Events Alternate Wrap -->
+                    <?php foreach ($homeEvents as $homeEvent): ?>
                     <div class="item">
                         <div class="event-wrap-alternate">
-                            <!-- Event Wrap -->
                             <div class="date-box">
-                                05 <span>Aug</span>
+                                <?php echo \App\Helpers::e(date("d", strtotime($homeEvent["event_start"] ?? "now"))); ?>
+                                <span><?php echo \App\Helpers::e(date("M", strtotime($homeEvent["event_start"] ?? "now"))); ?></span>
                             </div>
                             <div class="img-wrap">
-                                <a href="events-single.php"><img src="assets/images/events/event_alternate_img_1.jpg" alt=""></a>
+                                <a href="event.php?slug=<?php echo urlencode($homeEvent["slug"] ?? ""); ?>"><img src="<?php echo \App\Helpers::e($homeEvent["featured_image"] ?: "assets/images/events/event_alternate_img_1.jpg"); ?>" alt="<?php echo \App\Helpers::e($homeEvent["title"] ?? "Event"); ?>"></a>
                                 <div class="content-wrap">
-                                    <h3><a href="events-single.php">Everyone Let�s Run For The Humanity This Time</a></h3>
+                                    <h3><a href="event.php?slug=<?php echo urlencode($homeEvent["slug"] ?? ""); ?>"><?php echo \App\Helpers::e($homeEvent["title"] ?? "Upcoming Event"); ?></a></h3>
                                     <div class="event-details">
-                                        <div><i data-feather="clock"></i> 09:00 Am</div>
-                                        <div><i data-feather="map-pin"></i> Midpoint Center</div>
+                                        <div><i data-feather="clock"></i> <?php echo \App\Helpers::e(\App\Content::formatEventTime($homeEvent["event_start"] ?? "")); ?></div>
+                                        <div><i data-feather="map-pin"></i> <?php echo \App\Helpers::e(($homeEvent["city"] ?: $homeEvent["venue"]) ?? "Venue TBA"); ?></div>
                                     </div>
                                 </div>
-                            </div>                            
-                            <!-- Event Wrap -->
+                            </div>
                         </div>
                     </div>
-                    <!-- Events Alternate Wrap -->
-                
-                    <!-- Events Alternate Wrap -->
-                    <div class="item">
-                        <div class="event-wrap-alternate">
-                            <!-- Event Wrap -->
-                            <div class="date-box">
-                                05 <span>Aug</span>
-                            </div>
-                            <div class="img-wrap">
-                                <a href="events-single.php"><img src="assets/images/events/event_alternate_img_2.jpg" alt=""></a>
-                                <div class="content-wrap">
-                                    <h3><a href="events-single.php">Everyone Let�s Run For The Humanity This Time</a></h3>
-                                    <div class="event-details">
-                                        <div><i data-feather="clock"></i> 09:00 Am</div>
-                                        <div><i data-feather="map-pin"></i> Midpoint Center</div>
-                                    </div>
-                                </div>
-                            </div>                            
-                            <!-- Event Wrap -->
-                        </div>
-                    </div>
-                    <!-- Events Alternate Wrap -->
-                
-                    <!-- Events Alternate Wrap -->
-                    <div class="item">
-                        <div class="event-wrap-alternate">
-                            <!-- Event Wrap -->
-                            <div class="date-box">
-                                05 <span>Aug</span>
-                            </div>
-                            <div class="img-wrap">
-                                <a href="events-single.php"><img src="assets/images/events/event_alternate_img_3.jpg" alt=""></a>
-                                <div class="content-wrap">
-                                    <h3><a href="events-single.php">Everyone Let�s Run For The Humanity This Time</a></h3>
-                                    <div class="event-details">
-                                        <div><i data-feather="clock"></i> 09:00 Am</div>
-                                        <div><i data-feather="map-pin"></i> Midpoint Center</div>
-                                    </div>
-                                </div>
-                            </div>                            
-                            <!-- Event Wrap -->
-                        </div>
-                    </div>
-                    <!-- Events Alternate Wrap -->
-                
-                    <!-- Events Alternate Wrap -->
-                    <div class="item">
-                        <div class="event-wrap-alternate">
-                            <!-- Event Wrap -->
-                            <div class="date-box">
-                                05 <span>Aug</span>
-                            </div>
-                            <div class="img-wrap">
-                                <a href="events-single.php"><img src="assets/images/events/event_alternate_img_4.jpg" alt=""></a>
-                                <div class="content-wrap">
-                                    <h3><a href="events-single.php">Everyone Let�s Run For The Humanity This Time</a></h3>
-                                    <div class="event-details">
-                                        <div><i data-feather="clock"></i> 09:00 Am</div>
-                                        <div><i data-feather="map-pin"></i> Midpoint Center</div>
-                                    </div>
-                                </div>
-                            </div>                            
-                            <!-- Event Wrap -->
-                        </div>                        
-                    </div>
-                    <!-- Events Alternate Wrap -->
-
-                    <!-- Events Alternate Wrap -->
-                    <div class="item">
-                        <div class="event-wrap-alternate">
-                            <!-- Event Wrap -->
-                            <div class="date-box">
-                                05 <span>Aug</span>
-                            </div>
-                            <div class="img-wrap">
-                                <a href="events-single.php"><img src="assets/images/events/event_alternate_img_5.jpg" alt=""></a>
-                                <div class="content-wrap">
-                                    <h3><a href="events-single.php">Everyone Let�s Run For The Humanity This Time</a></h3>
-                                    <div class="event-details">
-                                        <div><i data-feather="clock"></i> 09:00 Am</div>
-                                        <div><i data-feather="map-pin"></i> Midpoint Center</div>
-                                    </div>
-                                </div>
-                            </div>                            
-                            <!-- Event Wrap -->
-                        </div>                  
-                    </div>
-                    <!-- Events Alternate Wrap -->
-
-                    <!-- Events Alternate Wrap -->
-                    <div class="item">
-                        <div class="event-wrap-alternate">
-                            <!-- Event Wrap -->
-                            <div class="date-box">
-                                05 <span>Aug</span>
-                            </div>
-                            <div class="img-wrap">
-                                <a href="events-single.php"><img src="assets/images/events/event_alternate_img_6.jpg" alt=""></a>
-                                <div class="content-wrap">
-                                    <h3><a href="events-single.php">Everyone Let�s Run For The Humanity This Time</a></h3>
-                                    <div class="event-details">
-                                        <div><i data-feather="clock"></i> 09:00 Am</div>
-                                        <div><i data-feather="map-pin"></i> Midpoint Center</div>
-                                    </div>
-                                </div>
-                            </div>                            
-                            <!-- Event Wrap -->
-                        </div>              
-                    </div>
-                    <!-- Events Alternate Wrap -->
-                
+                    <?php endforeach; ?>
                 </div>
+                <?php else: ?>
+                <div class="card text-center p-5">
+                    <h3 class="mb-3">No published events yet</h3>
+                    <p class="mb-0">Your newest published events will appear here automatically.</p>
+                </div>
+                <?php endif; ?>
 
                 <div class="text-center mt-5">
-                    <a href="events-alternate.php" class="btn btn-outline-dark">View All Events</a>
+                    <a href="events.php" class="btn btn-outline-dark">View All Events</a>
                 </div>
             </div>
         </section>
@@ -1644,3 +1545,4 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
 <script defer="" src="../../beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"64224fc8786846928480d180dfc466bd","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
+
