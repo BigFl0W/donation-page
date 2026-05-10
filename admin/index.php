@@ -41,6 +41,7 @@ if ($dbAvail) {
     $rawSettings = Database::fetchAll("SELECT setting_key,setting_value FROM settings") ?: [];
     foreach ($rawSettings as $s) { $settings[$s["setting_key"]] = $s["setting_value"]; }
 }
+$programmeDefaults = require __DIR__ . "/../config/programme_defaults.php";
 
 // ─── DEFAULT VARIABLES (NOW $SETTINGS IS AVAILABLE) ────────────────────────────────
 $adminBrandLogo = Helpers::brandLogoPath();
@@ -654,6 +655,59 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $flashMsg = $saveOk ? "Footer updated successfully" : "Footer update failed. Please try again.";
         $flashType = $saveOk ? "success" : "danger";
         header("Location: index.php?msg=" . urlencode($flashMsg) . "&type=" . $flashType . "&page=footer");
+        exit;
+    }
+
+    if ($action === "save_programme_page") {
+        $saveOk = true;
+        if (isset($_POST["settings"]) && is_array($_POST["settings"])) {
+            foreach ($_POST["settings"] as $key => $val) {
+                $saved = Database::execute(
+                    "INSERT INTO settings (setting_group, setting_key, setting_value)
+                     VALUES ('programme', :key, :val)
+                     ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                    ["key" => "programme_" . $key, "val" => is_string($val) ? trim($val) : $val]
+                );
+                if (!$saved) $saveOk = false;
+            }
+        }
+
+        if (isset($_FILES['media']) && is_array($_FILES['media']['name'] ?? null)) {
+            $uploadDir = __DIR__ . "/../assets/uploads/programme";
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+            $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'mp4', 'webm', 'ogg', 'mov'];
+
+            foreach ($_FILES['media']['name'] as $key => $name) {
+                if (($_FILES['media']['error'][$key] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+                    continue;
+                }
+
+                $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+                if (!in_array($ext, $allowedExts, true)) {
+                    $saveOk = false;
+                    continue;
+                }
+
+                $fileName = "programme_" . $key . "_" . time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($name));
+                $dest = $uploadDir . "/" . $fileName;
+                if (move_uploaded_file($_FILES['media']['tmp_name'][$key], $dest)) {
+                    $path = "assets/uploads/programme/" . $fileName;
+                    $saved = Database::execute(
+                        "INSERT INTO settings (setting_group, setting_key, setting_value)
+                         VALUES ('programme', :key, :val)
+                         ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                        ["key" => "programme_" . $key, "val" => $path]
+                    );
+                    if (!$saved) $saveOk = false;
+                } else {
+                    $saveOk = false;
+                }
+            }
+        }
+
+        $flashMsg = $saveOk ? "Programme page updated successfully" : "Programme page update failed. Please try again.";
+        $flashType = $saveOk ? "success" : "danger";
+        header("Location: index.php?msg=" . urlencode($flashMsg) . "&type=" . $flashType . "&page=programme");
         exit;
     }
 
@@ -2225,6 +2279,10 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <i class="fas fa-circle-info nav-icon"></i>
       <span class="nav-text">About Page</span>
     </div>
+    <div class="nav-item" onclick="showPage('programme',this)">
+      <i class="fas fa-layer-group nav-icon"></i>
+      <span class="nav-text">Programme</span>
+    </div>
     <div class="nav-item" onclick="showPage('footer',this)">
       <i class="fas fa-window-maximize nav-icon"></i>
       <span class="nav-text">Footer</span>
@@ -3325,6 +3383,120 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       btn.classList.add('on');
     }
   </script>
+  <div class="content" id="page-programme">
+    <div class="card" style="padding:0; overflow:hidden;">
+      <form method="post" enctype="multipart/form-data" style="padding:22px;">
+        <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
+        <input type="hidden" name="_action" value="save_programme_page">
+        <input type="hidden" name="_page" value="programme">
+
+        <div style="margin-bottom:25px; display:flex; justify-content:space-between; align-items:center; gap:15px; background:var(--brand-bg); padding:15px; border-radius:12px; border:1px solid var(--brand-dim);">
+          <div>
+            <h4 style="color:var(--brand); margin:0;">Programme Page Builder</h4>
+            <p style="font-size:0.75rem; color:var(--mid); margin:4px 0 0;">Edit the public Programme page article and manage the collage media from here.</p>
+          </div>
+          <button type="submit" class="btn-primary" style="padding:10px 30px; border-radius:10px; font-weight:800;">
+            <i class="fas fa-floppy-disk" style="margin-right:8px;"></i>Save Programme Page
+          </button>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div class="card" style="padding:18px; background:var(--surface);">
+            <h3 style="font-size:.92rem; font-weight:700; margin-bottom:14px;">Hero Copy</h3>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label">Hero Kicker</label>
+                <input class="form-input" name="settings[hero_kicker]" value="<?php echo Helpers::e($settings['programme_hero_kicker'] ?? $programmeDefaults['hero_kicker']); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Hero Title</label>
+                <input class="form-input" name="settings[hero_title]" value="<?php echo Helpers::e($settings['programme_hero_title'] ?? $programmeDefaults['hero_title']); ?>">
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Introduction</label>
+              <textarea class="form-input" name="settings[hero_intro]" rows="7"><?php echo Helpers::e($settings['programme_hero_intro'] ?? $programmeDefaults['hero_intro']); ?></textarea>
+            </div>
+          </div>
+
+          <div class="card" style="padding:18px; background:var(--surface);">
+            <h3 style="font-size:.92rem; font-weight:700; margin-bottom:14px;">Media Collage</h3>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label">Media Heading</label>
+                <input class="form-input" name="settings[media_heading]" value="<?php echo Helpers::e($settings['programme_media_heading'] ?? $programmeDefaults['media_heading']); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Media Intro</label>
+                <input class="form-input" name="settings[media_intro]" value="<?php echo Helpers::e($settings['programme_media_intro'] ?? $programmeDefaults['media_intro']); ?>">
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:16px;">
+              <?php for ($i = 1; $i <= 5; $i++): ?>
+                <?php $mediaPath = $settings["programme_media_{$i}"] ?? ''; ?>
+                <div class="card" style="padding:14px; background:#fff;">
+                  <label class="form-label">Media Slot <?php echo $i; ?></label>
+                  <div class="slot-preview <?php echo empty($mediaPath) ? 'empty' : ''; ?>" style="height:180px; margin-bottom:10px;">
+                    <?php if (!empty($mediaPath)): ?>
+                      <?php $ext = strtolower(pathinfo($mediaPath, PATHINFO_EXTENSION)); ?>
+                      <?php if (in_array($ext, ['mp4','webm','ogg','mov'], true)): ?>
+                        <video src="../<?php echo Helpers::e($mediaPath); ?>" controls muted style="width:100%; height:100%; object-fit:cover;"></video>
+                      <?php else: ?>
+                        <img src="../<?php echo Helpers::e($mediaPath); ?>" alt="Programme media <?php echo $i; ?>">
+                      <?php endif; ?>
+                    <?php else: ?>
+                      <i class="fas fa-photo-film"></i>
+                    <?php endif; ?>
+                  </div>
+                  <input type="file" name="media[media_<?php echo $i; ?>]" class="form-input" accept="image/*,video/*">
+                </div>
+              <?php endfor; ?>
+            </div>
+          </div>
+
+          <?php for ($i = 1; $i <= 8; $i++): ?>
+            <div class="card" style="padding:18px; background:var(--surface);">
+              <h3 style="font-size:.92rem; font-weight:700; margin-bottom:14px;">Programme Section <?php echo $i; ?></h3>
+              <div class="form-field">
+                <label class="form-label">Section Title</label>
+                <input class="form-input" name="settings[section_<?php echo $i; ?>_title]" value="<?php echo Helpers::e($settings["programme_section_{$i}_title"] ?? $programmeDefaults["section_{$i}_title"]); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Section Content</label>
+                <textarea class="form-input" name="settings[section_<?php echo $i; ?>_body]" rows="10"><?php echo Helpers::e($settings["programme_section_{$i}_body"] ?? $programmeDefaults["section_{$i}_body"]); ?></textarea>
+              </div>
+            </div>
+          <?php endfor; ?>
+
+          <div class="two-col">
+            <div class="card" style="padding:18px; background:var(--surface);">
+              <h3 style="font-size:.92rem; font-weight:700; margin-bottom:14px;">Our Commitment</h3>
+              <div class="form-field">
+                <label class="form-label">Commitment Title</label>
+                <input class="form-input" name="settings[commitment_title]" value="<?php echo Helpers::e($settings['programme_commitment_title'] ?? $programmeDefaults['commitment_title']); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Commitment Text</label>
+                <textarea class="form-input" name="settings[commitment_body]" rows="10"><?php echo Helpers::e($settings['programme_commitment_body'] ?? $programmeDefaults['commitment_body']); ?></textarea>
+              </div>
+            </div>
+
+            <div class="card" style="padding:18px; background:var(--surface);">
+              <h3 style="font-size:.92rem; font-weight:700; margin-bottom:14px;">Closing Card</h3>
+              <div class="form-field">
+                <label class="form-label">CTA Title</label>
+                <input class="form-input" name="settings[cta_title]" value="<?php echo Helpers::e($settings['programme_cta_title'] ?? $programmeDefaults['cta_title']); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">CTA Text</label>
+                <textarea class="form-input" name="settings[cta_text]" rows="6"><?php echo Helpers::e($settings['programme_cta_text'] ?? $programmeDefaults['cta_text']); ?></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
   <div class="content" id="page-footer">
     <div class="card">
       <form method="post">
@@ -3811,7 +3983,7 @@ const PAGES = {
   dashboard:'Dashboard',donations:'Donations',users:'Users',
   programmes:'Programmes',partners:'Partners',blog:'Blog & News',
   events:'Events',gallery:'Gallery',security:'Security',settings:'Settings',
-  profile:'My Profile',messages:'Messages', about:'About Page Builder', footer:'Footer Builder'
+  profile:'My Profile',messages:'Messages', about:'About Page Builder', programme:'Programme Builder', footer:'Footer Builder'
 };
 
 function previewAvatar(input) {

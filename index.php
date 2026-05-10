@@ -269,7 +269,7 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
                                     <li><a class="dropdown-item" href="gallery">Photo & Video Gallery</a></li>
                                     <li><a class="dropdown-item" href="partners-sponsors">Partners & Sponsors</a></li>
                                     <li><a class="dropdown-item" href="causes-projects">Our Causes</a></li>
-                                    <li><a class="dropdown-item" href="causes-projects">Projects & Programmes</a></li>
+                                    <li><a class="dropdown-item" href="programme">Programme</a></li>
                                     <li><a class="dropdown-item" href="faqs">FAQs</a></li>
                                 </ul>
                             </li>

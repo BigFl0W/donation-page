@@ -32,6 +32,7 @@ RewriteRule ^faqs/?$                                             faqs.php [L,QSA
 # Contact & About
 RewriteRule ^contact-us/?$                                       contact-us.php [L,QSA]
 RewriteRule ^about-us/?$                                         about-us.php [L,QSA]
+RewriteRule ^programme/?$                                        programme.php [L,QSA]
 
 # Donation
 RewriteRule ^donation-page/?$                                    donation-page.php [L,QSA]
