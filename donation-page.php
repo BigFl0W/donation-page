@@ -391,9 +391,10 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
         
            
     </main>
+    <?php require __DIR__ . "/includes/site-footer.php"; ?>
 
     <!-- Main Footer Start -->
-    <footer class="wide-tb-70 pb-0 mb-spacer-md">
+    <footer class="wide-tb-70 pb-0 mb-spacer-md" style="display:none">
         <div class="container pos-rel">
             <div class="row">
                 <div class="col-lg-5 col-md-10">

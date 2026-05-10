@@ -1340,9 +1340,10 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
         
            
     </main>
+    <?php require __DIR__ . "/includes/site-footer.php"; ?>
 
     <!-- Main Footer Start -->
-    <footer class="wide-tb-70 pb-0 mb-spacer-md footer-second">
+    <footer class="wide-tb-70 pb-0 mb-spacer-md footer-second" style="display:none">
         <div class="container bg-effect pos-rel">
             <div class="row">
                 <!-- Column First -->
