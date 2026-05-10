@@ -1,6 +1,9 @@
 <?php
 require_once 'config/autoload.php';
 $totalDonations = \App\Payment::getTotalDonations();
+$brandName = \App\Helpers::brandName("Gracious Charity");
+$brandLogo = \App\Helpers::brandLogoPath("assets/images/logo_dark.svg");
+$brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
 $recentCauses = \App\Database::fetchAll("SELECT * FROM programmes WHERE status = 'published' ORDER BY created_at DESC LIMIT 4");
 $homeEvents = \App\Database::fetchAll(
     "SELECT e.*, COALESCE(a.full_name, 'Events Desk') AS organizer
@@ -35,7 +38,7 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
     <meta name="keywords" content="Gracious, responsive, html5, charity, charity agency, charity foundation, charity template, church, donate, donation, fundraiser, fundraising, mosque, ngo, non-profit, nonprofit, organization, volunteer">
     
     <!-- Favicon -->    
-    <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="<?php echo htmlspecialchars($brandFavicon); ?>">
     <!-- Animate CSSS -->    
     <link href="assets/library/animate/animate.min.css" rel="stylesheet">
     <!-- Bootstrap CSS -->
@@ -216,7 +219,7 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
             <div class="container text-nowrap">
                 <div class="d-flex align-items-center w-100 col p-0 logo-brand">
                     <a class="navbar-brand rounded-bottom light-bg" href="index.php">
-                        <img src="assets/images/logo_white.svg" alt="">
+                        <img class="site-logo site-logo--header" src="<?php echo htmlspecialchars($brandLogo); ?>" alt="<?php echo htmlspecialchars($brandName); ?>">
                     </a> 
                 </div>
                 <!-- Topbar Buttons Start -->
@@ -239,7 +242,7 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
                     <!-- Mobile Logo -->
                     <div class="offcanvas-header">
                         <a href="index.php" class="logo-small">
-                            <img src="assets/images/logo_white.svg" alt="">
+                            <img class="site-logo site-logo--header" src="<?php echo htmlspecialchars($brandLogo); ?>" alt="<?php echo htmlspecialchars($brandName); ?>">
                         </a>                        
                     </div>
                     <!-- Mobile Logo -->
@@ -1346,7 +1349,7 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
                 <div class="col-lg-4 col-md-12">
                     <div class="logo-footer">
                         <a href="index.php">
-                            <img src="assets/images/logo_white.svg" alt="">
+                            <img class="site-logo site-logo--footer" src="<?php echo htmlspecialchars($brandLogo); ?>" alt="<?php echo htmlspecialchars($brandName); ?>">
                         </a>
                     </div>
                     <p>This is Photoshop�s version of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet</p>

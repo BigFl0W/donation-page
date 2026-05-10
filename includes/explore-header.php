@@ -66,7 +66,7 @@ $section_url = $section_url ?? "gallery.php";
             <div class="container text-nowrap">
                 <div class="d-flex align-items-center w-100 col p-0 logo-brand">
                     <a class="navbar-brand rounded-bottom light-bg" href="../../index.php">
-                        <img src="../../<?php echo htmlspecialchars($brand_logo); ?>" alt="<?php echo htmlspecialchars($brand_name); ?>">
+                        <img class="site-logo site-logo--header" src="../../<?php echo htmlspecialchars($brand_logo); ?>" alt="<?php echo htmlspecialchars($brand_name); ?>">
                     </a>
                 </div>
                 <div class="d-inline-flex request-btn order-lg-last col-auto p-0 align-items-center">
@@ -82,7 +82,7 @@ $section_url = $section_url ?? "gallery.php";
                 <div class="navbar-collapse">
                     <div class="offcanvas-header">
                         <a href="../../index.php" class="logo-small">
-                            <img src="../../<?php echo htmlspecialchars($brand_logo); ?>" alt="<?php echo htmlspecialchars($brand_name); ?>">
+                            <img class="site-logo site-logo--header" src="../../<?php echo htmlspecialchars($brand_logo); ?>" alt="<?php echo htmlspecialchars($brand_name); ?>">
                         </a>
                     </div>
                     <div class="offcanvas-body">

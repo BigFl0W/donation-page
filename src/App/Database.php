@@ -121,7 +121,12 @@ class Database
         if ($db === null) return false;
 
         try {
-            $stmt = $db->prepare("SHOW TABLES LIKE :table");
+            $stmt = $db->prepare(
+                "SELECT 1
+                 FROM information_schema.tables
+                 WHERE table_schema = DATABASE() AND table_name = :table
+                 LIMIT 1"
+            );
             $stmt->execute(["table" => $table]);
             return $stmt->fetch() !== false;
         } catch (PDOException) {

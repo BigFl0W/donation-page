@@ -810,16 +810,24 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                         // Verify file was actually created
                         if (file_exists($newLogoPath)) {
                             $logoPath = 'assets/uploads/branding/' . $newLogoName;
+                            $saved = true;
                             if ($dbAvail) {
-                                Database::execute(
-                                    "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
-                                    ['key' => 'brand_logo', 'value' => $logoPath]
+                                $saved = Database::execute(
+                                    "INSERT INTO settings (setting_group, setting_key, setting_value)
+                                     VALUES (:group, :key, :value)
+                                     ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                                    ['group' => 'site', 'key' => 'brand_logo', 'value' => $logoPath]
                                 );
                             }
-                            $settings['brand_logo'] = $logoPath;
-                            $adminBrandLogo = $logoPath;
-                            $flashMsg = "Logo updated successfully"; 
-                            $flashType = "success";
+                            if ($saved) {
+                                $settings['brand_logo'] = $logoPath;
+                                $adminBrandLogo = $logoPath;
+                                $flashMsg = "Logo updated successfully"; 
+                                $flashType = "success";
+                            } else {
+                                $flashMsg = "Logo uploaded but branding settings could not be saved to the database.";
+                                $flashType = "danger";
+                            }
                         } else {
                             $flashMsg = "Logo file was not saved correctly."; 
                             $flashType = "danger";
@@ -861,17 +869,27 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                         // Verify file was actually created
                         if (file_exists($newFaviconPath)) {
                             $faviconPath = 'assets/uploads/branding/' . $newFaviconName;
+                            $saved = true;
                             if ($dbAvail) {
-                                Database::execute(
-                                    "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
-                                    ['key' => 'site_favicon', 'value' => $faviconPath]
+                                $saved = Database::execute(
+                                    "INSERT INTO settings (setting_group, setting_key, setting_value)
+                                     VALUES (:group, :key, :value)
+                                     ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                                    ['group' => 'site', 'key' => 'site_favicon', 'value' => $faviconPath]
                                 );
                             }
-                            $settings['site_favicon'] = $faviconPath;
-                            $adminFavicon = $faviconPath;
-                            if ($flashMsg === "") {
-                                $flashMsg = "Favicon updated successfully"; 
-                                $flashType = "success";
+                            if ($saved) {
+                                $settings['site_favicon'] = $faviconPath;
+                                $adminFavicon = $faviconPath;
+                                if ($flashMsg === "") {
+                                    $flashMsg = "Favicon updated successfully"; 
+                                    $flashType = "success";
+                                }
+                            } else {
+                                if ($flashMsg === "") {
+                                    $flashMsg = "Favicon uploaded but branding settings could not be saved to the database.";
+                                    $flashType = "danger";
+                                }
                             }
                         } else {
                             if ($flashMsg === "") {
@@ -896,28 +914,37 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         
         // Update organization settings in database
         if ($siteName !== "" && $dbAvail) {
-            Database::execute(
-                "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
-                ['key' => 'site_name', 'value' => $siteName]
-            );
-            $settings['site_name'] = $siteName;
-            $siteName = $siteName;
+            if (Database::execute(
+                "INSERT INTO settings (setting_group, setting_key, setting_value)
+                 VALUES (:group, :key, :value)
+                 ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                ['group' => 'site', 'key' => 'site_name', 'value' => $siteName]
+            )) {
+                $settings['site_name'] = $siteName;
+                $siteName = $siteName;
+            }
         }
         
         if ($contactEmail !== "" && $dbAvail) {
-            Database::execute(
-                "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
-                ['key' => 'contact_email', 'value' => $contactEmail]
-            );
-            $settings['contact_email'] = $contactEmail;
+            if (Database::execute(
+                "INSERT INTO settings (setting_group, setting_key, setting_value)
+                 VALUES (:group, :key, :value)
+                 ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                ['group' => 'site', 'key' => 'contact_email', 'value' => $contactEmail]
+            )) {
+                $settings['contact_email'] = $contactEmail;
+            }
         }
         
         if ($contactPhone !== "" && $dbAvail) {
-            Database::execute(
-                "INSERT INTO settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
-                ['key' => 'contact_phone', 'value' => $contactPhone]
-            );
-            $settings['contact_phone'] = $contactPhone;
+            if (Database::execute(
+                "INSERT INTO settings (setting_group, setting_key, setting_value)
+                 VALUES (:group, :key, :value)
+                 ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                ['group' => 'site', 'key' => 'contact_phone', 'value' => $contactPhone]
+            )) {
+                $settings['contact_phone'] = $contactPhone;
+            }
         }
     }
 
@@ -3547,7 +3574,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
                   
                   if ($logoExists): 
                 ?>
-                  <img src="<?php echo Helpers::e($adminBrandLogo); ?>" alt="<?php echo Helpers::e($siteName); ?>" style="max-width:220px;max-height:72px;width:auto;height:auto;display:block">
+                  <img src="../<?php echo Helpers::e($adminBrandLogo); ?>" alt="<?php echo Helpers::e($siteName); ?>" style="max-width:220px;max-height:72px;width:auto;height:auto;display:block">
                 <?php else: ?>
                   <span style="color:var(--soft)">No logo uploaded</span>
                 <?php endif; ?>
@@ -3568,7 +3595,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
                   
                   if ($faviconExists): 
                 ?>
-                  <img src="<?php echo Helpers::e($adminFavicon); ?>" alt="Favicon" style="width:32px;height:32px;object-fit:contain">
+                  <img src="../<?php echo Helpers::e($adminFavicon); ?>" alt="Favicon" style="width:32px;height:32px;object-fit:contain">
                   <span style="font-size:.8rem;color:var(--muted)">Current favicon in use</span>
                 <?php else: ?>
                   <span style="font-size:.8rem;color:var(--soft)">No favicon uploaded</span>

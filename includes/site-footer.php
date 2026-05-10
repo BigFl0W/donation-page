@@ -163,11 +163,7 @@ $socials = [
             background: rgba(255, 255, 255, 0.08);
         }
         .site-footer-v2 .footer-brand img {
-            width: auto;
-            max-width: 160px;
-            max-height: 50px;
             margin-bottom: 24px;
-            filter: brightness(0) invert(1);
         }
         .site-footer-v2 .footer-brand p {
             font-size: 0.9rem;
@@ -369,7 +365,7 @@ $socials = [
 
             <div class="footer-grid">
                 <div class="footer-col footer-brand">
-                    <img src="<?php echo Helpers::e($brand_logo_footer); ?>" alt="<?php echo Helpers::e($brand_name); ?>">
+                    <img class="site-logo site-logo--footer" src="<?php echo Helpers::e($brand_logo_footer); ?>" alt="<?php echo Helpers::e($brand_name); ?>">
                     <p><?php echo Helpers::e($footerBrandText); ?></p>
                     <div class="footer-socials">
                         <ul>
