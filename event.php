@@ -36,6 +36,11 @@ require __DIR__ . "/includes/header.php";
                         <div class="explore-kicker">Event Overview</div>
                         <h2><?php echo Helpers::e($event["title"] ?? ""); ?></h2>
                         <p class="lead"><?php echo Helpers::e($event["summary"] ?? ""); ?></p>
+                        <div class="event-meta-list mb-4">
+                            <span><i class="icofont-user-alt-3"></i> <?php echo Helpers::e($event["organizer"] ?? "Events Desk"); ?></span>
+                            <?php if (!empty($event["status"])): ?><span><i class="icofont-flag-alt-2"></i> <?php echo Helpers::e(ucfirst((string)$event["status"])); ?></span><?php endif; ?>
+                            <?php if (!empty($event["event_end"])): ?><span><i class="icofont-clock-time"></i> Ends <?php echo Helpers::e(Content::formatEventTime($event["event_end"])); ?></span><?php endif; ?>
+                        </div>
                         <div class="event-detail-content">
                             <?php echo $event["content"] ?? ""; ?>
                         </div>
@@ -48,10 +53,12 @@ require __DIR__ . "/includes/header.php";
                     <ul class="explore-faq-list">
                         <li><i class="icofont-calendar"></i><span><?php echo Helpers::e(Content::formatEventDate($event["event_start"] ?? "")); ?></span></li>
                         <li><i class="icofont-clock-time"></i><span><?php echo Helpers::e(Content::formatEventTime($event["event_start"] ?? "")); ?></span></li>
+                        <?php if (!empty($event["event_end"])): ?><li><i class="icofont-hour-glass"></i><span><?php echo Helpers::e(Content::formatEventTime($event["event_end"])); ?></span></li><?php endif; ?>
                         <li><i class="icofont-location-pin"></i><span><?php echo Helpers::e($event["venue"] ?? ""); ?></span></li>
                         <li><i class="icofont-map"></i><span><?php echo Helpers::e($event["city"] ?? ""); ?></span></li>
                     </ul>
                     <a href="<?php echo Helpers::e($event["registration_url"] ?? "contact-us.php"); ?>" class="btn btn-default mt-3 w-100">Register Interest</a>
+                    <a href="events.php" class="btn btn-outline-dark mt-3 w-100">Back to All Events</a>
                 </div>
             </div>
         </div>

@@ -334,17 +334,36 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $city = (string) ($_POST["city"] ?? "");
         $eventStart = (string) ($_POST["event_start"] ?? "");
         $eventEnd = (string) ($_POST["event_end"] ?? "");
+        $registrationUrl = trim((string) ($_POST["registration_url"] ?? ""));
+        $metaTitle = trim((string) ($_POST["meta_title"] ?? ""));
+        $metaDescription = trim((string) ($_POST["meta_description"] ?? ""));
+        $isFeatured = isset($_POST["is_featured"]) ? 1 : 0;
         $status = (string) ($_POST["status"] ?? "draft");
+        $featuredImage = "";
+
+        if (isset($_FILES["featured_image"]) && $_FILES["featured_image"]["error"] === UPLOAD_ERR_OK) {
+            $name = time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($_FILES["featured_image"]["name"]));
+            $dest = __DIR__ . "/../assets/images/events/" . $name;
+            if (!is_dir(dirname($dest))) mkdir(dirname($dest), 0777, true);
+            if (move_uploaded_file($_FILES["featured_image"]["tmp_name"], $dest)) {
+                $featuredImage = "assets/images/events/" . $name;
+            }
+        }
 
         if ($title !== "" && $eventStart !== "") {
             $exists = Database::fetchOne("SELECT id FROM events WHERE slug = :slug", ["slug" => $slug]);
             if (!$exists) {
+                if ($isFeatured) {
+                    Database::execute("UPDATE events SET is_featured = 0");
+                }
                 Database::execute(
-                    "INSERT INTO events (title,slug,summary,content,venue,city,event_start,event_end,status,created_by,created_at)
-                     VALUES (:title,:slug,:summary,:content,:venue,:city,:event_start,:event_end,:status,:created_by,NOW())",
-                    ["title" => $title, "slug" => $slug, "summary" => $summary, "content" => $content,
+                    "INSERT INTO events (title,slug,summary,content,featured_image,venue,city,event_start,event_end,registration_url,status,is_featured,meta_title,meta_description,created_by,created_at)
+                     VALUES (:title,:slug,:summary,:content,:featured_image,:venue,:city,:event_start,:event_end,:registration_url,:status,:is_featured,:meta_title,:meta_description,:created_by,NOW())",
+                    ["title" => $title, "slug" => $slug, "summary" => $summary, "content" => $content, "featured_image" => $featuredImage,
                      "venue" => $venue, "city" => $city, "event_start" => $eventStart,
-                     "event_end" => $eventEnd ?: null, "status" => $status, "created_by" => (int)($admin["id"] ?? 0)]
+                     "event_end" => $eventEnd ?: null, "registration_url" => $registrationUrl ?: null,
+                     "status" => $status, "is_featured" => $isFeatured, "meta_title" => $metaTitle ?: null,
+                     "meta_description" => $metaDescription ?: null, "created_by" => (int)($admin["id"] ?? 0)]
                 );
                 $flashMsg = "Event created successfully"; $flashType = "success";
             } else { $flashMsg = "An event with this title already exists"; $flashType = "danger"; }
@@ -361,16 +380,40 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $city = (string) ($_POST["city"] ?? "");
         $eventStart = (string) ($_POST["event_start"] ?? "");
         $eventEnd = (string) ($_POST["event_end"] ?? "");
+        $registrationUrl = trim((string) ($_POST["registration_url"] ?? ""));
+        $metaTitle = trim((string) ($_POST["meta_title"] ?? ""));
+        $metaDescription = trim((string) ($_POST["meta_description"] ?? ""));
+        $isFeatured = isset($_POST["is_featured"]) ? 1 : 0;
         $status = (string) ($_POST["status"] ?? "draft");
+        $featuredImage = "";
+
+        if (isset($_FILES["featured_image"]) && $_FILES["featured_image"]["error"] === UPLOAD_ERR_OK) {
+            $name = time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($_FILES["featured_image"]["name"]));
+            $dest = __DIR__ . "/../assets/images/events/" . $name;
+            if (!is_dir(dirname($dest))) mkdir(dirname($dest), 0777, true);
+            if (move_uploaded_file($_FILES["featured_image"]["tmp_name"], $dest)) {
+                $featuredImage = "assets/images/events/" . $name;
+            }
+        }
 
         if ($title !== "" && $eventStart !== "" && $id > 0) {
+            if ($featuredImage === "") {
+                $existing = Database::fetchOne("SELECT featured_image FROM events WHERE id = :id", ["id" => $id]);
+                if ($existing) $featuredImage = $existing["featured_image"];
+            }
+            if ($isFeatured) {
+                Database::execute("UPDATE events SET is_featured = 0 WHERE id <> :id", ["id" => $id]);
+            }
             Database::execute(
                 "UPDATE events SET title=:title,slug=:slug,summary=:summary,content=:content,
-                 venue=:venue,city=:city,event_start=:event_start,event_end=:event_end,status=:status
+                 featured_image=:featured_image,venue=:venue,city=:city,event_start=:event_start,event_end=:event_end,
+                 registration_url=:registration_url,status=:status,is_featured=:is_featured,meta_title=:meta_title,meta_description=:meta_description
                  WHERE id=:id",
-                ["title" => $title, "slug" => $slug, "summary" => $summary, "content" => $content,
+                ["title" => $title, "slug" => $slug, "summary" => $summary, "content" => $content, "featured_image" => $featuredImage,
                  "venue" => $venue, "city" => $city, "event_start" => $eventStart,
-                 "event_end" => $eventEnd ?: null, "status" => $status, "id" => $id]
+                 "event_end" => $eventEnd ?: null, "registration_url" => $registrationUrl ?: null,
+                 "status" => $status, "is_featured" => $isFeatured, "meta_title" => $metaTitle ?: null,
+                 "meta_description" => $metaDescription ?: null, "id" => $id]
             );
             $flashMsg = "Event updated successfully"; $flashType = "success";
         } else { $flashMsg = "Invalid request"; $flashType = "danger"; }
@@ -2853,13 +2896,28 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       </div>
       <div style="overflow-x:auto">
         <table class="data-table">
-          <thead><tr><th>Title</th><th>Venue</th><th>Date</th><th>Organizer</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Event</th><th>Venue</th><th>Date</th><th>Organizer</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody>
             <?php if ($allEvents): ?>
               <?php foreach ($allEvents as $ev): ?>
               <?php $es = strtolower((string)($ev["status"] ?? "draft")); ?>
               <tr>
-                <td data-label="Title"><strong><?php echo Helpers::e($ev["title"] ?? "Untitled"); ?></strong></td>
+                <td data-label="Event">
+                  <div style="display:flex; gap:12px; align-items:flex-start;">
+                    <?php if (!empty($ev["featured_image"])): ?>
+                      <img src="../<?php echo Helpers::e($ev["featured_image"]); ?>" alt="" style="width:56px;height:56px;border-radius:14px;object-fit:cover;border:1px solid var(--line)">
+                    <?php else: ?>
+                      <div style="width:56px;height:56px;border-radius:14px;background:var(--soft-bg);display:flex;align-items:center;justify-content:center;color:var(--muted);border:1px solid var(--line)"><i class="fas fa-calendar-day"></i></div>
+                    <?php endif; ?>
+                    <div>
+                      <strong style="display:block"><?php echo Helpers::e($ev["title"] ?? "Untitled"); ?></strong>
+                      <div style="font-size:.78rem;color:var(--muted);margin-top:4px"><?php echo Helpers::e($ev["organizer"] ?? "Events Desk"); ?></div>
+                      <?php if (!empty($ev["is_featured"])): ?>
+                        <div style="font-size:.72rem;color:var(--primary-color);font-weight:800;margin-top:6px;text-transform:uppercase;letter-spacing:.08em">Featured Event</div>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+                </td>
                 <td data-label="Venue"><span style="color:var(--muted)"><?php echo Helpers::e($ev["venue"] ?? "—"); ?>, <?php echo Helpers::e($ev["city"] ?? "—"); ?></span></td>
                 <td data-label="Date" class="mono"><?php echo Helpers::e($ev["event_start"] ? date("M j, Y", strtotime($ev["event_start"])) : "TBD"); ?></td>
                 <td data-label="Organizer" style="color:var(--muted)"><?php echo Helpers::e($ev["organizer"] ?? "Events Desk"); ?></td>
@@ -3557,10 +3615,15 @@ const MODAL_FORMS = {
       {name:'_action',type:'hidden'},
       {name:'id',type:'hidden'},
       {name:'title',label:'Title',type:'text',required:true,placeholder:'Event title'},
+      {name:'featured_image',label:'Cover Image',type:'file'},
       {name:'venue',label:'Venue',type:'text',placeholder:'Event venue'},
       {name:'city',label:'City',type:'text',placeholder:'City'},
       {name:'event_start',label:'Start Date',type:'datetime-local',required:true},
       {name:'event_end',label:'End Date',type:'datetime-local'},
+      {name:'registration_url',label:'Registration Link',type:'url',placeholder:'https://example.com/register'},
+      {name:'is_featured',label:'Feature this event on site',type:'checkbox'},
+      {name:'meta_title',label:'SEO Title',type:'text',placeholder:'Search title for this event'},
+      {name:'meta_description',label:'SEO Description',type:'textarea',placeholder:'Short search description for this event...',rows:3},
       {name:'status',label:'Status',type:'select',options:['draft','published','cancelled','completed']},
       {name:'summary',label:'Summary',type:'textarea',placeholder:'Brief description…',rows:3},
       {name:'content',label:'Full Description',type:'textarea',placeholder:'Detailed description…',rows:6},
@@ -3672,6 +3735,11 @@ function openModal(type, id) {
         html += '<option value="' + opt + '">' + opt.charAt(0).toUpperCase() + opt.slice(1) + '</option>';
       }
       html += '</select>';
+    } else if (f.type === 'checkbox') {
+      html += '<label style="display:flex;align-items:center;gap:10px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--soft-bg)">';
+      html += '<input type="checkbox" name="' + f.name + '" value="1" style="width:18px;height:18px"/>';
+      html += '<span style="font-weight:600;color:var(--dark)">' + (f.label || f.name) + '</span>';
+      html += '</label>';
     } else if (f.type === 'textarea') {
       html += '<textarea class="form-control" name="' + f.name + '" placeholder="' + (f.placeholder||'') + '" rows="' + (f.rows||4) + '"' + (f.required ? ' required' : '') + '></textarea>';
     } else {
@@ -3714,6 +3782,8 @@ function fetchModalData(type, id) {
         if (el.type === 'datetime-local') {
           const d = value.replace(' ', 'T');
           el.value = d.substring(0, 16);
+        } else if (el.type === 'checkbox') {
+          el.checked = value === 1 || value === '1' || value === true || value === 'true';
         } else if (el.type === 'file') {
           // Cannot set file input value, maybe show a label?
         } else {

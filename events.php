@@ -46,8 +46,14 @@ require __DIR__ . "/includes/header.php";
                                 <span><i class="icofont-calendar"></i> <?php echo Helpers::e(Content::formatEventDate($featuredEvent["event_start"] ?? "")); ?></span>
                                 <span><i class="icofont-clock-time"></i> <?php echo Helpers::e(Content::formatEventTime($featuredEvent["event_start"] ?? "")); ?></span>
                                 <span><i class="icofont-location-pin"></i> <?php echo Helpers::e($featuredEvent["venue"] ?? ""); ?></span>
+                                <?php if (!empty($featuredEvent["city"])): ?><span><i class="icofont-map"></i> <?php echo Helpers::e($featuredEvent["city"]); ?></span><?php endif; ?>
                             </div>
-                            <a href="event.php?slug=<?php echo urlencode($featuredEvent["slug"] ?? ""); ?>" class="btn btn-default mt-4 event-hero-btn">View Event Details</a>
+                            <div class="d-flex flex-wrap gap-3 mt-4">
+                                <a href="event.php?slug=<?php echo urlencode($featuredEvent["slug"] ?? ""); ?>" class="btn btn-default event-hero-btn">View Event Details</a>
+                                <?php if (!empty($featuredEvent["registration_url"])): ?>
+                                    <a href="<?php echo Helpers::e($featuredEvent["registration_url"]); ?>" class="btn btn-outline-dark">Register Now</a>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -67,6 +73,7 @@ require __DIR__ . "/includes/header.php";
             </div>
         </div>
         <div class="row g-4">
+            <?php if ($upcomingEvents): ?>
             <?php foreach ($upcomingEvents as $event): ?>
                 <div class="col-md-6 col-lg-4">
                     <article class="event-card-pro">
@@ -86,6 +93,16 @@ require __DIR__ . "/includes/header.php";
                     </article>
                 </div>
             <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12">
+                    <div class="explore-panel text-center p-5">
+                        <div class="explore-kicker">Calendar Updating</div>
+                        <h3 class="mb-3">No upcoming events are published yet.</h3>
+                        <p class="mb-4">Your next event will appear here as soon as it is published from the admin dashboard.</p>
+                        <a href="contact-us.php" class="btn btn-default">Contact the Events Desk</a>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </section>
