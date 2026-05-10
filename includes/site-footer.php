@@ -18,6 +18,7 @@ if (class_exists(Database::class) && Database::available()) {
 $footerLabel = $footerSettings["footer_newsletter_label"] ?? "Stay Connected";
 $footerTitle = $footerSettings["footer_newsletter_title"] ?? "Get updates on outreach, events, and impact stories.";
 $footerButton = $footerSettings["footer_newsletter_button"] ?? "Join Newsletter";
+$footerBrandName = trim((string)($footerSettings["footer_brand_name"] ?? ""));
 $footerBrandText = $footerSettings["footer_brand_text"] ?? "We create credible programmes, visible impact, and trusted partnerships that supporters can follow with confidence.";
 $footerAddress = $footerSettings["footer_address"] ?? "13 Charity Avenue, Lagos, Nigeria";
 $footerPhone = $footerSettings["footer_phone"] ?? ($footerSettings["footer_cta_phone"] ?? "+1234567899");
@@ -162,8 +163,23 @@ $socials = [
             height: 1px;
             background: rgba(255, 255, 255, 0.08);
         }
+        .site-footer-v2 .footer-brand-lockup {
+            display: flex;
+            align-items: center;
+            margin-bottom: 22px;
+        }
         .site-footer-v2 .footer-brand img {
-            margin-bottom: 24px;
+            margin-bottom: 0;
+            flex-shrink: 0;
+        }
+        .site-footer-v2 .footer-brand-title {
+            color: #fff;
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            line-height: 1.2;
+            font-weight: 700;
+            margin: 0 0 0 16px;
+            max-width: 220px;
         }
         .site-footer-v2 .footer-brand p {
             font-size: 0.9rem;
@@ -342,6 +358,10 @@ $socials = [
             .site-footer-v2 .footer-grid {
                 grid-template-columns: 1fr;
             }
+            .site-footer-v2 .footer-brand-title {
+                font-size: 1rem;
+                max-width: none;
+            }
             .site-footer-v2 .footer-bottom {
                 flex-direction: column;
                 gap: 15px;
@@ -365,7 +385,12 @@ $socials = [
 
             <div class="footer-grid">
                 <div class="footer-col footer-brand">
-                    <img class="site-logo site-logo--footer" src="<?php echo Helpers::e($brand_logo_footer); ?>" alt="<?php echo Helpers::e($brand_name); ?>">
+                    <div class="footer-brand-lockup">
+                        <img class="site-logo site-logo--footer" src="<?php echo Helpers::e($brand_logo_footer); ?>" alt="<?php echo Helpers::e($brand_name); ?>">
+                        <?php if ($footerBrandName !== ""): ?>
+                            <h3 class="footer-brand-title"><?php echo Helpers::e($footerBrandName); ?></h3>
+                        <?php endif; ?>
+                    </div>
                     <p><?php echo Helpers::e($footerBrandText); ?></p>
                     <div class="footer-socials">
                         <ul>

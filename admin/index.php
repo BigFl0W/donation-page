@@ -3360,6 +3360,10 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
             <div class="card" style="padding:18px;background:var(--surface)">
               <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Brand & Contact</h3>
               <div class="form-field">
+                <label class="form-label">Footer Brand Name</label>
+                <input class="form-input" name="settings[brand_name]" value="<?php echo Helpers::e($settings['footer_brand_name'] ?? ''); ?>" placeholder="Optional name beside the footer logo">
+              </div>
+              <div class="form-field">
                 <label class="form-label">Brand Description</label>
                 <textarea class="form-input" name="settings[brand_text]" rows="4"><?php echo Helpers::e($settings['footer_brand_text'] ?? 'We create credible programmes, visible impact, and trusted partnerships that supporters can follow with confidence.'); ?></textarea>
               </div>
