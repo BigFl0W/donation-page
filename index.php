@@ -21,6 +21,13 @@ $homePartners = \App\Database::fetchAll(
      ORDER BY sort_order ASC, name ASC
      LIMIT 12"
 ) ?: [];
+$homeGalleryItems = \App\Database::fetchAll(
+    "SELECT title, media_type, media_path, description
+     FROM gallery_items
+     WHERE status = 'published'
+     ORDER BY created_at DESC
+     LIMIT 5"
+) ?: [];
 $homeAboutSettings = [];
 $rawHomeAbout = \App\Database::fetchAll("SELECT setting_key, setting_value FROM settings WHERE setting_key LIKE 'about_%'");
 foreach ($rawHomeAbout as $settingRow) {
@@ -761,150 +768,45 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
         <!-- Images Gallery Style Start -->
         <section id="media-gallery" class="wide-tb-100">
             <div class="container">
-                <div class="row img-gallery">                    
+                <div class="row img-gallery">
                     <div class="col-lg-4">
                         <h1 class="heading-main mb-lg-0">
-                            <small>Images Gallery</small>
-                            Project We Have Done
+                            <small>Photo & Video Gallery</small>
+                            Moments From Our Work
                         </h1>
-                    </div>
-
-                    <div class="col-lg-4 col-md-6">
-                        <!-- Gallery Item -->
-                        <div class="img-gallery-item">
-                            <a href="assets/images/gallery/gallery_img_1.jpg" title="School Development">
-                                <div class="gallery-content">
-                                    <div class="tag"><span>Education</span></div>
-                                    <h3>School Development</h3>
-                                    <div class="img-open">
-                                        <i data-feather="plus-circle"></i>
-                                    </div>
-                                </div>
-                                <img src="assets/images/gallery/gallery_img_1.jpg" alt="">
-                            </a>
+                        <div style="margin-top:24px;">
+                            <a href="gallery" class="btn btn-outline-dark">View More Images</a>
                         </div>
-                        <!-- Gallery Item -->
                     </div>
-
-                    <div class="col-lg-4 col-md-6">
-                        <!-- Gallery Item -->
-                        <div class="img-gallery-item">
-                            <a href="assets/images/gallery/gallery_img_2.jpg" title="Child Welfare">
-                                <div class="gallery-content">
-                                    <div class="tag"><span>Education</span></div>
-                                    <h3>Child Welfare</h3>
-                                    <div class="img-open">
-                                        <i data-feather="plus-circle"></i>
-                                    </div>
+                    <?php if ($homeGalleryItems): ?>
+                        <?php foreach ($homeGalleryItems as $galleryItem): ?>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="img-gallery-item">
+                                    <a href="<?php echo \App\Helpers::e($galleryItem['media_path']); ?>" title="<?php echo \App\Helpers::e($galleryItem['title']); ?>" <?php echo ($galleryItem['media_type'] ?? 'photo') === 'video' ? '' : 'data-fancybox="home-gallery"'; ?>>
+                                        <div class="gallery-content">
+                                            <div class="tag"><span><?php echo ($galleryItem['media_type'] ?? 'photo') === 'video' ? 'Video' : 'Photo'; ?></span></div>
+                                            <h3><?php echo \App\Helpers::e($galleryItem['title']); ?></h3>
+                                            <div class="img-open">
+                                                <i data-feather="<?php echo ($galleryItem['media_type'] ?? 'photo') === 'video' ? 'play-circle' : 'plus-circle'; ?>"></i>
+                                            </div>
+                                        </div>
+                                        <?php if (($galleryItem['media_type'] ?? 'photo') === 'video'): ?>
+                                            <video src="<?php echo \App\Helpers::e($galleryItem['media_path']); ?>" muted playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+                                        <?php else: ?>
+                                            <img src="<?php echo \App\Helpers::e($galleryItem['media_path']); ?>" alt="<?php echo \App\Helpers::e($galleryItem['title']); ?>">
+                                        <?php endif; ?>
+                                    </a>
                                 </div>
-                                <img src="assets/images/gallery/gallery_img_2.jpg" alt="">
-                            </a>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="col-lg-8 col-md-12">
+                            <div class="explore-intro-card">
+                                <h3 class="mb-2">No gallery items published yet.</h3>
+                                <p class="mb-0">Upload and publish gallery items from the admin dashboard and the latest five will appear here automatically.</p>
+                            </div>
                         </div>
-                        <!-- Gallery Item -->
-                    </div>
-
-                    <div class="col-lg-4 col-md-6">
-                        <!-- Gallery Item -->
-                        <div class="img-gallery-item">
-                            <a href="assets/images/gallery/gallery_img_3.jpg" title="Child Welfare">
-                                <div class="gallery-content">
-                                    <div class="tag"><span>Education</span></div>
-                                    <h3>Child Welfare</h3>
-                                    <div class="img-open">
-                                        <i data-feather="plus-circle"></i>
-                                    </div>
-                                </div>
-                                <img src="assets/images/gallery/gallery_img_3.jpg" alt="">
-                            </a>
-                        </div>
-                        <!-- Gallery Item -->
-                    </div>
-
-                    <div class="col-lg-4 col-md-6">
-                        <!-- Gallery Item -->
-                        <div class="img-gallery-item">
-                            <a href="assets/images/gallery/gallery_img_4.jpg" title="Child Welfare">
-                                <div class="gallery-content">
-                                    <div class="tag"><span>Education</span></div>
-                                    <h3>Child Welfare</h3>
-                                    <div class="img-open">
-                                        <i data-feather="plus-circle"></i>
-                                    </div>
-                                </div>
-                                <img src="assets/images/gallery/gallery_img_4.jpg" alt="">
-                            </a>
-                        </div>
-                        <!-- Gallery Item -->
-                    </div>
-
-                    <div class="col-lg-4 col-md-6">
-                        <!-- Gallery Item -->
-                        <div class="img-gallery-item">
-                            <a href="assets/images/gallery/gallery_img_5.jpg" title="Child Welfare">
-                                <div class="gallery-content">
-                                    <div class="tag"><span>Education</span></div>
-                                    <h3>Child Welfare</h3>
-                                    <div class="img-open">
-                                        <i data-feather="plus-circle"></i>
-                                    </div>
-                                </div>
-                                <img src="assets/images/gallery/gallery_img_5.jpg" alt="">
-                            </a>
-                        </div>
-                        <!-- Gallery Item -->
-                    </div>
-
-                    <div class="col-lg-4 col-md-6">
-                        <!-- Gallery Item -->
-                        <div class="img-gallery-item">
-                            <a href="assets/images/gallery/gallery_img_6.jpg" title="Child Welfare">
-                                <div class="gallery-content">
-                                    <div class="tag"><span>Education</span></div>
-                                    <h3>Child Welfare</h3>
-                                    <div class="img-open">
-                                        <i data-feather="plus-circle"></i>
-                                    </div>
-                                </div>
-                                <img src="assets/images/gallery/gallery_img_6.jpg" alt="">
-                            </a>
-                        </div>
-                        <!-- Gallery Item -->
-                    </div>
-
-                    <div class="col-lg-4 col-md-6">
-                        <!-- Gallery Item -->
-                        <div class="img-gallery-item">
-                            <a href="assets/images/gallery/gallery_img_7.jpg" title="Child Welfare">
-                                <div class="gallery-content">
-                                    <div class="tag"><span>Education</span></div>
-                                    <h3>Child Welfare</h3>
-                                    <div class="img-open">
-                                        <i data-feather="plus-circle"></i>
-                                    </div>
-                                </div>
-                                <img src="assets/images/gallery/gallery_img_7.jpg" alt="">
-                            </a>
-                        </div>
-                        <!-- Gallery Item -->
-                    </div>
-
-                    <div class="col-lg-4 col-md-6">
-                        <!-- Gallery Item -->
-                        <div class="img-gallery-item">
-                            <a href="assets/images/gallery/gallery_img_8.jpg" title="Child Welfare">
-                                <div class="gallery-content">
-                                    <div class="tag"><span>Education</span></div>
-                                    <h3>Child Welfare</h3>
-                                    <div class="img-open">
-                                        <i data-feather="plus-circle"></i>
-                                    </div>
-                                </div>
-                                <img src="assets/images/gallery/gallery_img_8.jpg" alt="">
-                            </a>
-                        </div>
-                        <!-- Gallery Item -->
-                    </div>
-
+                    <?php endif; ?>
                 </div>
             </div>
         </section>

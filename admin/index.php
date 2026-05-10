@@ -42,6 +42,7 @@ if ($dbAvail) {
     foreach ($rawSettings as $s) { $settings[$s["setting_key"]] = $s["setting_value"]; }
 }
 $programmeDefaults = require __DIR__ . "/../config/programme_defaults.php";
+$galleryDefaults = require __DIR__ . "/../config/gallery_defaults.php";
 
 // ─── DEFAULT VARIABLES (NOW $SETTINGS IS AVAILABLE) ────────────────────────────────
 $adminBrandLogo = Helpers::brandLogoPath();
@@ -499,6 +500,16 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $description = (string) ($_POST["description"] ?? "");
         $status = (string) ($_POST["status"] ?? "draft");
 
+        if (isset($_FILES["media_file"]) && $_FILES["media_file"]["error"] === UPLOAD_ERR_OK) {
+            $name = time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($_FILES["media_file"]["name"]));
+            $dir = __DIR__ . "/../assets/uploads/gallery/";
+            if (!is_dir($dir)) @mkdir($dir, 0777, true);
+            $dest = $dir . $name;
+            if (move_uploaded_file($_FILES["media_file"]["tmp_name"], $dest)) {
+                $mediaPath = "assets/uploads/gallery/" . $name;
+            }
+        }
+
         if ($title !== "" && $mediaPath !== "") {
             Database::execute(
                 "INSERT INTO gallery_items (title,media_type,media_path,thumbnail_path,description,status,created_at)
@@ -512,11 +523,26 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
 
     if ($action === "update_gallery") {
         $id = (int) ($_POST["id"] ?? 0);
-        $title = trim((string) ($_POST["title"] ?? ""));
+        $title = trim((string) ($_POST["title"] ?? ""));        
         $mediaType = (string) ($_POST["media_type"] ?? "photo");
         $mediaPath = (string) ($_POST["media_path"] ?? "");
         $description = (string) ($_POST["description"] ?? "");
         $status = (string) ($_POST["status"] ?? "draft");
+
+        if (isset($_FILES["media_file"]) && $_FILES["media_file"]["error"] === UPLOAD_ERR_OK) {
+            $name = time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($_FILES["media_file"]["name"]));
+            $dir = __DIR__ . "/../assets/uploads/gallery/";
+            if (!is_dir($dir)) @mkdir($dir, 0777, true);
+            $dest = $dir . $name;
+            if (move_uploaded_file($_FILES["media_file"]["tmp_name"], $dest)) {
+                $mediaPath = "assets/uploads/gallery/" . $name;
+            }
+        }
+
+        if ($mediaPath === "" && $id > 0) {
+            $existing = Database::fetchOne("SELECT media_path FROM gallery_items WHERE id = :id", ["id" => $id]);
+            if ($existing) $mediaPath = (string)($existing["media_path"] ?? "");
+        }
 
         if ($title !== "" && $mediaPath !== "" && $id > 0) {
             Database::execute(
@@ -532,6 +558,25 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
     if ($action === "delete_gallery") {
         $id = (int) ($_POST["id"] ?? 0);
         if ($id > 0) { Database::execute("DELETE FROM gallery_items WHERE id=:id", ["id" => $id]); $flashMsg = "Gallery item deleted"; $flashType = "success"; }
+    }
+
+    if ($action === "save_gallery_page") {
+        $saveOk = true;
+        if (isset($_POST["settings"]) && is_array($_POST["settings"])) {
+            foreach ($_POST["settings"] as $key => $val) {
+                $saved = Database::execute(
+                    "INSERT INTO settings (setting_group, setting_key, setting_value)
+                     VALUES ('gallery', :key, :val)
+                     ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                    ["key" => "gallery_" . $key, "val" => is_string($val) ? trim($val) : $val]
+                );
+                if (!$saved) $saveOk = false;
+            }
+        }
+        $flashMsg = $saveOk ? "Gallery page updated successfully" : "Gallery page update failed. Please try again.";
+        $flashType = $saveOk ? "success" : "danger";
+        header("Location: index.php?msg=" . urlencode($flashMsg) . "&type=" . $flashType . "&page=gallery");
+        exit;
     }
 
     if ($action === "create_partner") {
@@ -1101,7 +1146,7 @@ if ($dbAvail && isset($_GET["ajax"]) && $_GET["ajax"] === "get_item") {
 }
 
 // Fetch all data for management pages
-$allEvents = []; $allPosts = []; $allGalleryItems = [];
+$allEvents = []; $allPosts = []; $allGalleryItems = []; $galleryPageSettings = [];
 if ($dbAvail) {
     $allEvents = Database::fetchAll(
         "SELECT e.*, COALESCE(a.full_name,'Events Desk') AS organizer
@@ -1116,8 +1161,12 @@ if ($dbAvail) {
          ORDER BY COALESCE(p.published_at,p.updated_at) DESC LIMIT 20"
     ) ?: [];
     $allGalleryItems = Database::fetchAll(
-        "SELECT * FROM gallery_items ORDER BY created_at DESC LIMIT 20"
+        "SELECT * FROM gallery_items ORDER BY created_at DESC LIMIT 50"
     ) ?: [];
+    $rawGalleryPage = Database::fetchAll("SELECT setting_key, setting_value FROM settings WHERE setting_key LIKE 'gallery_%'") ?: [];
+    foreach ($rawGalleryPage as $s) {
+        $galleryPageSettings[$s["setting_key"]] = $s["setting_value"];
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -3154,6 +3203,104 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
        GALLERY
   ════════════════════════════════════════════ -->
   <div class="content" id="page-gallery">
+    <div class="card" style="margin-bottom:18px;">
+      <form method="post">
+        <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
+        <input type="hidden" name="_action" value="save_gallery_page">
+        <input type="hidden" name="_page" value="gallery">
+
+        <div class="card-hd">
+          <div class="card-hd-left">
+            <div class="card-title"><i class="fas fa-images" style="margin-right:6px;color:var(--brand)"></i>Gallery Page Builder</div>
+          </div>
+          <button class="btn-primary" type="submit"><i class="fas fa-floppy-disk"></i> Save Gallery Page</button>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div class="card" style="padding:18px;background:var(--surface)">
+            <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Hero Intro</h3>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label">Kicker</label>
+                <input class="form-input" name="settings[hero_kicker]" value="<?php echo Helpers::e($galleryPageSettings['gallery_hero_kicker'] ?? $galleryDefaults['hero_kicker']); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Main Title</label>
+                <input class="form-input" name="settings[hero_title]" value="<?php echo Helpers::e($galleryPageSettings['gallery_hero_title'] ?? $galleryDefaults['hero_title']); ?>">
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Description</label>
+              <textarea class="form-input" name="settings[hero_description]" rows="4"><?php echo Helpers::e($galleryPageSettings['gallery_hero_description'] ?? $galleryDefaults['hero_description']); ?></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label">Primary Button Label</label>
+                <input class="form-input" name="settings[primary_button_label]" value="<?php echo Helpers::e($galleryPageSettings['gallery_primary_button_label'] ?? $galleryDefaults['primary_button_label']); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Primary Button URL</label>
+                <input class="form-input" name="settings[primary_button_url]" value="<?php echo Helpers::e($galleryPageSettings['gallery_primary_button_url'] ?? $galleryDefaults['primary_button_url']); ?>">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label">Secondary Button Label</label>
+                <input class="form-input" name="settings[secondary_button_label]" value="<?php echo Helpers::e($galleryPageSettings['gallery_secondary_button_label'] ?? $galleryDefaults['secondary_button_label']); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Secondary Button URL</label>
+                <input class="form-input" name="settings[secondary_button_url]" value="<?php echo Helpers::e($galleryPageSettings['gallery_secondary_button_url'] ?? $galleryDefaults['secondary_button_url']); ?>">
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="padding:18px;background:var(--surface)">
+            <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Featured Field Update</h3>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label">Kicker</label>
+                <input class="form-input" name="settings[featured_kicker]" value="<?php echo Helpers::e($galleryPageSettings['gallery_featured_kicker'] ?? $galleryDefaults['featured_kicker']); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Featured Media Item</label>
+                <select class="form-control" name="settings[featured_item_id]">
+                  <option value="">Use latest published item</option>
+                  <?php foreach ($allGalleryItems as $galleryOption): ?>
+                    <option value="<?php echo Helpers::e((string)($galleryOption['id'] ?? '')); ?>" <?php echo ((string)($galleryPageSettings['gallery_featured_item_id'] ?? '') === (string)($galleryOption['id'] ?? '')) ? 'selected' : ''; ?>>
+                      <?php echo Helpers::e(($galleryOption['title'] ?? 'Untitled') . ' [' . ($galleryOption['status'] ?? 'draft') . ']'); ?>
+                    </option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Featured Title</label>
+              <input class="form-input" name="settings[featured_title]" value="<?php echo Helpers::e($galleryPageSettings['gallery_featured_title'] ?? $galleryDefaults['featured_title']); ?>">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Featured Description</label>
+              <textarea class="form-input" name="settings[featured_description]" rows="4"><?php echo Helpers::e($galleryPageSettings['gallery_featured_description'] ?? $galleryDefaults['featured_description']); ?></textarea>
+            </div>
+          </div>
+
+          <div class="card" style="padding:18px;background:var(--surface)">
+            <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Collection Heading</h3>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label">Small Label</label>
+                <input class="form-input" name="settings[collection_kicker]" value="<?php echo Helpers::e($galleryPageSettings['gallery_collection_kicker'] ?? $galleryDefaults['collection_kicker']); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Collection Title</label>
+                <input class="form-input" name="settings[collection_title]" value="<?php echo Helpers::e($galleryPageSettings['gallery_collection_title'] ?? $galleryDefaults['collection_title']); ?>">
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
     <div class="section-hd">
       <div><h2>Media Gallery</h2><p>Photos and videos from our programs</p></div>
       <div style="display:flex;gap:8px">
@@ -3169,12 +3316,28 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         $gIcon = $item["media_type"] === "video" ? "fa-video" : "fa-image";
       ?>
       <div class="gallery-item">
-        <div class="g-thumb" style="background:linear-gradient(135deg,<?php echo Helpers::e($gc[0]); ?>,<?php echo Helpers::e($gc[1]); ?>)"><i class="fas <?php echo Helpers::e($gIcon); ?>" style="color:rgba(255,255,255,.8)"></i></div>
+        <div class="g-thumb" style="background:linear-gradient(135deg,<?php echo Helpers::e($gc[0]); ?>,<?php echo Helpers::e($gc[1]); ?>)">
+          <?php if (!empty($item["media_path"])): ?>
+            <?php if (($item["media_type"] ?? "photo") === "video"): ?>
+              <video src="../<?php echo Helpers::e($item["media_path"]); ?>" muted playsinline style="width:100%;height:100%;object-fit:cover"></video>
+            <?php else: ?>
+              <img src="../<?php echo Helpers::e($item["media_path"]); ?>" alt="" style="width:100%;height:100%;object-fit:cover">
+            <?php endif; ?>
+          <?php else: ?>
+            <i class="fas <?php echo Helpers::e($gIcon); ?>" style="color:rgba(255,255,255,.8)"></i>
+          <?php endif; ?>
+        </div>
         <div class="g-overlay">
           <div class="g-actions">
+            <button class="g-btn" onclick="openModal('gallery',<?php echo Helpers::e((int)($item['id'] ?? 0)); ?>)"><i class="fas fa-pen"></i></button>
             <button class="g-btn" onclick="deleteItem('gallery',<?php echo Helpers::e((int)($item["id"] ?? 0)); ?>)"><i class="fas fa-trash"></i></button>
           </div>
-          <div class="g-caption"><?php echo Helpers::e($item["title"] ?? "Untitled"); ?></div>
+          <div class="g-caption">
+            <?php echo Helpers::e($item["title"] ?? "Untitled"); ?>
+            <div style="font-size:.72rem; margin-top:6px; opacity:.85; text-transform:uppercase; letter-spacing:.08em;">
+              <?php echo Helpers::e(($item["media_type"] ?? "photo") . " • " . ($item["status"] ?? "draft")); ?>
+            </div>
+          </div>
         </div>
       </div>
       <?php endforeach; ?>
@@ -4150,7 +4313,8 @@ const MODAL_FORMS = {
       {name:'id',type:'hidden'},
       {name:'title',label:'Title',type:'text',required:true,placeholder:'Image or video title'},
       {name:'media_type',label:'Media Type',type:'select',options:['photo','video']},
-      {name:'media_path',label:'Media URL / Path',type:'text',required:true,placeholder:'/assets/images/uploads/file.jpg'},
+      {name:'media_file',label:'Upload Media File',type:'file'},
+      {name:'media_path',label:'Media URL / Path (optional)',type:'text',placeholder:'/assets/images/uploads/file.jpg'},
       {name:'description',label:'Description',type:'textarea',placeholder:'Optional description…',rows:3},
       {name:'status',label:'Status',type:'select',options:['draft','published']},
     ]
