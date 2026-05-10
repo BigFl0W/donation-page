@@ -3432,7 +3432,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
               </div>
             </div>
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:16px;">
-              <?php for ($i = 1; $i <= 5; $i++): ?>
+              <?php for ($i = 1; $i <= 6; $i++): ?>
                 <?php $mediaPath = $settings["programme_media_{$i}"] ?? ''; ?>
                 <div class="card" style="padding:14px; background:#fff;">
                   <label class="form-label">Media Slot <?php echo $i; ?></label>

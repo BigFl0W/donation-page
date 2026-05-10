@@ -6,7 +6,7 @@ return [
     'hero_title' => 'Our Programs',
     'hero_intro' => "At Friends at Heart Welfare Initiative, our programs are designed to bring hope, restore dignity and provide practical support to vulnerable individuals, families and underserved communities. We believe that true compassion goes beyond words, it requires action that changes lives and creates lasting impact.\n\nOur initiatives focus on education, healthcare, empowerment, humanitarian support and community development, ensuring that no one is left behind because of poverty or lack of opportunity.",
     'media_heading' => 'Stories in Motion',
-    'media_intro' => 'Upload images and videos that visually reflect impact, outreach, and the people at the heart of each intervention.',
+    'media_intro' => 'A visual record of compassion in action, highlighting outreach moments, community response, and the lives being touched through each programme.',
     'section_1_title' => 'Educational Support Program',
     'section_1_body' => "Education is one of the strongest tools for breaking the cycle of poverty. Unfortunately, many children are forced out of school because their parents or guardians cannot afford school fees and educational materials.\n\nThrough our Educational Support Program, we provide:\n\n(i) School fee sponsorship\n\n(ii) Educational materials and supplies\n\n(iii) Back-to-school support\n\n(iv) Scholarships for vulnerable children\n\n(v) Learning assistance for underserved families\n\nOur goal is to ensure that every child has the opportunity to learn, grow and pursue a brighter future regardless of financial background.\n\nWe do not just sponsor education; we restore dreams and build future leaders.",
     'section_2_title' => 'Hospital Bill Support Program',
@@ -26,5 +26,5 @@ return [
     'commitment_title' => 'Our Commitment',
     'commitment_body' => "At Friends at Heart Welfare Initiative, we are committed to serving humanity with integrity, compassion, transparency and accountability.\n\nEvery school fee paid, every hospital bill settled, every medical outreach organized, every orphanage home visited and every individual empowered represents a life touched and a future restored.\n\nWe believe that kindness can heal wounds, compassion can restore hope and collective action can transform communities.\n\nTogether, we can build a society where no one is abandoned in their time of need.",
     'cta_title' => 'Bring the Work to Life',
-    'cta_text' => 'Use the admin dashboard to update the article, swap media, and keep the Programme page aligned with your latest outreach and community impact.',
+    'cta_text' => 'Our work is rooted in compassion, guided by accountability, and strengthened through consistent community impact. Each programme reflects a practical commitment to restoring dignity, expanding opportunity, and standing with those who need support most.',
 ];

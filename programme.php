@@ -71,7 +71,7 @@ $page_title = 'Programme | ' . Helpers::brandName();
 $hero_title = $getProgrammeValue('hero_title');
 $section_title = 'Programme';
 $mediaSlots = [];
-for ($i = 1; $i <= 5; $i++) {
+for ($i = 1; $i <= 6; $i++) {
     $path = trim((string)($programmeSettings["programme_media_{$i}"] ?? ''));
     if ($path !== '') {
         $mediaSlots[] = $path;
@@ -241,6 +241,7 @@ require_once __DIR__ . '/includes/header.php';
   }
   .programme-media-tile:nth-child(1) { grid-column:span 2; min-height:250px; }
   .programme-media-tile:nth-child(4) { grid-column:span 2; min-height:220px; }
+  .programme-media-tile:nth-child(6) { min-height:220px; }
   .programme-media-tile img,
   .programme-media-tile video {
     width:100%;
