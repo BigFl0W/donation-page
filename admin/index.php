@@ -638,6 +638,25 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
+    if ($action === "save_footer_settings") {
+        $saveOk = true;
+        if (isset($_POST["settings"]) && is_array($_POST["settings"])) {
+            foreach ($_POST["settings"] as $key => $val) {
+                $saved = Database::execute(
+                    "INSERT INTO settings (setting_group, setting_key, setting_value)
+                     VALUES ('footer', :key, :val)
+                     ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                    ["key" => "footer_" . $key, "val" => is_string($val) ? trim($val) : $val]
+                );
+                if (!$saved) $saveOk = false;
+            }
+        }
+        $flashMsg = $saveOk ? "Footer updated successfully" : "Footer update failed. Please try again.";
+        $flashType = $saveOk ? "success" : "danger";
+        header("Location: index.php?msg=" . urlencode($flashMsg) . "&type=" . $flashType . "&page=footer");
+        exit;
+    }
+
     if ($action === "create_admin") {
         $fullName = trim((string) ($_POST["full_name"] ?? ""));
         $email = trim((string) ($_POST["email"] ?? ""));
@@ -2179,6 +2198,10 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <i class="fas fa-circle-info nav-icon"></i>
       <span class="nav-text">About Page</span>
     </div>
+    <div class="nav-item" onclick="showPage('footer',this)">
+      <i class="fas fa-window-maximize nav-icon"></i>
+      <span class="nav-text">Footer</span>
+    </div>
     <div class="nav-item" onclick="showPage('gallery',this)">
       <i class="fas fa-images nav-icon"></i>
       <span class="nav-text">Gallery</span>
@@ -3273,6 +3296,170 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       btn.classList.add('on');
     }
   </script>
+  <div class="content" id="page-footer">
+    <div class="card">
+      <form method="post">
+        <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
+        <input type="hidden" name="_action" value="save_footer_settings">
+        <input type="hidden" name="_page" value="footer">
+
+        <div class="card-hd">
+          <div class="card-hd-left">
+            <div class="card-title"><i class="fas fa-window-maximize" style="margin-right:6px;color:var(--brand)"></i>Footer Builder</div>
+          </div>
+          <button class="btn-primary" type="submit"><i class="fas fa-floppy-disk"></i> Save Footer</button>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <div class="card" style="padding:18px;background:var(--surface)">
+            <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Top Call To Action</h3>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label">Small Label</label>
+                <input class="form-input" name="settings[newsletter_label]" value="<?php echo Helpers::e($settings['footer_newsletter_label'] ?? 'Stay Connected'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Button Label</label>
+                <input class="form-input" name="settings[newsletter_button]" value="<?php echo Helpers::e($settings['footer_newsletter_button'] ?? 'Join Newsletter'); ?>">
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Main Heading</label>
+              <textarea class="form-input" name="settings[newsletter_title]" rows="2"><?php echo Helpers::e($settings['footer_newsletter_title'] ?? 'Get updates on outreach, events, and impact stories.'); ?></textarea>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Brand & Contact</h3>
+              <div class="form-field">
+                <label class="form-label">Brand Description</label>
+                <textarea class="form-input" name="settings[brand_text]" rows="4"><?php echo Helpers::e($settings['footer_brand_text'] ?? 'We create credible programmes, visible impact, and trusted partnerships that supporters can follow with confidence.'); ?></textarea>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Address</label>
+                <textarea class="form-input" name="settings[address]" rows="2"><?php echo Helpers::e($settings['footer_address'] ?? '13 Charity Avenue, Lagos, Nigeria'); ?></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-field">
+                  <label class="form-label">Phone</label>
+                  <input class="form-input" name="settings[phone]" value="<?php echo Helpers::e($settings['footer_phone'] ?? '+1234567899'); ?>">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Email</label>
+                  <input class="form-input" name="settings[email]" value="<?php echo Helpers::e($settings['footer_email'] ?? 'info@graciouscharity.org'); ?>">
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Opening Hours</label>
+                <input class="form-input" name="settings[hours]" value="<?php echo Helpers::e($settings['footer_hours'] ?? 'Mon-Fri / 9:00 AM - 6:00 PM'); ?>">
+              </div>
+            </div>
+
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Callout & Copyright</h3>
+              <div class="form-row">
+                <div class="form-field">
+                  <label class="form-label">Callout Label</label>
+                  <input class="form-input" name="settings[cta_title]" value="<?php echo Helpers::e($settings['footer_cta_title'] ?? 'Give us a call'); ?>">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Callout Phone</label>
+                  <input class="form-input" name="settings[cta_phone]" value="<?php echo Helpers::e($settings['footer_cta_phone'] ?? '+1234567899'); ?>">
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Copyright Label</label>
+                <input class="form-input" name="settings[copyright]" value="<?php echo Helpers::e($settings['footer_copyright'] ?? 'Gracious Charity'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Quick Links Column Title</label>
+                <input class="form-input" name="settings[links_title]" value="<?php echo Helpers::e($settings['footer_links_title'] ?? 'Quick Links'); ?>">
+              </div>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Quick Links</h3>
+              <?php for ($i = 1; $i <= 4; $i++): ?>
+                <div class="form-row">
+                  <div class="form-field">
+                    <label class="form-label">Link <?php echo $i; ?> Label</label>
+                    <input class="form-input" name="settings[link_<?php echo $i; ?>_label]" value="<?php echo Helpers::e($settings["footer_link_{$i}_label"] ?? ''); ?>">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Link <?php echo $i; ?> URL</label>
+                    <input class="form-input" name="settings[link_<?php echo $i; ?>_url]" value="<?php echo Helpers::e($settings["footer_link_{$i}_url"] ?? ''); ?>">
+                  </div>
+                </div>
+              <?php endfor; ?>
+            </div>
+
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Footer Note Card</h3>
+              <div class="form-field">
+                <label class="form-label">Card Title</label>
+                <input class="form-input" name="settings[note_title]" value="<?php echo Helpers::e($settings['footer_note_title'] ?? 'Support the Mission'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Card Text</label>
+                <textarea class="form-input" name="settings[note_text]" rows="4"><?php echo Helpers::e($settings['footer_note_text'] ?? 'Support our programmes, follow new stories, and stay close to the work happening in communities.'); ?></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-field">
+                  <label class="form-label">Button Label</label>
+                  <input class="form-input" name="settings[note_button]" value="<?php echo Helpers::e($settings['footer_note_button'] ?? 'Donate Now'); ?>">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Button URL</label>
+                  <input class="form-input" name="settings[note_url]" value="<?php echo Helpers::e($settings['footer_note_url'] ?? 'donation-page.php'); ?>">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Social Links</h3>
+              <div class="form-field">
+                <label class="form-label">Facebook URL</label>
+                <input class="form-input" name="settings[social_facebook]" value="<?php echo Helpers::e($settings['footer_social_facebook'] ?? ''); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Twitter URL</label>
+                <input class="form-input" name="settings[social_twitter]" value="<?php echo Helpers::e($settings['footer_social_twitter'] ?? ''); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Instagram URL</label>
+                <input class="form-input" name="settings[social_instagram]" value="<?php echo Helpers::e($settings['footer_social_instagram'] ?? ''); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">YouTube URL</label>
+                <input class="form-input" name="settings[social_youtube]" value="<?php echo Helpers::e($settings['footer_social_youtube'] ?? ''); ?>">
+              </div>
+            </div>
+
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Bottom Links</h3>
+              <?php for ($i = 1; $i <= 3; $i++): ?>
+                <div class="form-row">
+                  <div class="form-field">
+                    <label class="form-label">Bottom Link <?php echo $i; ?> Label</label>
+                    <input class="form-input" name="settings[bottom_link_<?php echo $i; ?>_label]" value="<?php echo Helpers::e($settings["footer_bottom_link_{$i}_label"] ?? ''); ?>">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Bottom Link <?php echo $i; ?> URL</label>
+                    <input class="form-input" name="settings[bottom_link_<?php echo $i; ?>_url]" value="<?php echo Helpers::e($settings["footer_bottom_link_{$i}_url"] ?? ''); ?>">
+                  </div>
+                </div>
+              <?php endfor; ?>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
   <div class="content" id="page-security">
     <div class="stats-grid">
       <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-server"></i></div><span class="stat-trend up">Healthy</span></div><div class="stat-value">99.8%</div><div class="stat-label">System Uptime</div></div>
@@ -3591,7 +3778,7 @@ const PAGES = {
   dashboard:'Dashboard',donations:'Donations',users:'Users',
   programmes:'Programmes',partners:'Partners',blog:'Blog & News',
   events:'Events',gallery:'Gallery',security:'Security',settings:'Settings',
-  profile:'My Profile',messages:'Messages', about:'About Page Builder'
+  profile:'My Profile',messages:'Messages', about:'About Page Builder', footer:'Footer Builder'
 };
 
 function previewAvatar(input) {
