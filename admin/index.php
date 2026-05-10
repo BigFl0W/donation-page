@@ -1205,13 +1205,14 @@ body{
 
 /* ═══════ MAIN ═══════ */
 .main{
-  margin-left:var(--sidebar-w);flex:1;
+  margin-left:var(--sidebar-w);flex:1;min-width:0;
+  width:calc(100% - var(--sidebar-w));
   transition:margin-left .3s cubic-bezier(.4,0,.2,1);
   min-height:100vh;display:flex;flex-direction:column;
 }
-.main.collapsed{margin-left:72px}
+.main.collapsed{margin-left:72px;width:calc(100% - 72px)}
 @media(max-width:1023px){
-  .main,.main.collapsed{margin-left:0}
+  .main,.main.collapsed{margin-left:0;width:100%}
   .brand{
     padding:18px 16px 14px;
   }
@@ -1239,6 +1240,7 @@ body{
   border-bottom:1px solid var(--border);
   display:flex;align-items:center;gap:14px;
   padding:0 24px;position:sticky;top:0;z-index:100;
+  min-width:0;
 }
 .menu-btn{
   width:38px;height:38px;border-radius:10px;
@@ -1288,7 +1290,7 @@ body{
   position:absolute;left:12px;top:50%;transform:translateY(-50%);
   color:var(--soft);font-size:.8rem;
 }
-.topbar-right{display:flex;align-items:center;gap:6px;margin-left:10px}
+.topbar-right{display:flex;align-items:center;gap:6px;margin-left:10px;flex-shrink:0}
 .tb-btn{
   width:36px;height:36px;border-radius:9px;
   border:1px solid var(--border);background:var(--white);cursor:pointer;
@@ -1389,7 +1391,7 @@ body{
 .dd-link.danger:hover { background: #fff1f2; color: var(--rose); }
 
 /* ═══════ CONTENT ═══════ */
-.content{flex:1;padding:26px;display:none}
+.content{flex:1;padding:26px;display:none;min-width:0}
 .content.active{display:block;animation:pageIn .28s ease}
 @keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
@@ -1399,7 +1401,8 @@ body{
   gap:16px;margin-bottom:22px;
 }
 .stats-grid.cols-3{grid-template-columns:repeat(3,1fr)}
-@media(max-width:1279px){.stats-grid,.stats-grid.cols-3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1279px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1023px){.stats-grid.cols-3{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:767px){.stats-grid,.stats-grid.cols-3{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:479px){.stats-grid,.stats-grid.cols-3{grid-template-columns:1fr}}
 
@@ -1737,6 +1740,7 @@ body{
 
 /* ═══════ PARTNERS ═══════ */
 .partners-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:1399px){.partners-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:899px){.partners-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:599px){.partners-grid{grid-template-columns:1fr}}
 
@@ -1744,7 +1748,7 @@ body{
   background:var(--white);border:1px solid var(--border);
   border-radius:11px;padding:17px;
   display:flex;align-items:center;gap:13px;
-  transition:all .2s;cursor:pointer;
+  transition:all .2s;cursor:pointer;min-width:0;
 }
 .partner-card:hover{border-color:var(--brand-light);box-shadow:0 4px 14px rgba(15,118,110,.1)}
 .partner-logo{

@@ -25,7 +25,7 @@ $page_description = "News, impact stories, announcements, and programme updates 
 $meta_keywords = "charity blog, non-profit news, impact stories, outreach updates";
 $canonical_url = Helpers::siteUrl("blog");
 $share_image = Helpers::siteUrl("assets/images/blogs/blog_img_1.jpg");
-$default_blog_image = "assets/images/blogs/blog_img_1.jpg";
+$default_blog_image = Helpers::siteUrl("assets/images/blogs/blog_img_1.jpg");
 $publishedCount = count($posts);
 $categoryCount = count(array_filter($categories, fn($category) => (int) ($category["post_count"] ?? 0) > 0));
 $tagCount = count($tags);
@@ -457,7 +457,7 @@ require __DIR__ . "/includes/header.php";
                 <?php if (!empty($secondaryPosts)): ?>
                     <div class="row g-4">
                         <?php foreach ($secondaryPosts as $post): ?>
-                            <?php $postImage = (string) ($post["featured_image"] ?: $default_blog_image); ?>
+                            <?php $default_blog_image = Helpers::siteUrl("assets/images/blogs/blog_img_1.jpg"); $postImage = Helpers::siteUrl((string) ($post["featured_image"] ?: $default_blog_image)); ?>
                             <div class="col-md-6">
                                 <article class="post-wrap blog-post-broken journal-card">
                                     <div class="post-img">
