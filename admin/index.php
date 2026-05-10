@@ -2879,6 +2879,8 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
             <form method="post" style="display:inline" onsubmit="return confirm('Delete this cause?');">
                <input type="hidden" name="_action" value="delete_programme">
                <input type="hidden" name="id" value="<?php echo $p['id']; ?>">
+               <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
+               <input type="hidden" name="_page" value="programmes">
                <button class="btn-secondary" style="padding:6px 14px; font-size:0.78rem; color:var(--rose);" type="submit"><i class="fas fa-trash"></i></button>
             </form>
           </div>
