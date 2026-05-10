@@ -1740,7 +1740,6 @@ body{
 
 /* ═══════ PARTNERS ═══════ */
 .partners-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-@media(max-width:1399px){.partners-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:899px){.partners-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:599px){.partners-grid{grid-template-columns:1fr}}
 

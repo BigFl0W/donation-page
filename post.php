@@ -75,7 +75,7 @@ require __DIR__ . "/includes/explore-header.php";
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
-        padding: 60px;
+        padding: 54px 54px 118px;
     }
     .article-category {
         display: inline-flex;
@@ -94,18 +94,18 @@ require __DIR__ . "/includes/explore-header.php";
     }
     .article-title {
         color: #fff;
-        font-size: clamp(2.5rem, 5vw, 4.2rem);
+        font-size: clamp(2.1rem, 4.3vw, 3.5rem);
         line-height: 1.05;
-        margin-bottom: 24px;
+        margin-bottom: 18px;
         font-family: var(--font-heading);
         max-width: 900px;
     }
     .article-meta {
         display: flex;
         flex-wrap: wrap;
-        gap: 24px;
+        gap: 16px 22px;
         color: rgba(255,255,255,0.85);
-        font-size: 1.05rem;
+        font-size: 0.92rem;
         font-weight: 600;
     }
     .article-meta span {
@@ -120,23 +120,23 @@ require __DIR__ . "/includes/explore-header.php";
     .article-content-wrapper {
         background: #fff;
         border-radius: 32px;
-        padding: 60px 70px;
+        padding: 52px 58px;
         box-shadow: 0 18px 45px rgba(77, 56, 18, 0.05);
-        margin-top: -80px;
+        margin-top: -36px;
         position: relative;
         z-index: 10;
         margin-bottom: 60px;
     }
     .article-lead {
-        font-size: 1.4rem;
-        line-height: 1.8;
+        font-size: 1.18rem;
+        line-height: 1.7;
         color: #132238;
         font-weight: 500;
         margin-bottom: 30px;
     }
     .article-body {
-        font-size: 1.15rem;
-        line-height: 1.9;
+        font-size: 1rem;
+        line-height: 1.8;
         color: #4a5568;
     }
     .article-body p {
@@ -147,15 +147,15 @@ require __DIR__ . "/includes/explore-header.php";
         margin: 3rem 0 1.5rem;
         font-family: var(--font-heading);
     }
-    .article-body h2 { font-size: 2.2rem; }
-    .article-body h3 { font-size: 1.7rem; }
+    .article-body h2 { font-size: 1.9rem; }
+    .article-body h3 { font-size: 1.5rem; }
     .article-body blockquote {
         border-left: 4px solid var(--primary-color);
         padding: 2rem 2.5rem;
         background: linear-gradient(145deg, #fffdf8 0%, #fff8ea 100%);
         border-radius: 0 24px 24px 0;
         font-style: italic;
-        font-size: 1.4rem;
+        font-size: 1.18rem;
         color: #132238;
         margin: 3rem 0;
         box-shadow: 0 12px 30px rgba(77, 56, 18, 0.05);
@@ -193,13 +193,13 @@ require __DIR__ . "/includes/explore-header.php";
     .article-author-info h4 {
         margin: 0 0 5px;
         color: #132238;
-        font-size: 1.3rem;
+        font-size: 1.12rem;
         font-family: var(--font-heading);
     }
     .article-author-info p {
         margin: 0;
         color: #64748b;
-        font-size: 1rem;
+        font-size: 0.94rem;
         line-height: 1.6;
     }
     .related-articles-section {
@@ -233,10 +233,10 @@ require __DIR__ . "/includes/explore-header.php";
         width: 100%;
     }
     .journal-card .post-content {
-        padding: 30px;
+        padding: 24px;
     }
     .journal-card .post-title {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         line-height: 1.3;
         margin: 12px 0 16px;
         font-family: var(--font-heading);
@@ -252,7 +252,7 @@ require __DIR__ . "/includes/explore-header.php";
         color: #5d677f;
         line-height: 1.7;
         margin-bottom: 0;
-        font-size: 1.05rem;
+        font-size: 0.95rem;
     }
     .journal-story-meta {
         display: flex;
@@ -267,15 +267,45 @@ require __DIR__ . "/includes/explore-header.php";
     }
     @media (max-width: 991px) {
         .article-hero-overlay {
-            padding: 40px 30px;
+            padding: 34px 26px 84px;
         }
         .article-title {
-            font-size: 2.2rem;
+            font-size: 2rem;
         }
         .article-content-wrapper {
-            padding: 40px 30px;
-            margin-top: -40px;
+            padding: 34px 26px;
+            margin-top: -24px;
             border-radius: 24px;
+        }
+    }
+    @media (max-width: 767px) {
+        .article-hero img {
+            min-height: 320px;
+            height: 48vh;
+        }
+        .article-category {
+            font-size: 0.74rem;
+            padding: 8px 16px;
+            margin-bottom: 16px;
+        }
+        .article-title {
+            font-size: 1.8rem;
+            line-height: 1.08;
+        }
+        .article-meta {
+            font-size: 0.82rem;
+            gap: 10px 14px;
+        }
+        .article-lead {
+            font-size: 1.05rem;
+        }
+        .article-body {
+            font-size: 0.96rem;
+            line-height: 1.75;
+        }
+        .article-body blockquote {
+            padding: 1.35rem 1.5rem;
+            font-size: 1.05rem;
         }
     }
 </style>
