@@ -14,6 +14,13 @@ $homeEvents = \App\Database::fetchAll(
      LIMIT 3"
 ) ?: [];
 $homePosts = \App\Content::publishedPosts(5);
+$homePartners = \App\Database::fetchAll(
+    "SELECT name, logo_path, website_url
+     FROM partners
+     WHERE status = 'published'
+     ORDER BY sort_order ASC, name ASC
+     LIMIT 12"
+) ?: [];
 $homeAboutSettings = [];
 $rawHomeAbout = \App\Database::fetchAll("SELECT setting_key, setting_value FROM settings WHERE setting_key LIKE 'about_%'");
 foreach ($rawHomeAbout as $settingRow) {
@@ -1290,46 +1297,27 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
                     </div>
                     <div class="col-sm-12">
                         <div class="owl-carousel owl-theme" id="home-clients">
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client1.png" alt="">
+                            <?php if ($homePartners): ?>
+                                <?php foreach ($homePartners as $partner): ?>
+                                    <div class="item">
+                                        <div class="clients-logo">
+                                            <?php if (!empty($partner['website_url'])): ?>
+                                                <a href="<?php echo htmlspecialchars($partner['website_url']); ?>" target="_blank" rel="noopener">
+                                                    <img src="<?php echo htmlspecialchars($partner['logo_path'] ?: 'assets/images/clients/client1.png'); ?>" alt="<?php echo htmlspecialchars($partner['name'] ?: 'Partner'); ?>">
+                                                </a>
+                                            <?php else: ?>
+                                                <img src="<?php echo htmlspecialchars($partner['logo_path'] ?: 'assets/images/clients/client1.png'); ?>" alt="<?php echo htmlspecialchars($partner['name'] ?: 'Partner'); ?>">
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="item">
+                                    <div class="clients-logo">
+                                        <img src="assets/images/clients/client1.png" alt="Partner placeholder">
+                                    </div>
                                 </div>
-                            </div>
-                            <!-- Client Logo -->
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client2.png" alt="">
-                                </div>
-                            </div>
-                            <!-- Client Logo -->
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client3.png" alt="">
-                                </div>
-                            </div>
-                            <!-- Client Logo -->
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client4.png" alt="">
-                                </div>
-                            </div>
-                            <!-- Client Logo -->
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client5.png" alt="">
-                                </div>
-                            </div>
-                            <!-- Client Logo -->
+                            <?php endif; ?>
 
                         </div>
                     </div>

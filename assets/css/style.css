@@ -2569,6 +2569,17 @@ footer .social-icons a:hover{
 	opacity: 1;
 }
 
+#home-clients .clients-logo{
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+#home-clients .clients-logo img{
+    opacity: 1;
+}
+
 .clients-rounded-wrap{
 	margin-bottom: 8rem;
 }
