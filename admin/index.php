@@ -282,12 +282,15 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($existing) $featuredImage = (string)($existing["featured_image"] ?? "");
             }
             $categoryRow = Content::ensurePostCategory($category);
-            Database::execute(
+            $publishedAtSql = $status === "published"
+                ? "published_at=IF(published_at IS NULL,NOW(),published_at)"
+                : "published_at=published_at";
+            $updated = Database::execute(
                 "UPDATE posts SET title=:title,slug=:slug,permalink_path=:permalink,content=:content,excerpt=:excerpt,
                  featured_image=:featured_image,category=:category,author_name=:author_name,author_id=:author_id,
                  primary_category_id=:primary_category_id,status=:status,meta_title=:meta_title,meta_description=:meta_description,
                  seo_keywords=:seo_keywords,canonical_url=:canonical_url,
-                 published_at=IF(:status='published' AND published_at IS NULL,NOW(),published_at)
+                 {$publishedAtSql}
                  WHERE id=:id",
                 ["title" => $title, "slug" => $slug, "permalink" => $permalink, "content" => $content,
                  "excerpt" => $excerpt, "category" => $category, "author_name" => $authorName,
@@ -297,9 +300,13 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                  "seo_keywords" => $seoKeywords ?: null, "canonical_url" => $canonicalUrl ?: null,
                  "id" => $id]
             );
-            $tagNames = array_filter(array_map("trim", explode(",", $tagsRaw)));
-            Content::syncPostTags($id, $tagNames);
-            $flashMsg = "Post updated successfully"; $flashType = "success";
+            if ($updated) {
+                $tagNames = array_filter(array_map("trim", explode(",", $tagsRaw)));
+                Content::syncPostTags($id, $tagNames);
+                $flashMsg = "Post updated successfully"; $flashType = "success";
+            } else {
+                $flashMsg = "Post update failed. Please try again."; $flashType = "danger";
+            }
             }
         } else { $flashMsg = "Invalid request"; $flashType = "danger"; }
     }
@@ -3559,7 +3566,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     </div>
     <div class="modal-footer">
       <button type="button" class="btn-secondary" onclick="closeConfirm()">Cancel</button>
-      <button type="button" class="btn-primary" id="confirmDeleteBtn" style="background:var(--rose)"><i class="fas fa-trash"></i> Delete</button>
+      <button type="button" class="btn-primary" id="confirmActionBtn"><i class="fas fa-check"></i> Confirm</button>
     </div>
   </div>
 </div>
@@ -3914,14 +3921,32 @@ document.addEventListener('keydown', (e) => {
 // ─── CONFIRM MODAL ────────────────────────────────
 let pendingConfirm = null;
 
-function showConfirm(message, onConfirm) {
+function showConfirm(message, onConfirm, options = {}) {
+  const actionBtn = document.getElementById('confirmActionBtn');
+  const titleEl = document.getElementById('confirmTitle');
+  const {
+    title = 'Confirm Action',
+    confirmText = 'Confirm',
+    confirmIcon = 'fa-check',
+    confirmStyle = 'primary',
+  } = options;
+
+  titleEl.textContent = title;
   document.getElementById('confirmMessage').textContent = message;
+  actionBtn.innerHTML = '<i class="fas ' + confirmIcon + '"></i> ' + confirmText;
+  actionBtn.style.background = confirmStyle === 'danger' ? 'var(--rose)' : '';
+  actionBtn.classList.toggle('btn-danger-confirm', confirmStyle === 'danger');
   pendingConfirm = onConfirm;
   document.getElementById('confirmOverlay').classList.add('show');
 }
 
 function closeConfirm() {
   document.getElementById('confirmOverlay').classList.remove('show');
+  const actionBtn = document.getElementById('confirmActionBtn');
+  document.getElementById('confirmTitle').textContent = 'Confirm Action';
+  actionBtn.innerHTML = '<i class="fas fa-check"></i> Confirm';
+  actionBtn.style.background = '';
+  actionBtn.classList.remove('btn-danger-confirm');
   pendingConfirm = null;
 }
 
@@ -3936,7 +3961,7 @@ function deleteItem(type, id) {
     form.innerHTML = '<input type="hidden" name="_csrf_token" value="' + CSRF_TOKEN + '"/><input type="hidden" name="_action" value="delete_' + type + '"/><input type="hidden" name="id" value="' + id + '"/><input type="hidden" name="_page" value="' + currentPage + '"/>';
     document.body.appendChild(form);
     form.submit();
-  });
+  }, { title: 'Confirm Delete', confirmText: 'Delete', confirmIcon: 'fa-trash', confirmStyle: 'danger' });
 }
 
 // ─── TOAST NOTIFICATION ─────────────────────────
@@ -4047,13 +4072,13 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         showConfirm('Are you sure you want to change the status from "' + originalStatus + '" to "' + newStatus + '"?', () => {
           e.target.submit();
-        });
+        }, { title: 'Confirm Update', confirmText: 'Update', confirmIcon: 'fa-floppy-disk', confirmStyle: 'primary' });
       }
     }
   });
 
   // Confirm delete button
-  document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+  document.getElementById('confirmActionBtn').addEventListener('click', () => {
     if (typeof pendingConfirm === 'function') pendingConfirm();
     closeConfirm();
   });
