@@ -25,6 +25,7 @@ $page_description = "News, impact stories, announcements, and programme updates 
 $meta_keywords = "charity blog, non-profit news, impact stories, outreach updates";
 $canonical_url = Helpers::siteUrl("blog");
 $share_image = Helpers::siteUrl("assets/images/blogs/blog_img_1.jpg");
+$default_blog_image = "assets/images/blogs/blog_img_1.jpg";
 
 if ($categoryFilter !== "") {
     foreach ($categories as $category) {
@@ -71,10 +72,11 @@ require __DIR__ . "/includes/header.php";
         <div class="row g-4">
             <div class="col-lg-8">
                 <?php if ($featuredPost): ?>
+                    <?php $featuredImage = (string) ($featuredPost["featured_image"] ?: $default_blog_image); ?>
                     <article class="post-wrap">
                         <div class="post-img">
                             <a href="<?php echo Helpers::e(Helpers::postPublicUrl($featuredPost)); ?>">
-                                <img src="<?php echo Helpers::e((string) ($featuredPost["featured_image"] ?? "")); ?>" alt="<?php echo Helpers::e((string) ($featuredPost["title"] ?? "")); ?>">
+                                <img src="<?php echo Helpers::e($featuredImage); ?>" alt="<?php echo Helpers::e((string) ($featuredPost["title"] ?? "")); ?>">
                             </a>
                         </div>
                         <div class="post-content">
@@ -92,11 +94,12 @@ require __DIR__ . "/includes/header.php";
                 <?php if (!empty($secondaryPosts)): ?>
                     <div class="row">
                         <?php foreach ($secondaryPosts as $post): ?>
+                            <?php $postImage = (string) ($post["featured_image"] ?: $default_blog_image); ?>
                             <div class="col-md-6">
                                 <article class="post-wrap blog-post-broken">
                                     <div class="post-img">
                                         <a href="<?php echo Helpers::e(Helpers::postPublicUrl($post)); ?>">
-                                            <img src="<?php echo Helpers::e((string) ($post["featured_image"] ?? "")); ?>" alt="<?php echo Helpers::e((string) ($post["title"] ?? "")); ?>">
+                                            <img src="<?php echo Helpers::e($postImage); ?>" alt="<?php echo Helpers::e((string) ($post["title"] ?? "")); ?>">
                                         </a>
                                     </div>
                                     <div class="post-content">

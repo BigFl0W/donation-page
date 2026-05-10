@@ -200,19 +200,45 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $category = (string) ($_POST["category"] ?? "General");
         $authorName = (string) ($_POST["author_name"] ?? $adminName);
         $status = (string) ($_POST["status"] ?? "draft");
+        $metaTitle = trim((string) ($_POST["meta_title"] ?? ""));
+        $metaDescription = trim((string) ($_POST["meta_description"] ?? ""));
+        $seoKeywords = trim((string) ($_POST["seo_keywords"] ?? ""));
+        $canonicalUrl = trim((string) ($_POST["canonical_url"] ?? ""));
+        $tagsRaw = trim((string) ($_POST["tags"] ?? ""));
         $catSlug = Helpers::slugify($category);
         $permalink = "blog/" . $catSlug . "/" . $slug;
+        $featuredImage = "";
+
+        if (isset($_FILES["featured_image"]) && $_FILES["featured_image"]["error"] === UPLOAD_ERR_OK) {
+            $name = time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($_FILES["featured_image"]["name"]));
+            $dir = __DIR__ . "/../assets/images/blogs/";
+            if (!is_dir($dir)) @mkdir($dir, 0777, true);
+            $dest = $dir . $name;
+            if (move_uploaded_file($_FILES["featured_image"]["tmp_name"], $dest)) {
+                $featuredImage = "assets/images/blogs/" . $name;
+            }
+        }
 
         if ($title !== "") {
             $exists = Database::fetchOne("SELECT id FROM posts WHERE slug = :slug", ["slug" => $slug]);
             if (!$exists) {
+                $categoryRow = Content::ensurePostCategory($category);
                 Database::execute(
-                    "INSERT INTO posts (title,slug,permalink_path,content,excerpt,category,author_name,status,published_at,created_at)
-                     VALUES (:title,:slug,:permalink,:content,:excerpt,:category,:author_name,:status,:published_at,NOW())",
+                    "INSERT INTO posts (author_id,primary_category_id,title,slug,permalink_path,content,excerpt,featured_image,category,author_name,status,meta_title,meta_description,seo_keywords,canonical_url,published_at,created_at)
+                     VALUES (:author_id,:primary_category_id,:title,:slug,:permalink,:content,:excerpt,:featured_image,:category,:author_name,:status,:meta_title,:meta_description,:seo_keywords,:canonical_url,:published_at,NOW())",
                     ["title" => $title, "slug" => $slug, "permalink" => $permalink, "content" => $content,
                      "excerpt" => $excerpt, "category" => $category, "author_name" => $authorName,
-                     "status" => $status, "published_at" => $status === "published" ? date("Y-m-d H:i:s") : null]
+                     "featured_image" => $featuredImage ?: null, "status" => $status,
+                     "author_id" => (int)($admin["id"] ?? 0), "primary_category_id" => $categoryRow["id"] ?? null,
+                     "meta_title" => $metaTitle ?: null, "meta_description" => $metaDescription ?: null,
+                     "seo_keywords" => $seoKeywords ?: null, "canonical_url" => $canonicalUrl ?: null,
+                     "published_at" => $status === "published" ? date("Y-m-d H:i:s") : null]
                 );
+                $newPostId = (int)(Database::lastInsertId() ?? 0);
+                if ($newPostId > 0) {
+                    $tagNames = array_filter(array_map("trim", explode(",", $tagsRaw)));
+                    Content::syncPostTags($newPostId, $tagNames);
+                }
                 $flashMsg = "Post created successfully"; $flashType = "success";
             } else { $flashMsg = "A post with this title already exists"; $flashType = "danger"; }
         } else { $flashMsg = "Title is required"; $flashType = "danger"; }
@@ -227,20 +253,54 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $category = (string) ($_POST["category"] ?? "General");
         $authorName = (string) ($_POST["author_name"] ?? $adminName);
         $status = (string) ($_POST["status"] ?? "draft");
+        $metaTitle = trim((string) ($_POST["meta_title"] ?? ""));
+        $metaDescription = trim((string) ($_POST["meta_description"] ?? ""));
+        $seoKeywords = trim((string) ($_POST["seo_keywords"] ?? ""));
+        $canonicalUrl = trim((string) ($_POST["canonical_url"] ?? ""));
+        $tagsRaw = trim((string) ($_POST["tags"] ?? ""));
         $catSlug = Helpers::slugify($category);
         $permalink = "blog/" . $catSlug . "/" . $slug;
+        $featuredImage = "";
+
+        if (isset($_FILES["featured_image"]) && $_FILES["featured_image"]["error"] === UPLOAD_ERR_OK) {
+            $name = time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($_FILES["featured_image"]["name"]));
+            $dir = __DIR__ . "/../assets/images/blogs/";
+            if (!is_dir($dir)) @mkdir($dir, 0777, true);
+            $dest = $dir . $name;
+            if (move_uploaded_file($_FILES["featured_image"]["tmp_name"], $dest)) {
+                $featuredImage = "assets/images/blogs/" . $name;
+            }
+        }
 
         if ($title !== "" && $id > 0) {
+            $exists = Database::fetchOne("SELECT id FROM posts WHERE slug = :slug AND id != :id", ["slug" => $slug, "id" => $id]);
+            if ($exists) {
+                $flashMsg = "Another post already uses this title"; $flashType = "danger";
+            } else {
+            if ($featuredImage === "") {
+                $existing = Database::fetchOne("SELECT featured_image FROM posts WHERE id = :id", ["id" => $id]);
+                if ($existing) $featuredImage = (string)($existing["featured_image"] ?? "");
+            }
+            $categoryRow = Content::ensurePostCategory($category);
             Database::execute(
                 "UPDATE posts SET title=:title,slug=:slug,permalink_path=:permalink,content=:content,excerpt=:excerpt,
-                 category=:category,author_name=:author_name,status=:status,
+                 featured_image=:featured_image,category=:category,author_name=:author_name,author_id=:author_id,
+                 primary_category_id=:primary_category_id,status=:status,meta_title=:meta_title,meta_description=:meta_description,
+                 seo_keywords=:seo_keywords,canonical_url=:canonical_url,
                  published_at=IF(:status='published' AND published_at IS NULL,NOW(),published_at)
                  WHERE id=:id",
                 ["title" => $title, "slug" => $slug, "permalink" => $permalink, "content" => $content,
                  "excerpt" => $excerpt, "category" => $category, "author_name" => $authorName,
-                 "status" => $status, "id" => $id]
+                 "featured_image" => $featuredImage ?: null, "author_id" => (int)($admin["id"] ?? 0),
+                 "primary_category_id" => $categoryRow["id"] ?? null, "status" => $status,
+                 "meta_title" => $metaTitle ?: null, "meta_description" => $metaDescription ?: null,
+                 "seo_keywords" => $seoKeywords ?: null, "canonical_url" => $canonicalUrl ?: null,
+                 "id" => $id]
             );
+            $tagNames = array_filter(array_map("trim", explode(",", $tagsRaw)));
+            Content::syncPostTags($id, $tagNames);
             $flashMsg = "Post updated successfully"; $flashType = "success";
+            }
         } else { $flashMsg = "Invalid request"; $flashType = "danger"; }
     }
 
@@ -885,7 +945,7 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
         
-        if ($flashMsg === "" || strpos($flashMsg, "updated") === false) {
+        if ($action === "save_branding_settings" && ($flashMsg === "" || strpos($flashMsg, "updated") === false)) {
             $flashMsg = "Settings updated successfully"; $flashType = "success";
         }
     
@@ -915,6 +975,9 @@ if ($dbAvail && isset($_GET["ajax"]) && $_GET["ajax"] === "get_item") {
         }
         if ($type === "post") {
             $item = Database::fetchOne("SELECT * FROM posts WHERE id = :id", ["id" => $id]);
+            if ($item) {
+                $item["tags"] = implode(", ", Content::adminPostTagNames((int)($item["id"] ?? 0)));
+            }
         } elseif ($type === "event") {
             $item = Database::fetchOne("SELECT * FROM events WHERE id = :id", ["id" => $id]);
         } elseif ($type === "gallery") {
@@ -2830,10 +2893,22 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <div><h2>Blog &amp; News</h2><p>Manage your published content</p></div>
       <button class="btn-primary" onclick="openModal('post')"><i class="fas fa-pen-to-square"></i> New Post</button>
     </div>
+    <?php
+      $postPublished = count(array_filter($allPosts, fn($p) => ($p["status"] ?? "") === "published"));
+      $postDrafts = count(array_filter($allPosts, fn($p) => ($p["status"] ?? "") === "draft"));
+      $postSeoReady = count(array_filter($allPosts, fn($p) => !empty($p["meta_title"]) && !empty($p["meta_description"])));
+    ?>
+    <div class="stats-grid">
+      <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-newspaper"></i></div><span class="stat-trend up">Total</span></div><div class="stat-value"><?php echo Helpers::e(count($allPosts)); ?></div><div class="stat-label">Stories</div></div>
+      <div class="stat-card t4"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-globe"></i></div><span class="stat-trend up">Live</span></div><div class="stat-value"><?php echo Helpers::e($postPublished); ?></div><div class="stat-label">Published</div></div>
+      <div class="stat-card t2"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-file-pen"></i></div><span class="stat-trend neutral">Queue</span></div><div class="stat-value"><?php echo Helpers::e($postDrafts); ?></div><div class="stat-label">Drafts</div></div>
+      <div class="stat-card t3"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-magnifying-glass-chart"></i></div><span class="stat-trend up">SEO</span></div><div class="stat-value"><?php echo Helpers::e($postSeoReady); ?></div><div class="stat-label">SEO Ready</div></div>
+    </div>
     <?php if ($allPosts): ?>
     <div class="blog-grid">
       <?php foreach ($allPosts as $p): ?>
       <?php
+        $postTags = Content::adminPostTagNames((int)($p["id"] ?? 0));
         $cats = ["Healthcare","Nutrition","Mental Health","Emergency","Education","Partnerships","General"];
         $cat = $p["category"] ?: $cats[crc32($p["title"] ?? "x") % count($cats)];
         $icons = ["fa-kit-medical","fa-apple-whole","fa-brain","fa-house-flood-water","fa-graduation-cap","fa-handshake","fa-newspaper"];
@@ -2844,10 +2919,27 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         $pStatus = strtolower((string)($p["status"] ?? "draft"));
       ?>
       <div class="blog-card">
-        <div class="blog-thumb" style="background:linear-gradient(135deg,<?php echo Helpers::e($bg[0]); ?>,<?php echo Helpers::e($bg[1]); ?>)"><i class="fas <?php echo Helpers::e($icon); ?>" style="color:<?php echo Helpers::e(Helpers::bc($cat)); ?>;font-size:2.5rem"></i></div>
+        <div class="blog-thumb" style="background:linear-gradient(135deg,<?php echo Helpers::e($bg[0]); ?>,<?php echo Helpers::e($bg[1]); ?>)">
+          <?php if (!empty($p["featured_image"])): ?>
+            <img src="../<?php echo Helpers::e($p["featured_image"]); ?>" alt="" style="width:100%;height:100%;object-fit:cover">
+          <?php else: ?>
+            <i class="fas <?php echo Helpers::e($icon); ?>" style="color:<?php echo Helpers::e(Helpers::bc($cat)); ?>;font-size:2.5rem"></i>
+          <?php endif; ?>
+        </div>
         <div class="blog-body">
           <div class="blog-tag"><?php echo Helpers::e($cat); ?></div>
           <div class="blog-title"><?php echo Helpers::e($p["title"] ?? "Untitled"); ?></div>
+          <?php $postExcerptPreview = trim(strip_tags((string)($p["excerpt"] ?? ""))); ?>
+          <div style="color:var(--muted);font-size:.92rem;line-height:1.65;margin-top:10px">
+            <?php echo Helpers::e(strlen($postExcerptPreview) > 120 ? substr($postExcerptPreview, 0, 117) . "..." : $postExcerptPreview); ?>
+          </div>
+          <?php if ($postTags): ?>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
+              <?php foreach (array_slice($postTags, 0, 3) as $tagName): ?>
+                <span style="padding:6px 10px;border-radius:999px;background:var(--soft-bg);border:1px solid var(--line);font-size:.74rem;font-weight:700;color:var(--muted)"><?php echo Helpers::e($tagName); ?></span>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
           <div class="blog-meta">
             <span><i class="fas fa-user"></i><?php echo Helpers::e($p["author_name"] ?? "Admin"); ?></span>
             <span><i class="far fa-calendar"></i><?php echo Helpers::e(date("M j, Y", strtotime($p["published_at"] ?? $p["created_at"] ?? "now"))); ?></span>
@@ -3584,12 +3676,18 @@ const MODAL_FORMS = {
     fields: [
       {name:'_action',type:'hidden'},
       {name:'id',type:'hidden'},
-      {name:'title',label:'Title',type:'text',required:true,placeholder:'Enter post title'},
+      {name:'title',label:'Headline',type:'text',required:true,placeholder:'Enter a strong article headline'},
+      {name:'featured_image',label:'Cover Image',type:'file'},
       {name:'category',label:'Category',type:'select',options:['Impact Stories','News','Announcements','Healthcare','Education','Partnerships','General']},
-      {name:'author_name',label:'Author',type:'text',placeholder:'Author name'},
+      {name:'author_name',label:'Author Byline',type:'text',placeholder:'Author name'},
       {name:'status',label:'Status',type:'select',options:['draft','published','archived']},
       {name:'excerpt',label:'Excerpt',type:'textarea',placeholder:'Brief summary…',rows:3},
       {name:'content',label:'Content',type:'textarea',placeholder:'Write your post content here…',rows:8},
+      {name:'tags',label:'Tags',type:'text',placeholder:'community, outreach, health'},
+      {name:'meta_title',label:'SEO Title',type:'text',placeholder:'Search title for this story'},
+      {name:'meta_description',label:'SEO Description',type:'textarea',placeholder:'Short search description for this story...',rows:3},
+      {name:'seo_keywords',label:'SEO Keywords',type:'text',placeholder:'charity blog, outreach, impact'},
+      {name:'canonical_url',label:'Canonical URL',type:'url',placeholder:'https://example.com/blog/story-slug'},
     ]
   },
   programme: {

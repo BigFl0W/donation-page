@@ -20,7 +20,8 @@ $page_title = $post["meta_title"] ?: $post["title"];
 $page_description = $post["meta_description"] ?: $post["excerpt"];
 $meta_keywords = $post["seo_keywords"] ?? "";
 $canonical_url = $post["canonical_url"] ?: Helpers::postPublicUrl($post);
-$share_image = Helpers::siteUrl((string) ($post["featured_image"] ?? ""));
+$post_image = (string) ($post["featured_image"] ?: "assets/images/blogs/blog_img_1.jpg");
+$share_image = Helpers::siteUrl($post_image);
 $breadcrumb_title = $post["title"];
 $hero_title = $post["title"];
 $section_title = "Blog";
@@ -52,7 +53,7 @@ require __DIR__ . "/includes/explore-header.php";
             <div class="col-lg-8">
                 <div class="explore-panel">
                     <div class="event-detail-hero">
-                        <img src="<?php echo Helpers::e($post["featured_image"] ?? ""); ?>" alt="<?php echo Helpers::e($post["title"] ?? ""); ?>">
+                        <img src="<?php echo Helpers::e($post_image); ?>" alt="<?php echo Helpers::e($post["title"] ?? ""); ?>">
                     </div>
                     <div class="event-detail-copy">
                         <div class="story-meta mb-3">

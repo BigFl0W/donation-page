@@ -10,6 +10,7 @@ $homeEvents = \App\Database::fetchAll(
      ORDER BY COALESCE(e.event_start, e.created_at) DESC
      LIMIT 3"
 ) ?: [];
+$homePosts = \App\Content::publishedPosts(5);
 $homeAboutSettings = [];
 $rawHomeAbout = \App\Database::fetchAll("SELECT setting_key, setting_value FROM settings WHERE setting_key LIKE 'about_%'");
 foreach ($rawHomeAbout as $settingRow) {
@@ -1183,108 +1184,59 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
         <!-- Blog Style Start -->
         <section class="wide-tb-100 pb-0 home-blog-post-wrap">
             <div class="container">
-                <div class="row">
+                <div class="row align-items-end">
                     <div class="col-md-8 col-lg-6 col-9">
                         <h1 class="heading-main">
                             <small>News & Blogs</small>
                             Some Of Our Recent Stories & News Blog
                         </h1>
                     </div>
+                    <div class="col-md-4 col-lg-6 col-3 text-end">
+                        <a href="blog.php" class="btn btn-default d-inline-flex align-items-center px-4">View All Posts</a>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
                         <div class="owl-carousel owl-theme" id="home-second-blog-post">
-                        
-                            <!-- Blog Post Slider Item -->
-                            <div class="item">
-                                <div class="post-wrap">
-                                    <div class="post-img">
-                                        <a href="blog-single.php"><img src="assets/images/blogs/blog_img_1.jpg" alt=""></a>
+                            <?php if ($homePosts): ?>
+                                <?php foreach ($homePosts as $homePost): ?>
+                                    <?php
+                                        $postLink = \App\Helpers::postPublicUrl($homePost);
+                                        $postImage = (string)($homePost['featured_image'] ?? '');
+                                        if ($postImage === '') {
+                                            $postImage = 'assets/images/blogs/blog_img_1.jpg';
+                                        }
+                                    ?>
+                                    <div class="item">
+                                        <div class="post-wrap">
+                                            <div class="post-img">
+                                                <a href="<?php echo \App\Helpers::e($postLink); ?>"><img src="<?php echo \App\Helpers::e($postImage); ?>" alt="<?php echo \App\Helpers::e((string)($homePost['title'] ?? 'Blog story')); ?>"></a>
+                                            </div>
+                                            <div class="post-content">
+                                                <div class="post-date"><?php echo \App\Helpers::e(date('d, M, Y', strtotime((string)($homePost['published_at'] ?? $homePost['created_at'] ?? 'now')))); ?></div>
+                                                <h3 class="post-title"><a href="<?php echo \App\Helpers::e($postLink); ?>"><?php echo \App\Helpers::e((string)($homePost['title'] ?? 'Untitled story')); ?></a></h3>
+                                                <div class="post-category"><?php echo \App\Helpers::e((string)($homePost['category'] ?: 'News')); ?></div>
+                                                <div class="text-md-end">
+                                                    <a href="<?php echo \App\Helpers::e($postLink); ?>" class="read-more-line"><span>Read More</span></a>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="post-content">
-                                        <div class="post-date">17, Aug, 2020</div>
-                                        <h3 class="post-title"><a href="blog-single.php">Grant Distributions Continue to Increase</a></h3>
-                                        <div class="post-category">Food Charity</div>
-                                        <div class="text-md-end">
-                                            <a href="blog-single.php" class="read-more-line"><span>Read More</span></a>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="item">
+                                    <div class="post-wrap">
+                                        <div class="post-content">
+                                            <div class="post-date">Editorial Desk</div>
+                                            <h3 class="post-title"><a href="blog.php">No published stories yet</a></h3>
+                                            <div class="post-category">Blog</div>
+                                            <div class="text-md-end">
+                                                <a href="blog.php" class="read-more-line"><span>Open Blog</span></a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- Blog Post Slider Item -->
-
-                            <!-- Blog Post Slider Item -->
-                            <div class="item">
-                                <div class="post-wrap">
-                                    <div class="post-img">
-                                        <a href="blog-single.php"><img src="assets/images/blogs/blog_img_2.jpg" alt=""></a>
-                                    </div>
-                                    <div class="post-content">
-                                        <div class="post-date">17, Aug, 2020</div>
-                                        <h3 class="post-title"><a href="blog-single.php">Grant Distributions Continue to Increase</a></h3>
-                                        <div class="post-category">Food Charity</div>
-                                        <div class="text-md-end">
-                                            <a href="blog-single.php" class="read-more-line"><span>Read More</span></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Blog Post Slider Item -->
-
-                            <!-- Blog Post Slider Item -->
-                            <div class="item">
-                                <div class="post-wrap">
-                                    <div class="post-img">
-                                        <a href="blog-single.php"><img src="assets/images/blogs/blog_img_3.jpg" alt=""></a>
-                                    </div>
-                                    <div class="post-content">
-                                        <div class="post-date">17, Aug, 2020</div>
-                                        <h3 class="post-title"><a href="blog-single.php">Grant Distributions Continue to Increase</a></h3>
-                                        <div class="post-category">Food Charity</div>
-                                        <div class="text-md-end">
-                                            <a href="blog-single.php" class="read-more-line"><span>Read More</span></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Blog Post Slider Item -->
-
-                            <!-- Blog Post Slider Item -->
-                            <div class="item">
-                                <div class="post-wrap">
-                                    <div class="post-img">
-                                        <a href="blog-single.php"><img src="assets/images/blogs/blog_img_4.jpg" alt=""></a>
-                                    </div>
-                                    <div class="post-content">
-                                        <div class="post-date">17, Aug, 2020</div>
-                                        <h3 class="post-title"><a href="blog-single.php">Grant Distributions Continue to Increase</a></h3>
-                                        <div class="post-category">Food Charity</div>
-                                        <div class="text-md-end">
-                                            <a href="blog-single.php" class="read-more-line"><span>Read More</span></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Blog Post Slider Item -->
-
-                            <!-- Blog Post Slider Item -->
-                            <div class="item">
-                                <div class="post-wrap">
-                                    <div class="post-img">
-                                        <a href="blog-single.php"><img src="assets/images/blogs/blog_img_5.jpg" alt=""></a>
-                                    </div>
-                                    <div class="post-content">
-                                        <div class="post-date">17, Aug, 2020</div>
-                                        <h3 class="post-title"><a href="blog-single.php">Grant Distributions Continue to Increase</a></h3>
-                                        <div class="post-category">Food Charity</div>
-                                        <div class="text-md-end">
-                                            <a href="blog-single.php" class="read-more-line"><span>Read More</span></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Blog Post Slider Item -->
-                        
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
