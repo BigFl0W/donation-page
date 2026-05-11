@@ -248,6 +248,32 @@ $homeCoreValues = [
             line-height: 1.65;
             margin: 0;
         }
+        .home-blog-post-wrap .blog-section-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
+        }
+        .home-blog-post-wrap .blog-cta {
+            white-space: nowrap;
+        }
+        .home-blog-post-wrap .blog-carousel-shell {
+            position: relative;
+            padding-top: 34px;
+        }
+        #home-second-blog-post .owl-nav {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin: 0 0 28px;
+            position: relative;
+            top: 0;
+            right: 0;
+        }
+        #home-second-blog-post .owl-nav button.owl-prev,
+        #home-second-blog-post .owl-nav button.owl-next {
+            margin: 0;
+            flex: 0 0 auto;
+        }
         .home-about-summary .summary-collage {
             position: relative;
             min-height: 660px;
@@ -291,6 +317,10 @@ $homeCoreValues = [
                 padding-left: 0;
                 margin-top: 36px;
             }
+            .home-blog-post-wrap .blog-section-actions {
+                justify-content: flex-start;
+                margin-top: 18px;
+            }
             .home-about-summary .summary-copy {
                 padding-left: 0;
                 margin-top: 50px;
@@ -318,6 +348,13 @@ $homeCoreValues = [
             }
             .home-identity-section .identity-values-grid {
                 grid-template-columns: 1fr;
+            }
+            .home-blog-post-wrap .blog-carousel-shell {
+                padding-top: 18px;
+            }
+            #home-second-blog-post .owl-nav {
+                justify-content: flex-start;
+                margin-bottom: 22px;
             }
             .home-about-summary .summary-collage {
                 min-height: auto;
@@ -1281,12 +1318,13 @@ $homeCoreValues = [
                             Some Of Our Recent Stories & News Blog
                         </h1>
                     </div>
-                    <div class="col-md-4 col-lg-6 col-3 text-end">
-                        <a href="blog.php" class="btn btn-default d-inline-flex align-items-center px-4">View All Posts</a>
+                    <div class="col-md-4 col-lg-6 col-12 blog-section-actions">
+                        <a href="blog.php" class="btn btn-default d-inline-flex align-items-center px-4 blog-cta">View All Posts</a>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
+                        <div class="blog-carousel-shell">
                         <div class="owl-carousel owl-theme" id="home-second-blog-post">
                             <?php if ($homePosts): ?>
                                 <?php foreach ($homePosts as $homePost): ?>
@@ -1327,6 +1365,7 @@ $homeCoreValues = [
                                     </div>
                                 </div>
                             <?php endif; ?>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -1511,62 +1550,4 @@ $homeCoreValues = [
     </footer>
     <!-- Main Footer End -->
 
-    <!-- Search Popup Start -->
-    <div class="overlay overlay-hugeinc">    
-        <form class="form-inline mt-2 mt-md-0">
-            <div class="form-inner">
-                <div class="form-inner-div d-inline-flex align-items-center no-gutters">
-                    <div class="col-auto">
-                        <i class="icofont-search"></i>
-                    </div> 
-                    <div class="col">
-                        <input class="form-control w-100 p-0" type="text" placeholder="Search" aria-label="Search">
-                    </div>
-                    <div class="col-auto">
-                        <a href="#" class="overlay-close link-oragne"><i class="icofont-close-line"></i></a>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-    <!-- Search Popup End -->
-
-    <!-- Back To Top Start -->
-    <a id="mkdf-back-to-top" href="#" class="off"><i data-feather="corner-right-up"></i></a>
-    <!-- Back To Top End -->
-
-    <!-- Jquery Library JS -->
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="assets/library/jquery/jquery.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="assets/library/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- Feather Icon JS -->
-    <script src="assets/library/feather-icons/feather.min.js"></script>
-    <!-- Owl Carousel JS -->
-    <script src="assets/library/owlcarousel/js/owl.carousel.min.js"></script>
-    <!-- Select2 Dropdown JS -->
-    <script src="assets/library/select2/js/select2.min.js"></script>
-    <!-- Magnific Popup JS -->
-    <script src="assets/library/magnific-popup/jquery.magnific-popup.min.js"></script>
-    <!-- jflickrfeed Images JS -->
-    <script src="assets/library/jflickrfeed/jflickrfeed.min.js"></script>
-    <!-- Way Points JS -->
-    <script src="assets/library/jquery-waypoints/jquery.waypoints.min.js"></script>
-    <!-- Count Down JS -->
-    <script src="assets/library/countdown/jquery.countdown.min.js"></script>
-    <!-- Appear JS -->
-    <script src="assets/library/jquery-appear/jquery.appear.js"></script>
-    <!-- Jquery Easing JS -->
-    <script src="assets/library/jquery-easing/jquery.easing.min.js"></script>
-    <!-- Counter JS -->
-    <script src="assets/library/jquery.counterup/jquery.counterup.min.js"></script>
-    <!-- Form Validation JS -->
-    <script src="assets/library/jquery-validate/jquery.validate.min.js"></script>
-    <!-- Theme Custom -->
-    <script src="assets/js/site-custom.js"></script>
-
-    <!-- Home Slider (Only For Home pages) -->
-    <script src="assets/js/home-slider.js"></script>
-<script defer="" src="../../beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"64224fc8786846928480d180dfc466bd","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
-</html>
 
