@@ -293,7 +293,6 @@ Table of Content
         // Popup Gallery & Videos
         magnific_popup: function () {
             if ($('.popup-video').length) {
-
                 $('.popup-video').magnificPopup({
                     type: 'iframe',
                     mainClass: 'mfp-fade',
@@ -304,7 +303,7 @@ Table of Content
 
                 $('.img-gallery').each(function () { // the containers for all your galleries
                     $(this).magnificPopup({
-                        delegate: 'a', // the selector for gallery item
+                        delegate: 'a.gallery-media-trigger', // only gallery media links should open the lightbox
                         type: 'image',
                         gallery: {
                             enabled: true, // set to true to enable gallery

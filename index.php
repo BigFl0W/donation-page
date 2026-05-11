@@ -775,14 +775,14 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
                             Moments From Our Work
                         </h1>
                         <div style="margin-top:24px;">
-                            <a href="gallery" class="btn btn-outline-dark">View More Images</a>
+                            <button type="button" class="btn btn-outline-dark gallery-page-link" onclick="window.location.href='http://localhost/donation-page/gallery';">View More Images</button>
                         </div>
                     </div>
                     <?php if ($homeGalleryItems): ?>
                         <?php foreach ($homeGalleryItems as $galleryItem): ?>
                             <div class="col-lg-4 col-md-6">
                                 <div class="img-gallery-item">
-                                    <a href="<?php echo \App\Helpers::e($galleryItem['media_path']); ?>" title="<?php echo \App\Helpers::e($galleryItem['title']); ?>" <?php echo ($galleryItem['media_type'] ?? 'photo') === 'video' ? '' : 'data-fancybox="home-gallery"'; ?>>
+                                    <a class="gallery-media-trigger" href="<?php echo \App\Helpers::e($galleryItem['media_path']); ?>" title="<?php echo \App\Helpers::e($galleryItem['title']); ?>" <?php echo ($galleryItem['media_type'] ?? 'photo') === 'video' ? '' : 'data-fancybox="home-gallery"'; ?>>
                                         <div class="gallery-content">
                                             <div class="tag"><span><?php echo ($galleryItem['media_type'] ?? 'photo') === 'video' ? 'Video' : 'Photo'; ?></span></div>
                                             <h3><?php echo \App\Helpers::e($galleryItem['title']); ?></h3>
