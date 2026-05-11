@@ -498,7 +498,7 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $mediaType = (string) ($_POST["media_type"] ?? "photo");
         $mediaPath = (string) ($_POST["media_path"] ?? "");
         $description = (string) ($_POST["description"] ?? "");
-        $status = (string) ($_POST["status"] ?? "draft");
+        $status = (string) ($_POST["status"] ?? "published");
 
         if (isset($_FILES["media_file"]) && $_FILES["media_file"]["error"] === UPLOAD_ERR_OK) {
             $name = time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($_FILES["media_file"]["name"]));
@@ -4316,7 +4316,7 @@ const MODAL_FORMS = {
       {name:'media_file',label:'Upload Media File',type:'file'},
       {name:'media_path',label:'Media URL / Path (optional)',type:'text',placeholder:'/assets/images/uploads/file.jpg'},
       {name:'description',label:'Description',type:'textarea',placeholder:'Optional description…',rows:3},
-      {name:'status',label:'Status',type:'select',options:['draft','published']},
+      {name:'status',label:'Status',type:'select',options:['draft','published'],defaultValue:'published'},
     ]
   },
   donation: {
@@ -4396,7 +4396,8 @@ function openModal(type, id) {
     if (f.type === 'select') {
       html += '<select class="form-control" name="' + f.name + '"' + (f.required ? ' required' : '') + '>';
       for (const opt of f.options) {
-        html += '<option value="' + opt + '">' + opt.charAt(0).toUpperCase() + opt.slice(1) + '</option>';
+        const selected = (!isEdit && f.defaultValue === opt) ? ' selected' : '';
+        html += '<option value="' + opt + '"' + selected + '>' + opt.charAt(0).toUpperCase() + opt.slice(1) + '</option>';
       }
       html += '</select>';
     } else if (f.type === 'checkbox') {
