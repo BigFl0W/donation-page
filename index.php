@@ -35,6 +35,25 @@ foreach ($rawHomeAbout as $settingRow) {
 }
 $homeAboutTitleHtml = nl2br(strip_tags((string)($homeAboutSettings['about_hero_title'] ?? 'Building Hope, Restoring Dignity.'), '<br><i><em><strong><span>'));
 $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are dedicated to creating a world where everyone has the opportunity to thrive.'));
+$homeStoryHighlights = [
+    "Friends at Heart Welfare Initiative was born from moments that broke our hearts.",
+    "We saw the suffering. We felt it. And we chose not to look away.",
+    "We are ordinary people with extraordinary compassion, committed to standing with people in their moment of greatest need.",
+    "We do not just pay school fees or settle hospital bills; we restore dreams, dignity and the possibility of a better future.",
+    "As a registered organisation with the Corporate Affairs Commission and the Nigeria Network of NGOs, we serve with compassion, transparency and accountability."
+];
+$homeCoreValues = [
+    ["title" => "Compassion", "text" => "We show love, empathy and care to individuals and communities in need."],
+    ["title" => "Integrity", "text" => "We uphold honesty, accountability and strong moral principles in all we do."],
+    ["title" => "Transparency", "text" => "We remain open, trustworthy and responsible in our operations and use of resources."],
+    ["title" => "Equality", "text" => "We believe every individual deserves fairness, dignity and equal opportunity."],
+    ["title" => "Volunteerism", "text" => "We encourage selfless service, teamwork and community participation."],
+    ["title" => "Empowerment", "text" => "We equip people with opportunities, support and resources for a better future."],
+    ["title" => "Excellence", "text" => "We pursue professionalism, quality and meaningful service delivery."],
+    ["title" => "Inclusion", "text" => "We promote unity, acceptance and equal participation for all."],
+    ["title" => "Teamwork", "text" => "We believe collaboration and partnership strengthen our impact."],
+    ["title" => "Service To Humanity", "text" => "We are dedicated to improving lives and restoring hope through humanitarian service."]
+];
 ?>
 <!doctype html>
 <html lang="en">
@@ -123,6 +142,112 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
         .home-about-summary .summary-link:hover i {
             transform: translateX(4px);
         }
+        .home-identity-section {
+            background: linear-gradient(180deg, #fff 0%, #f7f3ea 100%);
+        }
+        .home-identity-section .identity-story-card {
+            background: #11332a;
+            color: rgba(255, 255, 255, 0.86);
+            border-radius: 32px;
+            padding: 42px;
+            box-shadow: 0 32px 80px rgba(17, 51, 42, 0.16);
+            height: 100%;
+        }
+        .home-identity-section .identity-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 22px;
+            color: #edaf23;
+            font-family: var(--font-heading);
+            font-style: italic;
+            font-weight: 700;
+        }
+        .home-identity-section .identity-kicker::before {
+            content: "";
+            width: 46px;
+            height: 2px;
+            background: #edaf23;
+            display: block;
+        }
+        .home-identity-section .identity-title {
+            color: #fff;
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(2.6rem, 4.2vw, 4rem);
+            line-height: 0.98;
+            font-style: italic;
+            margin-bottom: 22px;
+        }
+        .home-identity-section .identity-intro {
+            font-size: 1.05rem;
+            line-height: 1.9;
+            margin-bottom: 24px;
+        }
+        .home-identity-section .identity-lines {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .home-identity-section .identity-line {
+            padding-left: 20px;
+            border-left: 2px solid rgba(237, 175, 35, 0.4);
+            font-size: 0.98rem;
+            line-height: 1.75;
+        }
+        .home-identity-section .identity-trust {
+            border-top: 1px solid rgba(255, 255, 255, 0.14);
+            margin-top: 28px;
+            padding-top: 22px;
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 0.92rem;
+            line-height: 1.7;
+        }
+        .home-identity-section .identity-values-wrap {
+            padding-left: 28px;
+        }
+        .home-identity-section .identity-values-header {
+            margin-bottom: 24px;
+        }
+        .home-identity-section .identity-values-header small {
+            display: inline-block;
+            color: var(--secondary-color);
+            font-family: var(--font-heading);
+            font-style: italic;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .home-identity-section .identity-values-header h3 {
+            color: var(--primary-color);
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(2.2rem, 3.4vw, 3.2rem);
+            line-height: 1.02;
+            font-style: italic;
+            margin: 0;
+        }
+        .home-identity-section .identity-values-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+        .home-identity-section .value-chip {
+            background: #fff;
+            border: 1px solid rgba(71, 119, 99, 0.14);
+            border-radius: 22px;
+            padding: 18px 18px 16px;
+            box-shadow: 0 16px 36px rgba(49, 35, 30, 0.06);
+            min-height: 100%;
+        }
+        .home-identity-section .value-chip h4 {
+            color: var(--primary-color);
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        .home-identity-section .value-chip p {
+            color: #5e6884;
+            font-size: 0.92rem;
+            line-height: 1.65;
+            margin: 0;
+        }
         .home-about-summary .summary-collage {
             position: relative;
             min-height: 660px;
@@ -162,6 +287,10 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
             transform: rotate(-3deg);
         }
         @media (max-width: 991px) {
+            .home-identity-section .identity-values-wrap {
+                padding-left: 0;
+                margin-top: 36px;
+            }
             .home-about-summary .summary-copy {
                 padding-left: 0;
                 margin-top: 50px;
@@ -184,6 +313,12 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
             }
         }
         @media (max-width: 767px) {
+            .home-identity-section .identity-story-card {
+                padding: 30px 24px;
+            }
+            .home-identity-section .identity-values-grid {
+                grid-template-columns: 1fr;
+            }
             .home-about-summary .summary-collage {
                 min-height: auto;
                 display: grid;
@@ -850,6 +985,49 @@ $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are 
             </div>
         </section>
         <!-- About Us Style Start -->
+
+        <section class="wide-tb-100 home-identity-section">
+            <div class="container">
+                <div class="row align-items-start">
+                    <div class="col-lg-6">
+                        <div class="identity-story-card">
+                            <div class="identity-kicker">Who We Are</div>
+                            <h2 class="identity-title">Love that answers the call.</h2>
+                            <p class="identity-intro">
+                                Friends at Heart Welfare Initiative exists for children sent home over unpaid school fees, patients detained by medical bills, and families carrying hardship in silence. We step into those moments with practical help, dignity and hope.
+                            </p>
+                            <div class="identity-lines">
+                                <?php foreach ($homeStoryHighlights as $storyLine): ?>
+                                    <div class="identity-line"><?php echo \App\Helpers::e($storyLine); ?></div>
+                                <?php endforeach; ?>
+                            </div>
+                            <a class="summary-link" href="about-us.php">
+                                Read our full story <i data-feather="arrow-right"></i>
+                            </a>
+                            <div class="identity-trust">
+                                Until no child loses access to school because of unpaid fees, no patient is trapped by hospital bills, and no underserved community feels forgotten, our hearts will continue to answer the call.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="identity-values-wrap">
+                            <div class="identity-values-header">
+                                <small>Our Core Values</small>
+                                <h3>The principles behind every act of service.</h3>
+                            </div>
+                            <div class="identity-values-grid">
+                                <?php foreach ($homeCoreValues as $value): ?>
+                                    <div class="value-chip">
+                                        <h4><?php echo \App\Helpers::e($value['title']); ?></h4>
+                                        <p><?php echo \App\Helpers::e($value['text']); ?></p>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- Event Style Start -->
         <section id="media-gallery" class="wide-tb-100">

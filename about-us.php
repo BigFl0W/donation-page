@@ -10,6 +10,36 @@ foreach ($rawSettings as $s) {
     $settings[$s['setting_key']] = $s['setting_value'];
 }
 
+$defaultCoreValues = implode("\n", [
+    "Compassion|We show love, empathy and care to individuals and communities in need.",
+    "Integrity|We uphold honesty, accountability and strong moral principles in all we do.",
+    "Transparency|We remain open, trustworthy and responsible in our operations and use of resources.",
+    "Equality|We believe every individual deserves fairness, dignity and equal opportunity regardless of background or status.",
+    "Volunteerism|We encourage selfless service, teamwork and community participation to create lasting impact.",
+    "Empowerment|We believe in equipping people with opportunities, support and resources for a better future.",
+    "Excellence|We strive for professionalism, quality and impactful service delivery in every outreach and project.",
+    "Inclusion|We promote unity, acceptance and equal participation for all members of society.",
+    "Teamwork|We believe collaboration, unity and partnership strengthen our impact and mission.",
+    "Service To Humanity|We are dedicated to improving lives, restoring hope and supporting the vulnerable through humanitarian service."
+]);
+
+$coreValuesRaw = (string)($settings['about_values_list'] ?? $defaultCoreValues);
+$coreValues = [];
+foreach (preg_split('/\r\n|\r|\n/', $coreValuesRaw) as $line) {
+    $line = trim($line);
+    if ($line === '') {
+        continue;
+    }
+    $parts = array_map('trim', explode('|', $line, 2));
+    $coreValues[] = [
+        'title' => $parts[0] ?? '',
+        'text' => $parts[1] ?? '',
+    ];
+}
+
+$defaultStoryLead = "Friends at Heart Welfare Initiative was born from moments that broke our hearts.";
+$defaultStoryText = "From the tears of a child sent home from school because there was no one to pay the school fees.\n\nFrom the silent cry of a patient lying in a hospital bed, afraid that he or she could not go home because the medical bills remained unpaid.\n\nFrom the quiet strength of underserved men and women trying to feed their children while hiding their own pain.\n\nWe saw the suffering.\nWe felt it.\nAnd we chose not to look away.\n\nWe are ordinary people with extraordinary compassion, people who believe that no human being should be defined by poverty or abandoned in their moment of greatest need.\n\nWe are the hands that hold when strength is failing.\n\nWe are the voice that speaks when hope feels lost.\n\nWe are the bridge between despair and a second chance.\n\nAs a registered organisation with the Corporate Affairs Commission and the Nigeria Network of NGOs, we stand not only with compassion but also with responsibility, ensuring that every act of kindness is transparent, accountable and truly life-changing.\n\nWe do not just pay school fees; we restore dreams.\n\nWe do not just settle hospital bills; we rescue dignity.\n\nWe do not just empower youths, men, women and underserved communities; we rebuild the future.\n\nAt Friends at Heart Welfare Initiative, love is not something we simply feel, it is something we do.\n\nAnd until no child is sent home from school because of unpaid fees, no patient is detained in a hospital because of unpaid medical bills and no youth, man, woman or underserved community feels forgotten, our hearts will continue to answer the call.";
+
 // Meta for Header
 $page_title = "About Us | " . ($settings['about_hero_label'] ?? 'Our Journey');
 $hero_title = ""; 
@@ -103,6 +133,23 @@ include "includes/header.php";
     .story-content .lead { font-size: 1.25rem; font-weight: 600; color: var(--about-dark); margin-bottom: 25px; line-height: 1.5; }
     .story-content .text { font-size: 1.05rem; color: #475569; line-height: 1.8; margin-bottom: 40px; }
 
+    /* CORE VALUES */
+    .values-v3 { padding: 110px 0; background: linear-gradient(180deg, #fffaf0 0%, #ffffff 100%); }
+    .values-header { text-align: center; max-width: 760px; margin: 0 auto 60px; }
+    .values-header h2 { font-family: 'Instrument Serif', serif; font-size: 3.3rem; line-height: 1.05; font-style: italic; margin-bottom: 18px; }
+    .values-header p { color: #64748b; font-size: 1.05rem; line-height: 1.8; margin: 0; }
+    .values-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+    .value-card {
+        background: #fff;
+        border: 1px solid rgba(191, 138, 40, 0.16);
+        border-radius: 28px;
+        padding: 28px 26px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.06);
+        min-height: 100%;
+    }
+    .value-card h4 { margin-bottom: 10px; font-size: 1.15rem; color: var(--about-dark); font-weight: 800; }
+    .value-card p { margin: 0; color: #64748b; line-height: 1.75; }
+
     /* ══════ QUOTE SECTION ══════ */
     .quote-v3 { padding: 100px 0; background: #f8fafc; }
     .quote-card {
@@ -136,6 +183,7 @@ include "includes/header.php";
         .collage-wrap { display: none; }
         .stats-v3 { grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 40px; }
         .story-grid, .quote-card { grid-template-columns: 1fr; }
+        .values-grid { grid-template-columns: 1fr; }
         .t-grid { grid-template-columns: 1fr; }
         .t-grid::before { display: none; }
     }
@@ -186,10 +234,27 @@ include "includes/header.php";
                 <img src="<?php echo Helpers::e($settings['about_story_img'] ?? 'assets/images/about_img.png'); ?>" style="width:100%; height:600px; object-fit:cover">
             </div>
             <div class="story-content">
-                <h2><?php echo Helpers::e($settings['about_story_title'] ?? 'The Story Behind Our Mission'); ?></h2>
-                <p class="lead"><?php echo Helpers::e($settings['about_story_lead'] ?? 'Founded with a single vision to help those in need, we have grown into a community of thousands.'); ?></p>
-                <p class="text"><?php echo nl2br(Helpers::e($settings['about_story_text'] ?? "Our journey began over a decade ago when a small group of volunteers decided to take action against the growing inequality in their local community.\n\nToday, we operate in multiple regions, providing healthcare, education, and economic empowerment to those who need it most. We believe in transparency, local leadership, and sustainable impact.")); ?></p>
+                <h2><?php echo Helpers::e($settings['about_story_title'] ?? 'Who We Are'); ?></h2>
+                <p class="lead"><?php echo Helpers::e($settings['about_story_lead'] ?? $defaultStoryLead); ?></p>
+                <p class="text"><?php echo nl2br(Helpers::e($settings['about_story_text'] ?? $defaultStoryText)); ?></p>
             </div>
+        </div>
+    </div>
+</section>
+
+<section class="values-v3">
+    <div class="container">
+        <div class="values-header">
+            <h2><?php echo Helpers::e($settings['about_values_title'] ?? 'Our Core Values'); ?></h2>
+            <p><?php echo Helpers::e($settings['about_values_intro'] ?? 'The principles that guide how we serve, how we lead and how we remain accountable to the people and communities we support.'); ?></p>
+        </div>
+        <div class="values-grid">
+            <?php foreach ($coreValues as $value): ?>
+                <div class="value-card">
+                    <h4><?php echo Helpers::e($value['title']); ?></h4>
+                    <p><?php echo Helpers::e($value['text']); ?></p>
+                </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>

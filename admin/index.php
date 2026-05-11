@@ -3462,15 +3462,28 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
             <div>
               <div class="form-field">
                 <label class="form-label">Story Heading</label>
-                <input class="form-input" name="settings[story_title]" value="<?php echo Helpers::e($aboutSettings['about_story_title'] ?? ''); ?>"/>
+                <input class="form-input" name="settings[story_title]" value="<?php echo Helpers::e($aboutSettings['about_story_title'] ?? 'Who We Are'); ?>"/>
               </div>
               <div class="form-field">
                 <label class="form-label">Lead Sentence</label>
-                <textarea class="form-input" name="settings[story_lead]" rows="2"><?php echo Helpers::e($aboutSettings['about_story_lead'] ?? ''); ?></textarea>
+                <textarea class="form-input" name="settings[story_lead]" rows="2"><?php echo Helpers::e($aboutSettings['about_story_lead'] ?? 'Friends at Heart Welfare Initiative was born from moments that broke our hearts.'); ?></textarea>
               </div>
               <div class="form-field">
                 <label class="form-label">Full Story Content</label>
-                <textarea class="form-input" name="settings[story_text]" rows="8"><?php echo Helpers::e($aboutSettings['about_story_text'] ?? ''); ?></textarea>
+                <textarea class="form-input" name="settings[story_text]" rows="18"><?php echo Helpers::e($aboutSettings['about_story_text'] ?? "From the tears of a child sent home from school because there was no one to pay the school fees.\n\nFrom the silent cry of a patient lying in a hospital bed, afraid that he or she could not go home because the medical bills remained unpaid.\n\nFrom the quiet strength of underserved men and women trying to feed their children while hiding their own pain.\n\nWe saw the suffering.\nWe felt it.\nAnd we chose not to look away.\n\nWe are ordinary people with extraordinary compassion, people who believe that no human being should be defined by poverty or abandoned in their moment of greatest need.\n\nWe are the hands that hold when strength is failing.\n\nWe are the voice that speaks when hope feels lost.\n\nWe are the bridge between despair and a second chance.\n\nAs a registered organisation with the Corporate Affairs Commission and the Nigeria Network of NGOs, we stand not only with compassion but also with responsibility, ensuring that every act of kindness is transparent, accountable and truly life-changing.\n\nWe do not just pay school fees; we restore dreams.\n\nWe do not just settle hospital bills; we rescue dignity.\n\nWe do not just empower youths, men, women and underserved communities; we rebuild the future.\n\nAt Friends at Heart Welfare Initiative, love is not something we simply feel, it is something we do.\n\nAnd until no child is sent home from school because of unpaid fees, no patient is detained in a hospital because of unpaid medical bills and no youth, man, woman or underserved community feels forgotten, our hearts will continue to answer the call."); ?></textarea>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Core Values Heading</label>
+                <input class="form-input" name="settings[values_title]" value="<?php echo Helpers::e($aboutSettings['about_values_title'] ?? 'Our Core Values'); ?>"/>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Core Values Intro</label>
+                <textarea class="form-input" name="settings[values_intro]" rows="3"><?php echo Helpers::e($aboutSettings['about_values_intro'] ?? 'The principles that guide how we serve, how we lead and how we remain accountable to the people and communities we support.'); ?></textarea>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Core Values List</label>
+                <textarea class="form-input" name="settings[values_list]" rows="12" placeholder="Compassion|We show love, empathy and care to individuals and communities in need."><?php echo Helpers::e($aboutSettings['about_values_list'] ?? "Compassion|We show love, empathy and care to individuals and communities in need.\nIntegrity|We uphold honesty, accountability and strong moral principles in all we do.\nTransparency|We remain open, trustworthy and responsible in our operations and use of resources.\nEquality|We believe every individual deserves fairness, dignity and equal opportunity regardless of background or status.\nVolunteerism|We encourage selfless service, teamwork and community participation to create lasting impact.\nEmpowerment|We believe in equipping people with opportunities, support and resources for a better future.\nExcellence|We strive for professionalism, quality and impactful service delivery in every outreach and project.\nInclusion|We promote unity, acceptance and equal participation for all members of society.\nTeamwork|We believe collaboration, unity and partnership strengthen our impact and mission.\nService To Humanity|We are dedicated to improving lives, restoring hope and supporting the vulnerable through humanitarian service."); ?></textarea>
+                <div style="font-size:0.78rem; color:var(--mid); margin-top:8px;">Use one value per line in this format: <code>Title|Description</code></div>
               </div>
             </div>
             <div>
