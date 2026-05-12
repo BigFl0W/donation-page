@@ -30,6 +30,13 @@ for ($resourceIndex = 1; $resourceIndex <= 4; $resourceIndex++) {
         $registrationResources[] = ['label' => $label, 'url' => $url];
     }
 }
+$partnerRegistrationClicks = (int)$partnerSetting('registration_clicks', '0');
+$partnerConfirmedMemberships = (int)$partnerSetting('confirmed_memberships', '0');
+$partnerRegistrationClicksLabel = $partnerSetting('registration_clicks_label', 'Tracked Link Clicks');
+$partnerConfirmedMembershipsLabel = $partnerSetting('confirmed_memberships_label', 'Confirmed Memberships');
+$trackedLink = static function (string $url, string $source): string {
+    return 'partner-link.php?source=' . rawurlencode($source) . '&url=' . rawurlencode($url);
+};
 
 $page_title = "Partners & Sponsors";
 $breadcrumb_title = "Partners & Sponsors";
@@ -56,8 +63,8 @@ require_once 'includes/header.php';
                 </ul>
 
                 <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:center;">
-                    <a href="<?php echo htmlspecialchars($partnerSetting('registration_primary_url', 'https://nnngo.org/join-now/')); ?>" class="btn btn-default" style="background-color: #d59b2d; border-color: #d59b2d;" target="_blank" rel="noopener noreferrer"><?php echo htmlspecialchars($partnerSetting('registration_primary_label', 'Join NNNGO')); ?></a>
-                    <a href="<?php echo htmlspecialchars($partnerSetting('registration_secondary_url', 'https://nnngo.org/membership-benefits/')); ?>" class="btn btn-outline-dark" target="_blank" rel="noopener noreferrer"><?php echo htmlspecialchars($partnerSetting('registration_secondary_label', 'View Membership Benefits')); ?></a>
+                    <a href="<?php echo htmlspecialchars($trackedLink($partnerSetting('registration_primary_url', 'https://nnngo.org/join-now/'), 'primary_cta')); ?>" class="btn btn-default" style="background-color: #d59b2d; border-color: #d59b2d;" target="_blank" rel="noopener noreferrer"><?php echo htmlspecialchars($partnerSetting('registration_primary_label', 'Join NNNGO')); ?></a>
+                    <a href="<?php echo htmlspecialchars($trackedLink($partnerSetting('registration_secondary_url', 'https://nnngo.org/membership-benefits/'), 'secondary_cta')); ?>" class="btn btn-outline-dark" target="_blank" rel="noopener noreferrer"><?php echo htmlspecialchars($partnerSetting('registration_secondary_label', 'View Membership Benefits')); ?></a>
                 </div>
             </div>
             
@@ -70,7 +77,7 @@ require_once 'includes/header.php';
                     <div class="row g-3">
                         <?php foreach ($registrationResources as $resource): ?>
                         <div class="col-sm-6">
-                            <a href="<?php echo htmlspecialchars($resource['url']); ?>" target="_blank" rel="noopener noreferrer" class="partner-resource-card">
+                            <a href="<?php echo htmlspecialchars($trackedLink($resource['url'], $resource['label'])); ?>" target="_blank" rel="noopener noreferrer" class="partner-resource-card">
                                 <span><?php echo htmlspecialchars($resource['label']); ?></span>
                                 <i class="icofont-rounded-right"></i>
                             </a>
@@ -168,13 +175,14 @@ require_once 'includes/header.php';
                 <div class="explore-contact-card p-5 rounded-4" style="background: #fff; border: 1px solid #f0f0f0;">
                     <div class="explore-kicker text-muted text-uppercase mb-2" style="font-size: 0.7rem; letter-spacing: 1px;">Institutional Credibility</div>
                     <h3 class="fw-bold mb-3">Professional stewardship ensures long-term mission success.</h3>
-                    <p class="mb-0 text-muted">By moving beyond static templates, we provide our partners with a structured framework for visibility and accountability. Every contribution is handled with extreme administrative precision, allowing your organization to focus on what matters: the social return on your investment.</p>
+                    <p class="mb-0 text-muted">We separately track partner-link engagement from this page and keep confirmed memberships distinct from donation records, so your partnership reporting stays cleaner and easier to verify.</p>
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="explore-stat-card text-white p-5 rounded-4 text-center" style="background-color: #4e7a64;">
-                    <span class="display-4 fw-bold d-block mb-2">3</span>
-                    <p class="mb-0 fw-bold">Strategic tiers designed for maximum alignment and operational scale.</p>
+                    <span class="display-4 fw-bold d-block mb-2"><?php echo htmlspecialchars(number_format($partnerRegistrationClicks)); ?></span>
+                    <p class="mb-0 fw-bold"><?php echo htmlspecialchars($partnerRegistrationClicksLabel); ?></p>
+                    <div style="margin-top:14px; font-size:0.92rem; opacity:0.9;"><?php echo htmlspecialchars(number_format($partnerConfirmedMemberships)); ?> <?php echo htmlspecialchars($partnerConfirmedMembershipsLabel); ?></div>
                 </div>
             </div>
         </div>

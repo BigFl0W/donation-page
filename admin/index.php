@@ -3080,10 +3080,17 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
        PARTNERS
   ════════════════════════════════════════════ -->
   <div class="content" id="page-partners">
-    <div class="stats-grid cols-3">
+    <?php
+      $partnerRegistrationClicks = (int)($settings["partners_registration_clicks"] ?? 0);
+      $partnerConfirmedMemberships = (int)($settings["partners_confirmed_memberships"] ?? 0);
+      $partnerClicksLabel = (string)($settings["partners_registration_clicks_label"] ?? "Tracked Link Clicks");
+      $partnerConfirmedLabel = (string)($settings["partners_confirmed_memberships_label"] ?? "Confirmed Memberships");
+    ?>
+    <div class="stats-grid cols-4">
       <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-handshake"></i></div><span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i>Active</span></div><div class="stat-value"><?php echo Helpers::e($activePartners); ?></div><div class="stat-label">Active Partners</div></div>
       <div class="stat-card t4"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-building"></i></div></div><div class="stat-value"><?php echo Helpers::e(count($partnersList)); ?></div><div class="stat-label">Total Organizations</div></div>
-      <div class="stat-card t2"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-sack-dollar"></i></div></div><div class="stat-value"><?php echo Helpers::e(Helpers::fmt($totalDonationsAll)); ?></div><div class="stat-label">Total Contributions</div></div>
+      <div class="stat-card t2"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-arrow-up-right-from-square"></i></div></div><div class="stat-value"><?php echo Helpers::e(number_format($partnerRegistrationClicks)); ?></div><div class="stat-label"><?php echo Helpers::e($partnerClicksLabel); ?></div></div>
+      <div class="stat-card t3"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-user-check"></i></div></div><div class="stat-value"><?php echo Helpers::e(number_format($partnerConfirmedMemberships)); ?></div><div class="stat-label"><?php echo Helpers::e($partnerConfirmedLabel); ?></div></div>
     </div>
     <?php
       $partnerPageDefaults = [
@@ -3104,7 +3111,10 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         "registration_resource_3_label" => "Membership Category",
         "registration_resource_3_url" => "https://nnngo.org/membership-category/",
         "registration_resource_4_label" => "Join Now",
-        "registration_resource_4_url" => "https://nnngo.org/join-now/"
+        "registration_resource_4_url" => "https://nnngo.org/join-now/",
+        "registration_clicks_label" => "Tracked Link Clicks",
+        "confirmed_memberships_label" => "Confirmed Memberships",
+        "confirmed_memberships" => "0"
       ];
       $partnerPageSettings = [];
       foreach ($partnerPageDefaults as $key => $defaultValue) {
@@ -3159,6 +3169,24 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
           <div class="form-group" style="grid-column:1 / -1;">
             <label class="form-label">Resources Heading</label>
             <input class="form-input" type="text" name="settings[registration_resources_title]" value="<?php echo Helpers::e($partnerPageSettings["registration_resources_title"]); ?>">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Auto Metric Label</label>
+            <input class="form-input" type="text" name="settings[registration_clicks_label]" value="<?php echo Helpers::e($partnerPageSettings["registration_clicks_label"]); ?>">
+            <div class="form-help">This figure updates automatically when visitors click the tracked NNNGO partner links on your site.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Auto Metric Value</label>
+            <input class="form-input" type="text" value="<?php echo Helpers::e(number_format($partnerRegistrationClicks)); ?>" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirmed Memberships Label</label>
+            <input class="form-input" type="text" name="settings[confirmed_memberships_label]" value="<?php echo Helpers::e($partnerPageSettings["confirmed_memberships_label"]); ?>">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirmed Memberships Value</label>
+            <input class="form-input" type="number" min="0" step="1" name="settings[confirmed_memberships]" value="<?php echo Helpers::e($partnerPageSettings["confirmed_memberships"]); ?>">
+            <div class="form-help">Update this manually after NNNGO confirms completed membership purchases or approvals.</div>
           </div>
           <?php for ($resourceIndex = 1; $resourceIndex <= 4; $resourceIndex++): ?>
           <div class="form-group">
