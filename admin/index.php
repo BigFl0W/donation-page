@@ -645,6 +645,25 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         if ($id > 0) { Database::execute("DELETE FROM partners WHERE id=:id", ["id" => $id]); $flashMsg = "Partner removed"; $flashType = "success"; }
     }
 
+    if ($action === "save_partner_page") {
+        $saveOk = true;
+        if (isset($_POST["settings"]) && is_array($_POST["settings"])) {
+            foreach ($_POST["settings"] as $key => $val) {
+                $saved = Database::execute(
+                    "INSERT INTO settings (setting_group, setting_key, setting_value)
+                     VALUES ('partners', :key, :val)
+                     ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                    ["key" => "partners_" . $key, "val" => is_string($val) ? trim($val) : $val]
+                );
+                if (!$saved) $saveOk = false;
+            }
+        }
+        $flashMsg = $saveOk ? "Partners page updated successfully" : "Partners page update failed. Please try again.";
+        $flashType = $saveOk ? "success" : "danger";
+        header("Location: index.php?msg=" . urlencode($flashMsg) . "&type=" . $flashType . "&page=partners");
+        exit;
+    }
+
     if ($action === "save_about_v3") {
         $saveOk = true;
         if (isset($_POST['settings'])) {
@@ -3065,6 +3084,97 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-handshake"></i></div><span class="stat-trend up"><i class="fas fa-arrow-trend-up"></i>Active</span></div><div class="stat-value"><?php echo Helpers::e($activePartners); ?></div><div class="stat-label">Active Partners</div></div>
       <div class="stat-card t4"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-building"></i></div></div><div class="stat-value"><?php echo Helpers::e(count($partnersList)); ?></div><div class="stat-label">Total Organizations</div></div>
       <div class="stat-card t2"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-sack-dollar"></i></div></div><div class="stat-value"><?php echo Helpers::e(Helpers::fmt($totalDonationsAll)); ?></div><div class="stat-label">Total Contributions</div></div>
+    </div>
+    <?php
+      $partnerPageDefaults = [
+        "registration_kicker" => "Partner Registration",
+        "registration_title" => "Help prospective partners register through the Nigeria Network of NGOs.",
+        "registration_description" => "Use this section to explain why your organization values formal partnership, accountability and sector-wide collaboration. The primary button below should take partners directly to the official registration flow.",
+        "registration_primary_label" => "Join NNNGO",
+        "registration_primary_url" => "https://nnngo.org/join-now/",
+        "registration_secondary_label" => "View Membership Benefits",
+        "registration_secondary_url" => "https://nnngo.org/membership-benefits/",
+        "registration_benefits_title" => "Why register",
+        "registration_benefits_list" => "Build credibility through recognised NGO membership.\nAccess networking, advocacy and sector learning opportunities.\nUnderstand the available membership categories before applying.\nGive prospective partners one trusted registration path.",
+        "registration_resources_title" => "Helpful registration links",
+        "registration_resource_1_label" => "Membership Overview",
+        "registration_resource_1_url" => "https://nnngo.org/membership-2/",
+        "registration_resource_2_label" => "Membership Benefits",
+        "registration_resource_2_url" => "https://nnngo.org/membership-benefits/",
+        "registration_resource_3_label" => "Membership Category",
+        "registration_resource_3_url" => "https://nnngo.org/membership-category/",
+        "registration_resource_4_label" => "Join Now",
+        "registration_resource_4_url" => "https://nnngo.org/join-now/"
+      ];
+      $partnerPageSettings = [];
+      foreach ($partnerPageDefaults as $key => $defaultValue) {
+          $partnerPageSettings[$key] = (string)($settings["partners_" . $key] ?? $defaultValue);
+      }
+    ?>
+    <div class="card">
+      <div class="section-hd">
+        <div><h2>Partners Page Builder</h2><p>Control the public-facing partnership registration content</p></div>
+      </div>
+      <form method="post">
+        <input type="hidden" name="_action" value="save_partner_page">
+        <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
+        <div class="grid-2" style="gap:18px;">
+          <div class="form-group">
+            <label class="form-label">Section Label</label>
+            <input class="form-input" type="text" name="settings[registration_kicker]" value="<?php echo Helpers::e($partnerPageSettings["registration_kicker"]); ?>">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Primary CTA Label</label>
+            <input class="form-input" type="text" name="settings[registration_primary_label]" value="<?php echo Helpers::e($partnerPageSettings["registration_primary_label"]); ?>">
+          </div>
+          <div class="form-group" style="grid-column:1 / -1;">
+            <label class="form-label">Section Title</label>
+            <input class="form-input" type="text" name="settings[registration_title]" value="<?php echo Helpers::e($partnerPageSettings["registration_title"]); ?>">
+          </div>
+          <div class="form-group" style="grid-column:1 / -1;">
+            <label class="form-label">Description</label>
+            <textarea class="form-textarea" name="settings[registration_description]" rows="4"><?php echo Helpers::e($partnerPageSettings["registration_description"]); ?></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Primary CTA URL</label>
+            <input class="form-input" type="url" name="settings[registration_primary_url]" value="<?php echo Helpers::e($partnerPageSettings["registration_primary_url"]); ?>">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Secondary CTA Label</label>
+            <input class="form-input" type="text" name="settings[registration_secondary_label]" value="<?php echo Helpers::e($partnerPageSettings["registration_secondary_label"]); ?>">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Secondary CTA URL</label>
+            <input class="form-input" type="url" name="settings[registration_secondary_url]" value="<?php echo Helpers::e($partnerPageSettings["registration_secondary_url"]); ?>">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Benefits Heading</label>
+            <input class="form-input" type="text" name="settings[registration_benefits_title]" value="<?php echo Helpers::e($partnerPageSettings["registration_benefits_title"]); ?>">
+          </div>
+          <div class="form-group" style="grid-column:1 / -1;">
+            <label class="form-label">Benefits List</label>
+            <textarea class="form-textarea" name="settings[registration_benefits_list]" rows="5"><?php echo Helpers::e($partnerPageSettings["registration_benefits_list"]); ?></textarea>
+            <div class="form-help">Use one benefit per line.</div>
+          </div>
+          <div class="form-group" style="grid-column:1 / -1;">
+            <label class="form-label">Resources Heading</label>
+            <input class="form-input" type="text" name="settings[registration_resources_title]" value="<?php echo Helpers::e($partnerPageSettings["registration_resources_title"]); ?>">
+          </div>
+          <?php for ($resourceIndex = 1; $resourceIndex <= 4; $resourceIndex++): ?>
+          <div class="form-group">
+            <label class="form-label">Resource <?php echo $resourceIndex; ?> Label</label>
+            <input class="form-input" type="text" name="settings[registration_resource_<?php echo $resourceIndex; ?>_label]" value="<?php echo Helpers::e($partnerPageSettings["registration_resource_" . $resourceIndex . "_label"]); ?>">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Resource <?php echo $resourceIndex; ?> URL</label>
+            <input class="form-input" type="url" name="settings[registration_resource_<?php echo $resourceIndex; ?>_url]" value="<?php echo Helpers::e($partnerPageSettings["registration_resource_" . $resourceIndex . "_url"]); ?>">
+          </div>
+          <?php endfor; ?>
+        </div>
+        <div style="margin-top:18px;">
+          <button class="btn-primary" type="submit"><i class="fas fa-floppy-disk"></i> Save Partners Page Content</button>
+        </div>
+      </form>
     </div>
     <div class="card">
       <div class="section-hd">
