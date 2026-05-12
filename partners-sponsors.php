@@ -30,10 +30,6 @@ for ($resourceIndex = 1; $resourceIndex <= 4; $resourceIndex++) {
         $registrationResources[] = ['label' => $label, 'url' => $url];
     }
 }
-$partnerRegistrationClicks = (int)$partnerSetting('registration_clicks', '0');
-$partnerConfirmedMemberships = (int)$partnerSetting('confirmed_memberships', '0');
-$partnerRegistrationClicksLabel = $partnerSetting('registration_clicks_label', 'Tracked Link Clicks');
-$partnerConfirmedMembershipsLabel = $partnerSetting('confirmed_memberships_label', 'Confirmed Memberships');
 $trackedLink = static function (string $url, string $source): string {
     return 'partner-link.php?source=' . rawurlencode($source) . '&url=' . rawurlencode($url);
 };
@@ -175,14 +171,13 @@ require_once 'includes/header.php';
                 <div class="explore-contact-card p-5 rounded-4" style="background: #fff; border: 1px solid #f0f0f0;">
                     <div class="explore-kicker text-muted text-uppercase mb-2" style="font-size: 0.7rem; letter-spacing: 1px;">Institutional Credibility</div>
                     <h3 class="fw-bold mb-3">Professional stewardship ensures long-term mission success.</h3>
-                    <p class="mb-0 text-muted">We separately track partner-link engagement from this page and keep confirmed memberships distinct from donation records, so your partnership reporting stays cleaner and easier to verify.</p>
+                    <p class="mb-0 text-muted">We guide prospective partners through a credible registration path, communicate expectations clearly and build every collaboration on transparency, accountability and shared social impact.</p>
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="explore-stat-card text-white p-5 rounded-4 text-center" style="background-color: #4e7a64;">
-                    <span class="display-4 fw-bold d-block mb-2"><?php echo htmlspecialchars(number_format($partnerRegistrationClicks)); ?></span>
-                    <p class="mb-0 fw-bold"><?php echo htmlspecialchars($partnerRegistrationClicksLabel); ?></p>
-                    <div style="margin-top:14px; font-size:0.92rem; opacity:0.9;"><?php echo htmlspecialchars(number_format($partnerConfirmedMemberships)); ?> <?php echo htmlspecialchars($partnerConfirmedMembershipsLabel); ?></div>
+                    <span class="display-4 fw-bold d-block mb-2">3</span>
+                    <p class="mb-0 fw-bold">Helpful membership resources for partner onboarding.</p>
                 </div>
             </div>
         </div>
