@@ -3575,6 +3575,37 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         <div class="about-pane" id="about-pane-homepage" style="display:none">
           <div class="two-col">
             <div>
+              <div class="card" style="padding:20px; background:var(--surface); margin-bottom:18px;">
+                <h4 style="margin:0 0 14px; color:var(--primary-color);">Homepage Hero Slider</h4>
+                <div class="form-field">
+                  <label class="form-label">Slider Kicker</label>
+                  <input class="form-input" name="settings[home_slider_kicker]" value="<?php echo Helpers::e($aboutSettings['about_home_slider_kicker'] ?? 'Restoring Hope'); ?>"/>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Slider Title</label>
+                  <textarea class="form-input" name="settings[home_slider_title]" rows="3"><?php echo Helpers::e($aboutSettings['about_home_slider_title'] ?? 'For Children And Families'); ?></textarea>
+                </div>
+                <div class="form-row">
+                  <div class="form-field">
+                    <label class="form-label">Primary Button Label</label>
+                    <input class="form-input" name="settings[home_slider_primary_label]" value="<?php echo Helpers::e($aboutSettings['about_home_slider_primary_label'] ?? 'Join Us Now'); ?>"/>
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Primary Button URL</label>
+                    <input class="form-input" name="settings[home_slider_primary_url]" value="<?php echo Helpers::e($aboutSettings['about_home_slider_primary_url'] ?? 'causes-list.php'); ?>"/>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-field">
+                    <label class="form-label">Video Link Label</label>
+                    <input class="form-input" name="settings[home_slider_video_label]" value="<?php echo Helpers::e($aboutSettings['about_home_slider_video_label'] ?? 'Watch the video'); ?>"/>
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Video Link URL</label>
+                    <input class="form-input" name="settings[home_slider_video_url]" value="<?php echo Helpers::e($aboutSettings['about_home_slider_video_url'] ?? 'https://player.vimeo.com/video/7449107'); ?>"/>
+                  </div>
+                </div>
+              </div>
               <div class="form-field">
                 <label class="form-label">Homepage Section Label</label>
                 <input class="form-input" name="settings[home_intro_label]" value="<?php echo Helpers::e($aboutSettings['about_home_intro_label'] ?? 'Friends at Heart Welfare Initiative'); ?>"/>
@@ -3589,6 +3620,21 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
               </div>
             </div>
             <div>
+              <div class="card" style="padding:20px; background:var(--surface); margin-bottom:18px;">
+                <h4 style="margin:0 0 14px; color:var(--primary-color);">Slider Background Images</h4>
+                <?php for ($slideIndex = 1; $slideIndex <= 3; $slideIndex++): ?>
+                <div class="form-field">
+                  <label class="form-label">Slide <?php echo $slideIndex; ?> Image</label>
+                  <input class="form-input" type="file" name="images[home_slider_image_<?php echo $slideIndex; ?>]" accept=".jpg,.jpeg,.png,.webp,.gif">
+                  <?php if (!empty($aboutSettings['about_home_slider_image_' . $slideIndex])): ?>
+                    <div style="margin-top:10px;">
+                      <img src="../<?php echo Helpers::e($aboutSettings['about_home_slider_image_' . $slideIndex]); ?>" alt="" style="width:100%; max-width:220px; border-radius:14px; border:1px solid var(--line); object-fit:cover;">
+                    </div>
+                  <?php endif; ?>
+                </div>
+                <?php endfor; ?>
+                <div style="font-size:0.8rem; color:var(--mid);">Upload one image for each homepage slide. Text and buttons stay synchronized across all three slides.</div>
+              </div>
               <div class="card" style="padding:20px; background:var(--surface); margin-bottom:18px;">
                 <div class="form-field">
                   <label class="form-label">Stat One Value</label>

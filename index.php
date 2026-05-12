@@ -42,6 +42,16 @@ $homeIntroStat1Value = trim((string)($homeAboutSettings['about_home_intro_stat_1
 $homeIntroStat1Label = trim((string)($homeAboutSettings['about_home_intro_stat_1_label'] ?? 'Lives Supported'));
 $homeIntroStat2Value = trim((string)($homeAboutSettings['about_home_intro_stat_2_value'] ?? '14,800'));
 $homeIntroStat2Label = trim((string)($homeAboutSettings['about_home_intro_stat_2_label'] ?? 'Community Donations'));
+$homeSliderKicker = trim((string)($homeAboutSettings['about_home_slider_kicker'] ?? 'Restoring Hope'));
+$homeSliderTitle = trim((string)($homeAboutSettings['about_home_slider_title'] ?? 'For Children And Families'));
+$homeSliderPrimaryLabel = trim((string)($homeAboutSettings['about_home_slider_primary_label'] ?? 'Join Us Now'));
+$homeSliderPrimaryUrl = trim((string)($homeAboutSettings['about_home_slider_primary_url'] ?? 'causes-list.php'));
+$homeSliderVideoLabel = trim((string)($homeAboutSettings['about_home_slider_video_label'] ?? 'Watch the video'));
+$homeSliderVideoUrl = trim((string)($homeAboutSettings['about_home_slider_video_url'] ?? 'https://player.vimeo.com/video/7449107'));
+$homeSliderImage1 = trim((string)($homeAboutSettings['about_home_slider_image_1'] ?? 'assets/images/slider/slider_home_first_1.jpg'));
+$homeSliderImage2 = trim((string)($homeAboutSettings['about_home_slider_image_2'] ?? 'assets/images/slider/slider_home_first_2.jpg'));
+$homeSliderImage3 = trim((string)($homeAboutSettings['about_home_slider_image_3'] ?? 'assets/images/slider/slider_home_first_3.jpg'));
+$homeSliderImages = [$homeSliderImage1, $homeSliderImage2, $homeSliderImage3];
 $homeStoryHighlights = [
     "Friends at Heart Welfare Initiative was born from moments that broke our hearts.",
     "We saw the suffering. We felt it. And we chose not to look away.",
@@ -487,18 +497,18 @@ $homeCoreValues = [
         <div class="slides-wrap">
             <div class="owl-carousel owl-theme">
                 <!--/owl-slide-->
-                <div class="owl-slide d-flex align-items-center cover" style="background-image: url(assets/images/slider/slider_home_first_1.jpg);">
+                <div class="owl-slide d-flex align-items-center cover" style="background-image: url(<?php echo htmlspecialchars($homeSliderImages[0]); ?>);">
                     <div class="container">
                         <div class="row justify-content-center justify-content-md-start no-gutters">
                             <div class="col-10 col-md-6 static">
                                 <div class="owl-slide-text">
-                                    <h3 class="owl-slide-animated owl-slide-title">Raising Hope</h3>
+                                    <h3 class="owl-slide-animated owl-slide-title"><?php echo htmlspecialchars($homeSliderKicker); ?></h3>
                                     <h1 class="owl-slide-animated owl-slide-subtitle">
-                                        To The Homeless People
+                                        <?php echo nl2br(htmlspecialchars($homeSliderTitle)); ?>
                                     </h1>
                                     <div class="owl-slide-animated owl-slide-cta">                                        
-                                        <a class="btn btn-default me-3" href="causes-list.php" role="button">Join Us Now</a>
-                                        <a class="slider-link popup-video" href="https://player.vimeo.com/video/7449107">Watch the video <i class="charity-play_button"></i></a>
+                                        <a class="btn btn-default me-3" href="<?php echo htmlspecialchars($homeSliderPrimaryUrl); ?>" role="button"><?php echo htmlspecialchars($homeSliderPrimaryLabel); ?></a>
+                                        <a class="slider-link popup-video" href="<?php echo htmlspecialchars($homeSliderVideoUrl); ?>"><?php echo htmlspecialchars($homeSliderVideoLabel); ?> <i class="charity-play_button"></i></a>
                                     </div>
                                 </div>
                             </div>
@@ -509,18 +519,18 @@ $homeCoreValues = [
                 
                 
                 <!--/owl-slide-->
-                <div class="owl-slide d-flex align-items-center cover" style="background-image: url(assets/images/slider/slider_home_first_2.jpg);">
+                <div class="owl-slide d-flex align-items-center cover" style="background-image: url(<?php echo htmlspecialchars($homeSliderImages[1]); ?>);">
                     <div class="container">
                         <div class="row justify-content-center justify-content-md-start no-gutters">
                             <div class="col-10 col-md-6 static">
                                 <div class="owl-slide-text">
-                                    <h3 class="owl-slide-animated owl-slide-title">Raising Hope</h3>
+                                    <h3 class="owl-slide-animated owl-slide-title"><?php echo htmlspecialchars($homeSliderKicker); ?></h3>
                                     <h1 class="owl-slide-animated owl-slide-subtitle">
-                                        To The Homeless People
+                                        <?php echo nl2br(htmlspecialchars($homeSliderTitle)); ?>
                                     </h1>
                                     <div class="owl-slide-animated owl-slide-cta">                                        
-                                        <a class="btn btn-default me-3" href="causes-list.php" role="button">Join Us Now</a>
-                                        <a class="slider-link popup-video" href="https://player.vimeo.com/video/7449107">Watch the video <i class="charity-play_button"></i></a>
+                                        <a class="btn btn-default me-3" href="<?php echo htmlspecialchars($homeSliderPrimaryUrl); ?>" role="button"><?php echo htmlspecialchars($homeSliderPrimaryLabel); ?></a>
+                                        <a class="slider-link popup-video" href="<?php echo htmlspecialchars($homeSliderVideoUrl); ?>"><?php echo htmlspecialchars($homeSliderVideoLabel); ?> <i class="charity-play_button"></i></a>
                                     </div>
                                 </div>
                             </div>
@@ -529,18 +539,18 @@ $homeCoreValues = [
                 </div>
 
                 <!--/owl-slide-->
-                <div class="owl-slide d-flex align-items-center cover" style="background-image: url(assets/images/slider/slider_home_first_3.jpg);">
+                <div class="owl-slide d-flex align-items-center cover" style="background-image: url(<?php echo htmlspecialchars($homeSliderImages[2]); ?>);">
                     <div class="container">
                         <div class="row justify-content-center justify-content-md-start no-gutters">
                             <div class="col-10 col-md-6 static">
                                 <div class="owl-slide-text">
-                                    <h3 class="owl-slide-animated owl-slide-title">Raising Hope</h3>
+                                    <h3 class="owl-slide-animated owl-slide-title"><?php echo htmlspecialchars($homeSliderKicker); ?></h3>
                                     <h1 class="owl-slide-animated owl-slide-subtitle">
-                                        To The Homeless People
+                                        <?php echo nl2br(htmlspecialchars($homeSliderTitle)); ?>
                                     </h1>
                                     <div class="owl-slide-animated owl-slide-cta">                                        
-                                        <a class="btn btn-default me-3" href="causes-list.php" role="button">Join Us Now</a>
-                                        <a class="slider-link popup-video" href="https://player.vimeo.com/video/7449107">Watch the video <i class="charity-play_button"></i></a>
+                                        <a class="btn btn-default me-3" href="<?php echo htmlspecialchars($homeSliderPrimaryUrl); ?>" role="button"><?php echo htmlspecialchars($homeSliderPrimaryLabel); ?></a>
+                                        <a class="slider-link popup-video" href="<?php echo htmlspecialchars($homeSliderVideoUrl); ?>"><?php echo htmlspecialchars($homeSliderVideoLabel); ?> <i class="charity-play_button"></i></a>
                                     </div>
                                 </div>
                             </div>
