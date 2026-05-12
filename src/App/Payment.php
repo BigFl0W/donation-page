@@ -15,9 +15,9 @@ class Payment
         $url = "https://api.paystack.co/transaction/initialize";
         $fields = [
             'email' => $data['email'],
-            'amount' => $data['amount'] * 100, // Paystack uses kobo/cents
+            'amount' => $data['amount'] * 100,
             'callback_url' => $data['callback_url'] ?? (Helpers::siteUrl() . '/includes/paystack_callback.php'),
-            'metadata' => json_encode($data['metadata'] ?? [])
+            'metadata' => json_encode($data['metadata'] ?? []),
         ];
 
         $ch = curl_init();
@@ -27,7 +27,7 @@ class Payment
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             "Authorization: Bearer " . self::getSecretKey(),
             "Cache-Control: no-cache",
-            "Content-Type: application/json"
+            "Content-Type: application/json",
         ]);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
@@ -45,7 +45,7 @@ class Payment
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             "Authorization: Bearer " . self::getSecretKey(),
-            "Cache-Control: no-cache"
+            "Cache-Control: no-cache",
         ]);
         $response = curl_exec($ch);
         curl_close($ch);
@@ -58,7 +58,9 @@ class Payment
         $success = Database::execute(
             "INSERT INTO donations (donor_name, donor_email, amount, currency, gateway, payment_reference, status, metadata, paid_at, created_at)
              VALUES (:name, :email, :amount, :currency, 'paystack', :ref, :status, :meta, :paid_at, NOW())
-             ON DUPLICATE KEY UPDATE status = VALUES(status), paid_at = VALUES(paid_at)",
+             ON DUPLICATE KEY UPDATE donor_name = VALUES(donor_name), donor_email = VALUES(donor_email),
+             amount = VALUES(amount), currency = VALUES(currency), status = VALUES(status),
+             metadata = VALUES(metadata), paid_at = VALUES(paid_at)",
             [
                 'name' => $data['donor_name'],
                 'email' => $data['donor_email'],
@@ -67,19 +69,19 @@ class Payment
                 'ref' => $data['reference'],
                 'status' => $data['status'],
                 'meta' => json_encode($data['metadata'] ?? []),
-                'paid_at' => $data['paid_at'] ?? null
+                'paid_at' => $data['paid_at'] ?? null,
             ]
         );
 
-        if ($success && ($data['status'] === 'success' || $data['status'] === 'successful')) {
+        if ($success && in_array((string) $data['status'], ['success', 'successful'], true)) {
             Database::execute(
                 "INSERT INTO admin_notifications (title, message, icon, link, created_at)
                  VALUES (:title, :msg, :icon, :link, NOW())",
                 [
                     'title' => 'New Donation!',
-                    'msg' => "A donation of " . ($data['currency'] ?? '₦') . number_format((float)$data['amount']) . " was received from " . $data['donor_name'],
+                    'msg' => "A donation of " . ($data['currency'] ?? 'NGN') . ' ' . number_format((float) $data['amount']) . " was received from " . $data['donor_name'],
                     'icon' => 'fas fa-hand-holding-heart',
-                    'link' => '?page=donations'
+                    'link' => '?page=donations',
                 ]
             );
         }
@@ -87,13 +89,58 @@ class Payment
         return $success;
     }
 
+    public static function sendReceiptIfNeeded(array $donation): bool
+    {
+        $reference = (string) ($donation['reference'] ?? '');
+        if ($reference === '') {
+            return false;
+        }
+
+        $row = Database::fetchOne(
+            "SELECT metadata FROM donations WHERE payment_reference = :ref LIMIT 1",
+            ['ref' => $reference]
+        );
+
+        $metadata = [];
+        if (!empty($row['metadata'])) {
+            $decoded = json_decode((string) $row['metadata'], true);
+            if (is_array($decoded)) {
+                $metadata = $decoded;
+            }
+        }
+
+        if (!empty($metadata['receipt_sent_at'])) {
+            return true;
+        }
+
+        $sent = self::sendReceipt($donation);
+        if (!$sent) {
+            return false;
+        }
+
+        $metadata['receipt_sent_at'] = date('c');
+        $metadata['receipt_recipient'] = (string) ($donation['donor_email'] ?? '');
+
+        Database::execute(
+            "UPDATE donations SET metadata = :meta WHERE payment_reference = :ref",
+            ['meta' => json_encode($metadata), 'ref' => $reference]
+        );
+
+        return true;
+    }
+
     public static function sendReceipt(array $donation): bool
     {
-        $to = $donation['donor_email'];
-        $subject = "Donation Receipt - " . $donation['reference'];
-        $amount = number_format((float)$donation['amount'], 2);
-        $currency = ($donation['currency'] === 'NGN' || $donation['currency'] === 'NG') ? '₦' : $donation['currency'];
-        
+        $to = (string) ($donation['donor_email'] ?? '');
+        $subject = "Donation Receipt - " . (string) ($donation['reference'] ?? '');
+        $amount = number_format((float) ($donation['amount'] ?? 0), 2);
+        $currencyCode = (string) ($donation['currency'] ?? 'NGN');
+        $currencyLabel = in_array($currencyCode, ['NGN', 'NG'], true) ? 'NGN' : $currencyCode;
+        $brandName = Helpers::brandName('Friends At Heart Welfare Initiative');
+        $receiptDate = (string) ($donation['paid_at'] ?? date('M j, Y H:i'));
+        $donorName = (string) ($donation['donor_name'] ?? 'Supporter');
+        $reference = (string) ($donation['reference'] ?? '');
+
         $message = "
         <html>
         <head>
@@ -107,35 +154,33 @@ class Payment
         <body>
             <div class='receipt'>
                 <div class='header'>
-                    <h2>Gracious Charity Receipt</h2>
+                    <h2>{$brandName} Donation Receipt</h2>
                 </div>
-                <p>Hello <strong>{$donation['donor_name']}</strong>,</p>
-                <p>Thank you for your generous donation. Your support helps us continue our mission.</p>
-                
-                <div class='amount'>{$currency} {$amount}</div>
-                
+                <p>Hello <strong>{$donorName}</strong>,</p>
+                <p>Thank you for your generous donation. Your support helps us continue serving children, families and communities in need.</p>
+                <div class='amount'>{$currencyLabel} {$amount}</div>
                 <table width='100%'>
-                    <tr><td><strong>Reference:</strong></td><td>{$donation['reference']}</td></tr>
-                    <tr><td><strong>Date:</strong></td><td>{$donation['paid_at']}</td></tr>
+                    <tr><td><strong>Reference:</strong></td><td>{$reference}</td></tr>
+                    <tr><td><strong>Date:</strong></td><td>{$receiptDate}</td></tr>
                     <tr><td><strong>Status:</strong></td><td>Successful</td></tr>
                 </table>
-                
                 <div class='footer'>
-                    <p>&copy; " . date('Y') . " Gracious Charity. All rights reserved.</p>
+                    <p>&copy; " . date('Y') . " {$brandName}. All rights reserved.</p>
                 </div>
             </div>
         </body>
         </html>
         ";
-        
+
         return Mailer::send($to, $subject, $message);
     }
 
     public static function getTotalDonations(): float
     {
         $result = Database::fetchOne(
-            "SELECT SUM(amount) as total FROM donations WHERE status = 'success' OR status = 'paid'"
+            "SELECT SUM(amount) as total FROM donations WHERE status = 'success' OR status = 'successful' OR status = 'paid'"
         );
+
         return (float) ($result['total'] ?? 0);
     }
 }

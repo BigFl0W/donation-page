@@ -32,8 +32,8 @@ if ($res['status'] && $res['data']['status'] === 'success') {
         'paid_at' => date("Y-m-d H:i:s", strtotime($data['paid_at']))
     ]);
 
-    // Send Receipt Email
-    Payment::sendReceipt([
+    // Send one receipt per successful transaction, no matter which page started the donation.
+    Payment::sendReceiptIfNeeded([
         'donor_name' => $donorName,
         'donor_email' => $data['customer']['email'],
         'amount' => $amount,

@@ -39,8 +39,8 @@ if ($event['event'] === 'charge.success') {
         'paid_at' => date("Y-m-d H:i:s", strtotime($data['paid_at']))
     ]);
 
-    // Send Receipt Email
-    Payment::sendReceipt([
+    // Webhook guarantees a receipt even if the donor never lands back on the callback page.
+    Payment::sendReceiptIfNeeded([
         'donor_name' => $donorName,
         'donor_email' => $data['customer']['email'],
         'amount' => $amount,

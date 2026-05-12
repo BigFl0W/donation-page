@@ -1,98 +1,80 @@
 <?php
 require_once 'config/autoload.php';
 
+use App\Database;
+use App\Payment;
+
 $action = $_GET['action'] ?? '';
 
 if ($action === 'verify_payment') {
     $input = json_decode(file_get_contents('php://input'), true);
-    $reference = $input['reference'] ?? '';
+    $reference = (string)($input['reference'] ?? '');
     $cause_id = (int)($input['cause_id'] ?? 0);
     $amount = (float)($input['amount'] ?? 0);
 
-    if (empty($reference)) {
+    if ($reference === '') {
         echo json_encode(['status' => 'error', 'message' => 'No reference provided']);
         exit;
     }
 
-    $secret_key = $_ENV['PAYSTACK_SECRET_KEY'] ?? '';
-    
-    $curl = curl_init();
-    curl_setopt_array($curl, array(
-        CURLOPT_URL => "https://api.paystack.co/transaction/verify/" . rawurlencode($reference),
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => "",
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "GET",
-        CURLOPT_HTTPHEADER => array(
-            "Authorization: Bearer " . $secret_key,
-            "Cache-Control: no-cache",
-        ),
-    ));
-
-    $response = curl_exec($curl);
-    $err = curl_error($curl);
-    curl_close($curl);
-
-    if ($err) {
-        echo json_encode(['status' => 'error', 'message' => 'Curl error: ' . $err]);
+    $verification = Payment::verify($reference);
+    if (!($verification['status'] ?? false)) {
+        echo json_encode(['status' => 'error', 'message' => 'API returned error: ' . ($verification['message'] ?? 'Unable to verify payment')]);
         exit;
     }
 
-    $tranx = json_decode($response);
-
-    if (!$tranx->status) {
-        echo json_encode(['status' => 'error', 'message' => 'API returned error: ' . $tranx->message]);
+    $tranx = $verification['data'] ?? [];
+    if (($tranx['status'] ?? '') !== 'success') {
+        echo json_encode(['status' => 'error', 'message' => 'Transaction status: ' . ($tranx['status'] ?? 'unknown')]);
         exit;
     }
 
-    if ('success' == $tranx->data->status) {
-        // Payment is valid!
-        // Update the cause raised_amount
-        if ($cause_id > 0) {
-            \App\Database::execute(
-                "UPDATE programmes SET raised_amount = raised_amount + :amount WHERE id = :id",
-                ['amount' => $amount, 'id' => $cause_id]
-            );
-            
-            // Get cause title for the donation record
-            $c = \App\Database::fetchOne("SELECT title FROM programmes WHERE id = :id", ['id' => $cause_id]);
-            $campaign = $c ? $c['title'] : 'General Donation';
-
-            // Log the donation in donations table
-            try {
-                \App\Database::execute(
-                    "INSERT INTO donations (donor_email, campaign, currency, amount, gateway, status, payment_reference, paid_at, created_at) 
-                     VALUES (:email, :campaign, 'NGN', :amt, 'paystack', 'successful', :ref, NOW(), NOW())",
-                    [
-                        'email' => $tranx->data->customer->email,
-                        'campaign' => $campaign,
-                        'amt' => $amount,
-                        'ref' => $reference
-                    ]
-                );
-
-                // Send Notification to Admin
-                \App\Database::execute(
-                    "INSERT INTO admin_notifications (title, message, icon, link, created_at)
-                     VALUES (:title, :msg, :icon, :link, NOW())",
-                    [
-                        'title' => 'New Donation Received!',
-                        'msg' => "A donation of ₦" . number_format($amount) . " was received from " . $tranx->data->customer->email . " for " . $campaign,
-                        'icon' => 'fas fa-hand-holding-heart',
-                        'link' => '?page=donations'
-                    ]
-                );
-            } catch (\Exception $e) {
-                // Ignore error if insert fails
-            }
-        }
-
-        echo json_encode(['status' => 'success']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Transaction status: ' . $tranx->data->status]);
+    $verifiedAmount = isset($tranx['amount']) ? ((float)$tranx['amount'] / 100) : $amount;
+    $donorEmail = (string)($tranx['customer']['email'] ?? '');
+    $metadata = is_array($tranx['metadata'] ?? null) ? $tranx['metadata'] : [];
+    $donorName = trim((string)($metadata['donor_name'] ?? ''));
+    if ($donorName === '') {
+        $donorName = 'Anonymous Supporter';
     }
+    $paidAtDb = !empty($tranx['paid_at']) ? date("Y-m-d H:i:s", strtotime((string)$tranx['paid_at'])) : date("Y-m-d H:i:s");
+    $paidAtReceipt = !empty($tranx['paid_at']) ? date("M j, Y H:i", strtotime((string)$tranx['paid_at'])) : date("M j, Y H:i");
+
+    if ($cause_id > 0) {
+        Database::execute(
+            "UPDATE programmes SET raised_amount = raised_amount + :amount WHERE id = :id",
+            ['amount' => $verifiedAmount, 'id' => $cause_id]
+        );
+    }
+
+    $c = $cause_id > 0 ? Database::fetchOne("SELECT title FROM programmes WHERE id = :id", ['id' => $cause_id]) : null;
+    $campaign = $c ? (string)$c['title'] : 'General Donation';
+
+    try {
+        Payment::recordDonation([
+            'donor_name' => $donorName,
+            'donor_email' => $donorEmail,
+            'amount' => $verifiedAmount,
+            'currency' => (string)($tranx['currency'] ?? 'NGN'),
+            'reference' => $reference,
+            'status' => 'successful',
+            'metadata' => array_merge($tranx, ['campaign' => $campaign, 'cause_id' => $cause_id]),
+            'paid_at' => $paidAtDb,
+        ]);
+
+        Payment::sendReceiptIfNeeded([
+            'donor_name' => $donorName,
+            'donor_email' => $donorEmail,
+            'amount' => $verifiedAmount,
+            'currency' => (string)($tranx['currency'] ?? 'NGN'),
+            'reference' => $reference,
+            'paid_at' => $paidAtReceipt,
+        ]);
+    } catch (\Throwable $e) {
+        echo json_encode(['status' => 'error', 'message' => 'Could not finalize donation record']);
+        exit;
+    }
+
+    echo json_encode(['status' => 'success']);
     exit;
 }
 
