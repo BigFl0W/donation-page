@@ -756,6 +756,59 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
+    if ($action === "save_volunteer_page") {
+        $saveOk = true;
+        if (isset($_POST["settings"]) && is_array($_POST["settings"])) {
+            foreach ($_POST["settings"] as $key => $val) {
+                $saved = Database::execute(
+                    "INSERT INTO settings (setting_group, setting_key, setting_value)
+                     VALUES ('volunteer', :key, :val)
+                     ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                    ["key" => "volunteer_" . $key, "val" => is_string($val) ? trim($val) : $val]
+                );
+                if (!$saved) $saveOk = false;
+            }
+        }
+
+        if (isset($_FILES['volunteer_media']) && is_array($_FILES['volunteer_media']['name'] ?? null)) {
+            $uploadDir = __DIR__ . "/../assets/uploads/volunteer";
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+            $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+
+            foreach ($_FILES['volunteer_media']['name'] as $key => $name) {
+                if (($_FILES['volunteer_media']['error'][$key] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+                    continue;
+                }
+
+                $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+                if (!in_array($ext, $allowedExts, true)) {
+                    $saveOk = false;
+                    continue;
+                }
+
+                $fileName = "volunteer_" . $key . "_" . time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($name));
+                $dest = $uploadDir . "/" . $fileName;
+                if (move_uploaded_file($_FILES['volunteer_media']['tmp_name'][$key], $dest)) {
+                    $path = "assets/uploads/volunteer/" . $fileName;
+                    $saved = Database::execute(
+                        "INSERT INTO settings (setting_group, setting_key, setting_value)
+                         VALUES ('volunteer', :key, :val)
+                         ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                        ["key" => "volunteer_" . $key, "val" => $path]
+                    );
+                    if (!$saved) $saveOk = false;
+                } else {
+                    $saveOk = false;
+                }
+            }
+        }
+
+        $flashMsg = $saveOk ? "Volunteer page updated successfully" : "Volunteer page update failed. Please try again.";
+        $flashType = $saveOk ? "success" : "danger";
+        header("Location: index.php?msg=" . urlencode($flashMsg) . "&type=" . $flashType . "&page=volunteer");
+        exit;
+    }
+
     if ($action === "create_admin") {
         $fullName = trim((string) ($_POST["full_name"] ?? ""));
         $email = trim((string) ($_POST["email"] ?? ""));
@@ -2332,6 +2385,10 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <i class="fas fa-layer-group nav-icon"></i>
       <span class="nav-text">Programme</span>
     </div>
+    <div class="nav-item" onclick="showPage('volunteer',this)">
+      <i class="fas fa-hands-helping nav-icon"></i>
+      <span class="nav-text">Volunteer</span>
+    </div>
     <div class="nav-item" onclick="showPage('footer',this)">
       <i class="fas fa-window-maximize nav-icon"></i>
       <span class="nav-text">Footer</span>
@@ -3886,6 +3943,156 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       </form>
     </div>
   </div>
+  <div class="content" id="page-volunteer">
+    <div class="card" style="padding:0; overflow:hidden;">
+      <form method="POST" enctype="multipart/form-data" style="padding:22px;">
+        <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
+        <input type="hidden" name="_action" value="save_volunteer_page">
+
+        <div style="margin-bottom:25px; display:flex; justify-content:space-between; align-items:center; background:var(--brand-bg); padding:15px; border-radius:12px; border:1px solid var(--brand-dim);">
+          <div>
+            <h4 style="color:var(--brand); margin:0;">Volunteer Page Builder</h4>
+            <p style="font-size:0.75rem; color:var(--mid); margin:0;">Manage the standalone volunteer page and homepage CTA destination.</p>
+          </div>
+          <button type="submit" class="btn-primary" style="padding:10px 30px; border-radius:10px; font-weight:800;">
+            <i class="fas fa-floppy-disk" style="margin-right:8px;"></i>Publish Changes
+          </button>
+        </div>
+
+        <div class="two-col">
+          <div style="display:flex; flex-direction:column; gap:18px;">
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">SEO & Hero</h3>
+              <div class="form-field">
+                <label class="form-label">Page Title</label>
+                <input class="form-input" name="settings[page_title]" value="<?php echo Helpers::e($settings['volunteer_page_title'] ?? 'Volunteer With Friends at Heart Welfare Initiative'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Page Description</label>
+                <textarea class="form-input" name="settings[page_description]" rows="3"><?php echo Helpers::e($settings['volunteer_page_description'] ?? 'Support outreach, community care, and practical compassion by serving as a volunteer with Friends at Heart Welfare Initiative.'); ?></textarea>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Hero Label</label>
+                <input class="form-input" name="settings[hero_label]" value="<?php echo Helpers::e($settings['volunteer_hero_label'] ?? 'Serve With Us'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Hero Title</label>
+                <textarea class="form-input" name="settings[hero_title]" rows="3"><?php echo Helpers::e($settings['volunteer_hero_title'] ?? 'Volunteer with Friends at Heart Welfare Initiative'); ?></textarea>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Hero Description</label>
+                <textarea class="form-input" name="settings[hero_description]" rows="4"><?php echo Helpers::e($settings['volunteer_hero_description'] ?? 'Join a compassionate network of volunteers helping children, patients and underserved families through practical community support.'); ?></textarea>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Hero Image</label>
+                <input class="form-input" name="volunteer_media[hero_image]" type="file" accept=".jpg,.jpeg,.png,.gif,.webp,.svg">
+                <div style="font-size:.75rem;color:var(--soft);margin-top:6px;">Current: <?php echo Helpers::e($settings['volunteer_hero_image'] ?? 'assets/images/about_img.png'); ?></div>
+              </div>
+            </div>
+
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Main Copy</h3>
+              <div class="form-field">
+                <label class="form-label">Intro Title</label>
+                <input class="form-input" name="settings[intro_title]" value="<?php echo Helpers::e($settings['volunteer_intro_title'] ?? 'Where your time can make a real difference'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Intro Description</label>
+                <textarea class="form-input" name="settings[intro_description]" rows="4"><?php echo Helpers::e($settings['volunteer_intro_description'] ?? 'Our volunteers support outreach logistics, beneficiary care, event coordination, fundraising campaigns and administrative follow-through. We welcome people who are dependable, compassionate and ready to serve with dignity.'); ?></textarea>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Why Volunteer Title</label>
+                <input class="form-input" name="settings[impact_title]" value="<?php echo Helpers::e($settings['volunteer_impact_title'] ?? 'Why people volunteer with us'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Why Volunteer Lines</label>
+                <textarea class="form-input" name="settings[impact_lines]" rows="5"><?php echo Helpers::e($settings['volunteer_impact_lines'] ?? "Serve people directly with empathy and purpose.\nGain meaningful field and community experience.\nJoin a mission-driven team that values accountability and compassion."); ?></textarea>
+                <div style="font-size:.75rem;color:var(--soft);margin-top:6px;">One line per point.</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:18px;">
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Calls To Action</h3>
+              <div class="form-row">
+                <div class="form-field">
+                  <label class="form-label">Primary Button Label</label>
+                  <input class="form-input" name="settings[primary_cta_label]" value="<?php echo Helpers::e($settings['volunteer_primary_cta_label'] ?? 'Apply to Volunteer'); ?>">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Primary Button URL</label>
+                  <input class="form-input" name="settings[primary_cta_url]" value="<?php echo Helpers::e($settings['volunteer_primary_cta_url'] ?? 'contact-us.php'); ?>">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-field">
+                  <label class="form-label">Secondary Button Label</label>
+                  <input class="form-input" name="settings[secondary_cta_label]" value="<?php echo Helpers::e($settings['volunteer_secondary_cta_label'] ?? 'Speak With Our Team'); ?>">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Secondary Button URL</label>
+                  <input class="form-input" name="settings[secondary_cta_url]" value="<?php echo Helpers::e($settings['volunteer_secondary_cta_url'] ?? 'contact-us.php'); ?>">
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Final CTA Title</label>
+                <input class="form-input" name="settings[final_cta_title]" value="<?php echo Helpers::e($settings['volunteer_final_cta_title'] ?? 'Ready to serve with us?'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Final CTA Description</label>
+                <textarea class="form-input" name="settings[final_cta_description]" rows="3"><?php echo Helpers::e($settings['volunteer_final_cta_description'] ?? 'Take the next step and let us know how you would like to contribute your time, energy and skills.'); ?></textarea>
+              </div>
+            </div>
+
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Opportunities</h3>
+              <div class="form-field">
+                <label class="form-label">Section Title</label>
+                <input class="form-input" name="settings[opportunities_title]" value="<?php echo Helpers::e($settings['volunteer_opportunities_title'] ?? 'Volunteer opportunities'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Section Intro</label>
+                <textarea class="form-input" name="settings[opportunities_intro]" rows="3"><?php echo Helpers::e($settings['volunteer_opportunities_intro'] ?? 'Choose the kind of contribution that best matches your strength, schedule and passion.'); ?></textarea>
+              </div>
+              <?php for ($i = 1; $i <= 3; $i++): ?>
+                <div class="form-field">
+                  <label class="form-label">Opportunity <?php echo $i; ?> Title</label>
+                  <input class="form-input" name="settings[opportunity_<?php echo $i; ?>_title]" value="<?php echo Helpers::e($settings["volunteer_opportunity_{$i}_title"] ?? ([1 => 'Community Outreach', 2 => 'Programme Support', 3 => 'Events and Campaigns'][$i] ?? '')); ?>">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Opportunity <?php echo $i; ?> Description</label>
+                  <textarea class="form-input" name="settings[opportunity_<?php echo $i; ?>_description]" rows="3"><?php echo Helpers::e($settings["volunteer_opportunity_{$i}_description"] ?? ([1 => 'Help with field visits, distributions, beneficiary engagement and on-site coordination during community interventions.', 2 => 'Support school-fee drives, hospital-bill advocacy, case follow-up and everyday programme administration.', 3 => 'Assist with planning, registrations, storytelling, guest coordination and fundraising events that move the mission forward.'][$i] ?? '')); ?></textarea>
+                </div>
+              <?php endfor; ?>
+            </div>
+
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Joining Process</h3>
+              <div class="form-field">
+                <label class="form-label">Process Title</label>
+                <input class="form-input" name="settings[process_title]" value="<?php echo Helpers::e($settings['volunteer_process_title'] ?? 'How joining works'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Process Intro</label>
+                <textarea class="form-input" name="settings[process_intro]" rows="3"><?php echo Helpers::e($settings['volunteer_process_intro'] ?? 'We keep the process simple so committed volunteers can get started clearly and confidently.'); ?></textarea>
+              </div>
+              <?php for ($i = 1; $i <= 3; $i++): ?>
+                <div class="form-field">
+                  <label class="form-label">Step <?php echo $i; ?> Title</label>
+                  <input class="form-input" name="settings[step_<?php echo $i; ?>_title]" value="<?php echo Helpers::e($settings["volunteer_step_{$i}_title"] ?? ([1 => 'Submit your interest', 2 => 'Have a short conversation', 3 => 'Get matched and start serving'][$i] ?? '')); ?>">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Step <?php echo $i; ?> Description</label>
+                  <textarea class="form-input" name="settings[step_<?php echo $i; ?>_description]" rows="3"><?php echo Helpers::e($settings["volunteer_step_{$i}_description"] ?? ([1 => 'Reach out through the volunteer application link and tell us how you would like to help.', 2 => 'Our team reviews your interest and discusses your availability, experience and preferred area of service.', 3 => 'We place you where your contribution fits best and guide you into the next available opportunity.'][$i] ?? '')); ?></textarea>
+                </div>
+              <?php endfor; ?>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
   <div class="content" id="page-security">
     <div class="stats-grid">
       <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-server"></i></div><span class="stat-trend up">Healthy</span></div><div class="stat-value">99.8%</div><div class="stat-label">System Uptime</div></div>
@@ -4204,7 +4411,7 @@ const PAGES = {
   dashboard:'Dashboard',donations:'Donations',users:'Users',
   programmes:'Programmes',partners:'Partners',blog:'Blog & News',
   events:'Events',gallery:'Gallery',security:'Security',settings:'Settings',
-  profile:'My Profile',messages:'Messages', about:'About Page Builder', programme:'Programme Builder', footer:'Footer Builder'
+  profile:'My Profile',messages:'Messages', about:'About Page Builder', programme:'Programme Builder', volunteer:'Volunteer Builder', footer:'Footer Builder'
 };
 
 function previewAvatar(input) {

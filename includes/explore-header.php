@@ -100,6 +100,7 @@ $section_url = $section_url ?? "gallery.php";
                                     <li><a class="dropdown-item" href="../../partners-sponsors.php">Partners &amp; Sponsors</a></li>
                                     <li><a class="dropdown-item" href="../../causes-projects">Our Causes</a></li>
                                     <li><a class="dropdown-item" href="../../programme">Programme</a></li>
+                                    <li><a class="dropdown-item" href="../../volunteer.php">Volunteer</a></li>
                                     <li><a class="dropdown-item" href="../../faqs.php">FAQs</a></li>
                                 </ul>
                             </li>

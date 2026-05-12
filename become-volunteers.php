@@ -1,8 +1,6 @@
 <?php
-require_once __DIR__ . '/config/autoload.php';
-$brandName = \App\Helpers::brandName("Gracious Charity");
-$brandLogo = \App\Helpers::brandLogoPath("assets/images/logo_dark.svg");
-$brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
+header('Location: volunteer.php', true, 302);
+exit;
 ?>
 <!doctype html>
 <html lang="en">

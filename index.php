@@ -456,6 +456,7 @@ $homeCoreValues = [
                                     <li><a class="dropdown-item" href="partners-sponsors">Partners & Sponsors</a></li>
                                     <li><a class="dropdown-item" href="causes-projects">Our Causes</a></li>
                                     <li><a class="dropdown-item" href="programme">Programme</a></li>
+                                    <li><a class="dropdown-item" href="volunteer.php">Volunteer</a></li>
                                     <li><a class="dropdown-item" href="faqs">FAQs</a></li>
                                 </ul>
                             </li>
@@ -706,7 +707,7 @@ $homeCoreValues = [
                                 <!-- Map Icons Start -->
                             </div>
 
-                            <a href="become-volunteers.php" class="btn btn-outline-default">Become a Volunteer</a>
+                            <a href="volunteer.php" class="btn btn-outline-default">Become a Volunteer</a>
                         </div>
                     </div>
 
