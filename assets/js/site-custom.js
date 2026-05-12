@@ -658,13 +658,20 @@ Table of Content
                 $("#contact_form").validate({
                     meta: "validate",
                     submitHandler: function (form) {
-
+                        const $form = $("#contact_form");
+                        const $submitButton = $form.find('button[type="submit"]');
+                        if ($form.data('submitting')) {
+                            return false;
+                        }
+                        $form.data('submitting', true);
+                        $submitButton.prop('disabled', true).text('Sending...');
                         var s_name = $("#name").val();
                         var s_lastname = $("#lastname").val();
                         var s_email = $("#email").val();
                         var s_phone = $("#phone").val();
                         var s_suject = $("#subject").val();
                         var s_comment = $("#comment").val();
+                        $('#sucessmessage').html('');
                         $.post("contact.php", {
                             name: s_name,
                             lastname: s_lastname,
@@ -674,9 +681,15 @@ Table of Content
                             comment: s_comment
                         },
                             function (result) {
-                                $('#sucessmessage').append(result);
+                                $('#sucessmessage').html(result);
+                                $form.trigger('reset');
+                                $form.hide();
+                            })
+                            .fail(function () {
+                                $('#sucessmessage').html("<div class='alert alert-danger mt-4'>We could not send your message right now. Please try again.</div>");
+                                $submitButton.prop('disabled', false).text('Send Message');
+                                $form.data('submitting', false);
                             });
-                        $('#contact_form').hide();
                         return false;
                     },
                     /* */

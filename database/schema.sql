@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS donation_page;
-CREATE DATABASE donation_page CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE donation_page;
+-- Import this file into an already-created database on shared hosting.
+-- Do not include DROP DATABASE / CREATE DATABASE / USE statements here,
+-- because many hosting providers disable them in phpMyAdmin imports.
 
 CREATE TABLE roles (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -13,6 +13,7 @@ CREATE TABLE admins (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     role_id INT UNSIGNED NOT NULL,
     full_name VARCHAR(120) NOT NULL,
+    avatar VARCHAR(255) NULL,
     email VARCHAR(190) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     status ENUM('active', 'inactive', 'suspended') DEFAULT 'active',
@@ -89,8 +90,10 @@ CREATE TABLE programmes (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(190) NOT NULL,
     slug VARCHAR(150) NOT NULL UNIQUE,
+    content_type VARCHAR(20) NOT NULL DEFAULT 'cause',
     category VARCHAR(120) NULL,
     summary TEXT NULL,
+    mission_statement TEXT NULL,
     content LONGTEXT NULL,
     featured_image VARCHAR(255) NULL,
     goal_amount DECIMAL(15,2) DEFAULT 0.00,
@@ -164,6 +167,23 @@ CREATE TABLE post_tag_map (
     CONSTRAINT fk_post_tag_map_tag FOREIGN KEY (tag_id) REFERENCES post_tags(id) ON DELETE CASCADE
 );
 
+CREATE TABLE blog_comments (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    post_id BIGINT UNSIGNED NOT NULL,
+    user_name VARCHAR(255) NOT NULL,
+    user_email VARCHAR(255) NOT NULL,
+    comment_text TEXT NOT NULL,
+    parent_id BIGINT UNSIGNED NULL,
+    status ENUM('pending', 'approved', 'spam') DEFAULT 'pending',
+    is_admin_reply TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY idx_blog_comments_post_id (post_id),
+    KEY idx_blog_comments_parent_id (parent_id),
+    CONSTRAINT fk_blog_comments_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    CONSTRAINT fk_blog_comments_parent FOREIGN KEY (parent_id) REFERENCES blog_comments(id) ON DELETE CASCADE
+);
+
 CREATE TABLE events (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     created_by BIGINT UNSIGNED NULL,
@@ -197,6 +217,7 @@ CREATE TABLE donations (
     gateway ENUM('paystack', 'stripe', 'manual') NOT NULL,
     status ENUM('pending', 'successful', 'failed', 'refunded') DEFAULT 'pending',
     payment_reference VARCHAR(190) NOT NULL UNIQUE,
+    metadata TEXT NULL,
     paid_at DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -243,11 +264,14 @@ CREATE TABLE audit_logs (
 
 CREATE TABLE contact_messages (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    sender_name VARCHAR(190) NOT NULL,
-    sender_email VARCHAR(190) NOT NULL,
+    name VARCHAR(190) NOT NULL,
+    email VARCHAR(190) NOT NULL,
+    phone VARCHAR(60) NULL,
     subject VARCHAR(255) NULL,
-    message LONGTEXT NOT NULL,
+    message TEXT NOT NULL,
     status ENUM('unread', 'read', 'replied', 'archived') DEFAULT 'unread',
+    admin_reply TEXT NULL,
+    replied_at DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -157,11 +157,11 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
                 <div class="row align-items-center">
                     <div class="col-lg-8 col-md-12">
                         <h1 class="heading-main">
-                            <small>Get In Touch</small>
-                            Contact With Us
+                            <small>Friends at Heart Welfare Initiative (FAHWI)</small>
+                            Contact Us
                         </h1>
 
-                        <p>The secret to happiness lies in helping others. Never underestimate the difference YOU can make in the lives of the poor, the abused and the helpless. Spread sunshine in their lives no matter what the weather may be.</p>
+                        <p>Reach out to Friends at Heart Welfare Initiative for enquiries, support, partnership conversations and general assistance. We are happy to hear from you and will respond as quickly as possible.</p>
                     </div>
                 </div>
 
@@ -200,6 +200,12 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
 
                                     <div class="col-md-12 mb-0">
                                         <div class="form-group">
+                                            <input type="text" name="subject" id="subject" class="form-control" placeholder="Subject">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 mb-0">
+                                        <div class="form-group">
                                             <textarea name="comment" id="comment" class="form-control" rows="6" placeholder="Message"></textarea>
                                         </div>
                                     </div>
@@ -217,7 +223,7 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
                         <div class="icon-box-4 bg-orange mb-4">
                             <i data-feather="map-pin"></i>
                             <h3>Our Address</h3>
-                            <div>Envato Pty Ltd 13/2 Elizabeth St melbourne VLC 3000 Australia</div>
+                            <div>137 Market Road, Aba, Abia State, Nigeria</div>
                         </div>
                         <!-- Icon Boxes Style -->
 
@@ -225,7 +231,7 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
                         <div class="icon-box-4 bg-green mb-4">
                             <i data-feather="phone"></i>
                             <h3>Phone Number</h3>
-                            <div>+1234567899<br>1-800-763-5400</div>
+                            <div><a href="tel:+2348037444680">+2348037444680</a><br><a href="tel:+2348035294025">+2348035294025</a></div>
                         </div>
                         <!-- Icon Boxes Style -->
 
@@ -233,8 +239,8 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
                         <div class="icon-box-4 bg-gray mb-4">
                             <i data-feather="mail"></i>
                             <h3>Email Address</h3>
-                            <div><a href="/cdn-cgi/l/email-protection#bdd4d3dbd2fdd5d2cdd8cfdcd4ced893ded2d0"><span class="__cf_email__" data-cfemail="244d4a424b644c4b544156454d57410a474b49">[email&#160;protected]</span></a></div>
-                            <div><a href="/cdn-cgi/l/email-protection#4a3c25263f243e2f2f380a22253a2f382b23392f64292527"><span class="__cf_email__" data-cfemail="5d2b323128332938382f1d35322d382f3c342e38733e3230">[email&#160;protected]</span></a></div>
+                            <div><a href="mailto:info@fahwi.org">info@fahwi.org</a></div>
+                            <div><a href="mailto:support@fahwi.org">support@fahwi.org</a></div>
                         </div>
                         <!-- Icon Boxes Style -->
                     </div>
@@ -245,7 +251,7 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
 
         <section class="wide-tb-100">
             <div class="map-frame">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d2965.0824050173574!2d-93.63905729999999!3d41.998507000000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sWebFilings%2C+University+Boulevard%2C+Ames%2C+IA!5e0!3m2!1sen!2sus!4v1390839289319"></iframe>
+                <iframe src="https://www.google.com/maps?q=137%20Market%20Road%2C%20Aba%2C%20Abia%20State%2C%20Nigeria&z=15&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
             <div class="container">
                 <div class="row">

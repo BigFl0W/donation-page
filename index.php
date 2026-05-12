@@ -883,7 +883,7 @@ $homeCoreValues = [
                             Moments From Our Work
                         </h1>
                         <div style="margin-top:24px;">
-                            <button type="button" class="btn btn-outline-dark gallery-page-link" onclick="window.location.href='http://localhost/donation-page/gallery';">View More Images</button>
+                            <button type="button" class="btn btn-outline-dark gallery-page-link" onclick="window.location.href='<?php echo \App\Helpers::e(\App\Helpers::siteUrl('gallery')); ?>';">View More Images</button>
                         </div>
                     </div>
                     <?php if ($homeGalleryItems): ?>
@@ -1025,7 +1025,7 @@ $homeCoreValues = [
                         </h1>
                     </div>
                     <div class="col-lg-8 col-md-6 text-md-end btn-team">
-                        <a href="volunteers.php" class="btn btn-outline-dark">View All Members</a>
+                        <a href="volunteer.php" class="btn btn-outline-dark">View All Members</a>
                     </div>
                 </div>
 

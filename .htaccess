@@ -1,10 +1,11 @@
 RewriteEngine On
+DirectoryIndex index.php
 
 # ------------------------------------------------------------------
 # Error document – any 404 status (Apache internal or PHP‑set) will
 # show the custom 404 page (path relative to DocumentRoot).
 # ------------------------------------------------------------------
-ErrorDocument 404 /donation-page/404-page.php
+ErrorDocument 404 /404-page.php
 
 # ------------------------------------------------------------------
 # Existing files & directories – serve them directly.
@@ -38,9 +39,10 @@ RewriteRule ^programme/?$                                        programme.php [
 RewriteRule ^donation-page/?$                                    donation-page.php [L,QSA]
 
 # Volunteers
+RewriteRule ^volunteer/?$                                        volunteer.php [L,QSA]
 RewriteRule ^volunteers/?$                                       volunteers.php [L,QSA]
 RewriteRule ^volunteer/([a-zA-Z0-9-]+)/?$                        volunteers-single.php?slug=$1 [L,QSA]
-RewriteRule ^become-volunteers/?$                                 become-volunteers.php [L,QSA]
+RewriteRule ^become-volunteers/?$                                become-volunteers.php [L,QSA]
 
 # Programmes & Partners
 RewriteRule ^causes-projects/?$                                  causes.php [L,QSA]
@@ -48,7 +50,7 @@ RewriteRule ^cause/([a-zA-Z0-9-]+)/?$                            causes-single.p
 RewriteRule ^partners-sponsors/?$                                 partners-sponsors.php [L,QSA]
 
 # Admin
-RewriteRule ^admin/?$                                             admin/index.php [L,QSA]
+RewriteRule ^admin/?$                                            admin/index.php [L,QSA]
 
 # ------------------------------------------------------------------
 # Catch‑all – anything that wasn't matched above goes to the 404

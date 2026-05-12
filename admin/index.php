@@ -6,6 +6,7 @@ use App\Auth;
 use App\Helpers;
 use App\Database;
 use App\Content;
+use App\Mailer;
 
 Auth::requireLogin();
 
@@ -66,6 +67,7 @@ $unreadNotifCount = 0;
 $recentNotifications = [];
 $unreadMsgCount = 0;
 $recentMessages = [];
+$selectedMessage = null;
 
 if ($dbAvail) {
     // Notifications for current admin
@@ -194,6 +196,50 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
     $action = (string) ($_POST["_action"] ?? "");
 
     if (!$csrfError):
+    if ($action === "reply_contact_message") {
+        $messageId = (int) ($_POST["message_id"] ?? 0);
+        $replyBody = trim((string) ($_POST["reply_body"] ?? ""));
+        if ($messageId > 0 && $replyBody !== '') {
+            $messageRow = Database::fetchOne("SELECT * FROM contact_messages WHERE id = :id", ["id" => $messageId]);
+            if ($messageRow && !empty($messageRow["email"])) {
+                $senderName = (string)($messageRow["name"] ?? 'Supporter');
+                $senderEmail = (string)$messageRow["email"];
+                $subject = trim((string)($messageRow["subject"] ?? 'Your enquiry'));
+                $emailSubject = "Re: " . ($subject !== '' ? $subject : 'Your enquiry');
+                $brandName = Helpers::brandName('Friends At Heart Welfare Initiative');
+                $htmlReply = "
+                    <p>Hello " . Helpers::e($senderName) . ",</p>
+                    <p>Thank you for contacting {$brandName}. Please see our response below.</p>
+                    <div style=\"margin:16px 0;padding:16px;border-left:4px solid #0f766e;background:#f8fafc;\">" . nl2br(Helpers::e($replyBody)) . "</div>
+                    <p>Warm regards,<br>{$brandName}</p>
+                ";
+                if (Mailer::send($senderEmail, $emailSubject, $htmlReply, $replyBody)) {
+                    Database::execute(
+                        "UPDATE contact_messages
+                         SET admin_reply = :reply, replied_at = NOW(), status = 'replied'
+                         WHERE id = :id",
+                        ["reply" => $replyBody, "id" => $messageId]
+                    );
+                    $flashMsg = "Reply sent successfully."; $flashType = "success";
+                } else {
+                    $flashMsg = "Reply could not be sent. Please check SMTP settings."; $flashType = "danger";
+                }
+            } else {
+                $flashMsg = "Message not found."; $flashType = "danger";
+            }
+        } else {
+            $flashMsg = "Reply message cannot be empty."; $flashType = "danger";
+        }
+    }
+
+    if ($action === "delete_contact_message") {
+        $messageId = (int) ($_POST["message_id"] ?? 0);
+        if ($messageId > 0) {
+            Database::execute("DELETE FROM contact_messages WHERE id = :id", ["id" => $messageId]);
+            $flashMsg = "Message deleted."; $flashType = "success";
+        }
+    }
+
     if ($action === "create_post") {
         $title = trim((string) ($_POST["title"] ?? ""));
         $slug = Helpers::slugify($title);
@@ -1180,6 +1226,16 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $page = (string)($_POST["_page"] ?? "dashboard");
         header("Location: " . Helpers::adminUrl("index.php?page=" . urlencode($page) . "&msg=" . urlencode($flashMsg) . "&type=" . $flashType));
         exit;
+    }
+}
+
+if ($dbAvail && (string)($_GET["page"] ?? "") === "messages" && (int)($_GET["id"] ?? 0) > 0) {
+    $selectedMessageId = (int)($_GET["id"] ?? 0);
+    $selectedMessage = Database::fetchOne("SELECT * FROM contact_messages WHERE id = :id", ["id" => $selectedMessageId]);
+    if ($selectedMessage && ($selectedMessage["status"] ?? "") === "unread") {
+        Database::execute("UPDATE contact_messages SET status = 'read' WHERE id = :id", ["id" => $selectedMessageId]);
+        $selectedMessage["status"] = "read";
+        $unreadMsgCount = max(0, $unreadMsgCount - 1);
     }
 }
 
@@ -2511,11 +2567,11 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
               <div class="dd-empty">
                 <i class="fas fa-comment-slash"></i>
                 <span>Inbox is empty</span>
-                <p>Wait for donors or partners to reach out.</p>
+                <p>Wait for website visitors to reach out.</p>
               </div>
             <?php else: ?>
               <?php foreach ($recentMessages as $m): ?>
-                <a href="admin/index.php?page=messages&id=<?php echo $m['id']; ?>" class="dd-item">
+                <a href="index.php?page=messages&id=<?php echo $m['id']; ?>" class="dd-item">
                   <div class="dd-icon"><i class="fas fa-user"></i></div>
                   <div class="dd-content">
                     <div class="dd-title"><?php echo Helpers::e($m['name']); ?></div>
@@ -2526,7 +2582,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
               <?php endforeach; ?>
             <?php endif; ?>
           </div>
-          <div class="dd-footer"><a href="admin/index.php?page=messages">View All Messages</a></div>
+          <div class="dd-footer"><a href="index.php?page=messages">View All Messages</a></div>
         </div>
       </div>
 
@@ -4508,6 +4564,49 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     <div class="section-hd">
       <div><h2>Inbound Messages</h2><p>Contact form inquiries from the website</p></div>
     </div>
+    <?php if ($selectedMessage): ?>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="section-hd" style="margin-bottom:16px;">
+        <div>
+          <h3 style="margin:0;"><?php echo Helpers::e($selectedMessage["subject"] ?: "No Subject"); ?></h3>
+          <p><?php echo Helpers::e($selectedMessage["name"] ?? "Unknown"); ?> • <?php echo Helpers::e($selectedMessage["email"] ?? ""); ?><?php if (!empty($selectedMessage["phone"])): ?> • <?php echo Helpers::e($selectedMessage["phone"]); ?><?php endif; ?></p>
+        </div>
+        <span class="badge <?php echo ($selectedMessage["status"] ?? '') === 'replied' ? 'success' : (($selectedMessage["status"] ?? '') === 'unread' ? 'warning' : 'info'); ?>"><?php echo ucfirst(Helpers::e($selectedMessage["status"] ?? "read")); ?></span>
+      </div>
+      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;">
+        <div>
+          <div style="padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--soft-bg);line-height:1.8;color:var(--mid);">
+            <?php echo nl2br(Helpers::e($selectedMessage["message"] ?? "")); ?>
+          </div>
+          <?php if (!empty($selectedMessage["admin_reply"])): ?>
+            <div style="margin-top:16px;">
+              <h4 style="font-size:0.95rem;margin-bottom:8px;">Last Reply Sent</h4>
+              <div style="padding:16px;border:1px solid rgba(15,118,110,.16);border-radius:18px;background:#f0fdfa;line-height:1.8;color:var(--mid);">
+                <?php echo nl2br(Helpers::e($selectedMessage["admin_reply"])); ?>
+              </div>
+              <p style="margin-top:8px;font-size:0.82rem;color:var(--muted);">Sent <?php echo Helpers::e(Helpers::ta($selectedMessage["replied_at"] ?? "")); ?></p>
+            </div>
+          <?php endif; ?>
+        </div>
+        <div>
+          <form method="post">
+            <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
+            <input type="hidden" name="_page" value="messages">
+            <input type="hidden" name="_action" value="reply_contact_message">
+            <input type="hidden" name="message_id" value="<?php echo (int)$selectedMessage["id"]; ?>">
+            <div class="form-group">
+              <label>Reply Message</label>
+              <textarea name="reply_body" class="form-control" rows="8" placeholder="Write your response to this sender..." required></textarea>
+            </div>
+            <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:16px;">
+              <a href="index.php?page=messages" class="btn-secondary" style="padding:10px 18px;">Close</a>
+              <button type="submit" class="btn-primary" style="padding:10px 18px;"><i class="fas fa-paper-plane"></i> Send Reply</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <?php endif; ?>
     <div class="card">
       <div class="toolbar">
         <div class="search-box"><i class="fas fa-search"></i><input placeholder="Search messages…"/></div>
@@ -4528,11 +4627,17 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
                 </td>
                 <td data-label="Subject"><strong><?php echo Helpers::e($m['subject'] ?? 'No Subject'); ?></strong><div class="cell-sub"><?php echo Helpers::e(substr($m['message'] ?? '', 0, 40)); ?>…</div></td>
                 <td data-label="Date" class="mono"><?php echo Helpers::e(Helpers::ta($m['created_at'] ?? '')); ?></td>
-                <td data-label="Status"><span class="badge <?php echo ($m['status'] ?? '') === 'unread' ? 'warning' : 'success'; ?>"><?php echo ucfirst($m['status'] ?? 'read'); ?></span></td>
+                <td data-label="Status"><span class="badge <?php echo ($m['status'] ?? '') === 'unread' ? 'warning' : (($m['status'] ?? '') === 'replied' ? 'success' : 'info'); ?>"><?php echo ucfirst($m['status'] ?? 'read'); ?></span></td>
                 <td data-label="Actions">
                   <div class="action-btns">
-                    <button class="action-btn view" title="Read Message"><i class="fas fa-eye"></i></button>
-                    <button class="action-btn del" title="Delete"><i class="fas fa-trash"></i></button>
+                    <a class="action-btn view" title="Read Message" href="index.php?page=messages&id=<?php echo (int)$m['id']; ?>"><i class="fas fa-eye"></i></a>
+                    <form method="post" style="display:inline;">
+                      <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
+                      <input type="hidden" name="_page" value="messages">
+                      <input type="hidden" name="_action" value="delete_contact_message">
+                      <input type="hidden" name="message_id" value="<?php echo (int)$m['id']; ?>">
+                      <button type="submit" class="action-btn del" title="Delete" onclick="return confirm('Delete this message?');"><i class="fas fa-trash"></i></button>
+                    </form>
                   </div>
                 </td>
               </tr>
