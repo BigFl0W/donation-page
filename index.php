@@ -52,6 +52,8 @@ $homeSliderImage1 = trim((string)($homeAboutSettings['about_home_slider_image_1'
 $homeSliderImage2 = trim((string)($homeAboutSettings['about_home_slider_image_2'] ?? 'assets/images/slider/slider_home_first_2.jpg'));
 $homeSliderImage3 = trim((string)($homeAboutSettings['about_home_slider_image_3'] ?? 'assets/images/slider/slider_home_first_3.jpg'));
 $homeSliderImages = [$homeSliderImage1, $homeSliderImage2, $homeSliderImage3];
+$homeDonationHighlightValue = trim((string)($homeAboutSettings['about_home_donation_highlight_value'] ?? '100'));
+$homeDonationHighlightLabel = trim((string)($homeAboutSettings['about_home_donation_highlight_label'] ?? 'Lives Supported'));
 $homeStoryHighlights = [
     "Friends at Heart Welfare Initiative was born from moments that broke our hearts.",
     "We saw the suffering. We felt it. And we chose not to look away.",
@@ -577,10 +579,9 @@ $homeCoreValues = [
                                 <div class="gift-icon">
                                     <i class="charity-gift_box"></i>
                                 </div>
-                                <small>Funds Committed</small>
+                                <small><?php echo \App\Helpers::e($homeDonationHighlightLabel); ?></small>
                                 <div class="d-flex justify-content-center align-items-center">
-                                    <span class="currency-symbol" style="font-size: 2rem; font-weight: 800; margin-right: 5px; margin-top: 10px;">₦</span>
-                                    <span class="counter"><?php echo number_format($totalDonations); ?></span>
+                                    <span class="counter"><?php echo \App\Helpers::e($homeDonationHighlightValue); ?></span>
                                 </div>
                             </div>
                             <form class="form-style" action="includes/paystack_initialize.php" method="POST">

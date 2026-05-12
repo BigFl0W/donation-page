@@ -3647,6 +3647,16 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
               </div>
               <div class="card" style="padding:20px; background:var(--surface);">
                 <div class="form-field">
+                  <label class="form-label">Donation Highlight Value</label>
+                  <input class="form-input" name="settings[home_donation_highlight_value]" value="<?php echo Helpers::e($aboutSettings['about_home_donation_highlight_value'] ?? '100'); ?>"/>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Donation Highlight Label</label>
+                  <input class="form-input" name="settings[home_donation_highlight_label]" value="<?php echo Helpers::e($aboutSettings['about_home_donation_highlight_label'] ?? 'Lives Supported'); ?>"/>
+                </div>
+              </div>
+              <div class="card" style="padding:20px; background:var(--surface); margin-top:18px;">
+                <div class="form-field">
                   <label class="form-label">Stat Two Value</label>
                   <input class="form-input" name="settings[home_intro_stat_2_value]" value="<?php echo Helpers::e($aboutSettings['about_home_intro_stat_2_value'] ?? '14,800'); ?>"/>
                 </div>
