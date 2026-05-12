@@ -252,7 +252,7 @@ require __DIR__ . '/includes/header.php';
                         <p class="volunteer-copy"><?php echo Helpers::e($opportunitiesIntro); ?></p>
                     </div>
                     <?php
-                    $icons = ['charity-love_hearts', 'charity-hand_shake', 'charity-gift_box'];
+                    $icons = ['charity-love_hearts', 'charity-school_icon', 'charity-gift_box'];
                     foreach ($opportunities as $index => $item):
                     ?>
                         <div class="col-md-4">
