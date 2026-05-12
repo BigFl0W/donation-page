@@ -3355,6 +3355,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
   <div class="content" id="page-about">
     <div class="card" style="padding:0; overflow:hidden;">
       <div class="tabs" style="background:var(--surface); border-bottom:1px solid var(--border); padding:0 15px;">
+        <button class="tab-btn" onclick="switchAboutTab('homepage', this)">Homepage Intro</button>
         <button class="tab-btn on" onclick="switchAboutTab('hero', this)">Hero & Collage</button>
         <button class="tab-btn" onclick="switchAboutTab('stats', this)">Impact Stats</button>
         <button class="tab-btn" onclick="switchAboutTab('story', this)">Mission Story</button>
@@ -3374,6 +3375,50 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
           <button type="submit" class="btn-primary" style="padding:10px 30px; border-radius:10px; font-weight:800; box-shadow:0 10px 20px rgba(15,118,110,0.2);">
             <i class="fas fa-rocket" style="margin-right:8px;"></i>Publish Changes
           </button>
+        </div>
+
+        <div class="about-pane" id="about-pane-homepage" style="display:none">
+          <div class="two-col">
+            <div>
+              <div class="form-field">
+                <label class="form-label">Homepage Section Label</label>
+                <input class="form-input" name="settings[home_intro_label]" value="<?php echo Helpers::e($aboutSettings['about_home_intro_label'] ?? 'Friends at Heart Welfare Initiative'); ?>"/>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Homepage Intro Title</label>
+                <textarea class="form-input" name="settings[home_intro_title]" rows="3"><?php echo Helpers::e($aboutSettings['about_home_intro_title'] ?? 'Compassion in action for children, families and communities.'); ?></textarea>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Homepage Intro Description</label>
+                <textarea class="form-input" name="settings[home_intro_desc]" rows="5"><?php echo Helpers::e($aboutSettings['about_home_intro_desc'] ?? 'We support children kept out of school by unpaid fees, patients burdened by medical bills, and families facing severe hardship. Every donation helps us restore dignity, protect hope and deliver practical care where it is needed most.'); ?></textarea>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="padding:20px; background:var(--surface); margin-bottom:18px;">
+                <div class="form-field">
+                  <label class="form-label">Stat One Value</label>
+                  <input class="form-input" name="settings[home_intro_stat_1_value]" value="<?php echo Helpers::e($aboutSettings['about_home_intro_stat_1_value'] ?? '3,750'); ?>"/>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Stat One Label</label>
+                  <input class="form-input" name="settings[home_intro_stat_1_label]" value="<?php echo Helpers::e($aboutSettings['about_home_intro_stat_1_label'] ?? 'Lives Supported'); ?>"/>
+                </div>
+              </div>
+              <div class="card" style="padding:20px; background:var(--surface);">
+                <div class="form-field">
+                  <label class="form-label">Stat Two Value</label>
+                  <input class="form-input" name="settings[home_intro_stat_2_value]" value="<?php echo Helpers::e($aboutSettings['about_home_intro_stat_2_value'] ?? '14,800'); ?>"/>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Stat Two Label</label>
+                  <input class="form-input" name="settings[home_intro_stat_2_label]" value="<?php echo Helpers::e($aboutSettings['about_home_intro_stat_2_label'] ?? 'Community Donations'); ?>"/>
+                </div>
+              </div>
+              <div style="font-size:0.8rem; color:var(--mid); margin-top:10px;">
+                This controls the homepage welcome block beside the donation form.
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Pane: Stats -->

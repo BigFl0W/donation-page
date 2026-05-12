@@ -35,6 +35,13 @@ foreach ($rawHomeAbout as $settingRow) {
 }
 $homeAboutTitleHtml = nl2br(strip_tags((string)($homeAboutSettings['about_hero_title'] ?? 'Building Hope, Restoring Dignity.'), '<br><i><em><strong><span>'));
 $homeAboutDesc = trim((string)($homeAboutSettings['about_hero_desc'] ?? 'We are dedicated to creating a world where everyone has the opportunity to thrive.'));
+$homeIntroLabel = trim((string)($homeAboutSettings['about_home_intro_label'] ?? 'Friends at Heart Welfare Initiative'));
+$homeIntroTitle = trim((string)($homeAboutSettings['about_home_intro_title'] ?? 'Compassion in action for children, families and communities.'));
+$homeIntroDesc = trim((string)($homeAboutSettings['about_home_intro_desc'] ?? 'We support children kept out of school by unpaid fees, patients burdened by medical bills, and families facing severe hardship. Every donation helps us restore dignity, protect hope and deliver practical care where it is needed most.'));
+$homeIntroStat1Value = trim((string)($homeAboutSettings['about_home_intro_stat_1_value'] ?? '3,750'));
+$homeIntroStat1Label = trim((string)($homeAboutSettings['about_home_intro_stat_1_label'] ?? 'Lives Supported'));
+$homeIntroStat2Value = trim((string)($homeAboutSettings['about_home_intro_stat_2_value'] ?? '14,800'));
+$homeIntroStat2Label = trim((string)($homeAboutSettings['about_home_intro_stat_2_label'] ?? 'Community Donations'));
 $homeStoryHighlights = [
     "Friends at Heart Welfare Initiative was born from moments that broke our hearts.",
     "We saw the suffering. We felt it. And we chose not to look away.",
@@ -670,8 +677,8 @@ $homeCoreValues = [
                         <div>
                             
                             <h1 class="heading-main">
-                                <small>Welcome To Raise Hope</small>
-                                Small Actions Lead To Big changes
+                                <small><?php echo \App\Helpers::e($homeIntroLabel); ?></small>
+                                <?php echo \App\Helpers::e($homeIntroTitle); ?>
                             </h1>
                             <p>That�s 14% of the world�s population. Put another way, that's 1 in 8 people alive today living without hope amongst trash, sewage, drugs, and abuse in unimaginable conditions. Life without secure housing is a life without basic needs being met.</p>                        
 
@@ -681,7 +688,7 @@ $homeCoreValues = [
                                     <div class="icon-box-1">
                                         <i class="charity-volunteer_people"></i>
                                         <div class="text">
-                                            <h3>3,750 <br> <span>Volunteers</span></h3>
+                                            <h3><?php echo \App\Helpers::e($homeIntroStat1Value); ?> <br> <span><?php echo \App\Helpers::e($homeIntroStat1Label); ?></span></h3>
                                         </div>
                                     </div>
                                 </div>
@@ -692,7 +699,7 @@ $homeCoreValues = [
                                     <div class="icon-box-1">
                                         <i class="charity-donate_money"></i>
                                         <div class="text">
-                                            <h3>14,800 <br> <span>Trusted Funds</span></h3>
+                                            <h3><?php echo \App\Helpers::e($homeIntroStat2Value); ?> <br> <span><?php echo \App\Helpers::e($homeIntroStat2Label); ?></span></h3>
                                         </div>
                                     </div>
                                 </div>
@@ -713,16 +720,31 @@ $homeCoreValues = [
         </section>
         <!-- Donation Style Start -->
 
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var homepageIntroCopy = <?php echo json_encode($homeIntroDesc); ?>;
+            var donationSectionParagraph = document.querySelector('.home-second-welcome')?.previousElementSibling;
+            if (donationSectionParagraph && donationSectionParagraph.tagName === 'P') {
+                donationSectionParagraph.textContent = homepageIntroCopy;
+            }
+
+            var greenIntroParagraph = document.querySelector('.wide-tb-100.pb-5.bg-green p');
+            if (greenIntroParagraph) {
+                greenIntroParagraph.textContent = homepageIntroCopy;
+            }
+        });
+        </script>
+
         <!-- Welcome Home Style Start -->
         <section class="wide-tb-100 pb-5 bg-green">
             <div class="container">
                 <div class="row">                    
                     <div class="col-lg-5 col-md-12">
                         <h1 class="heading-main">
-                            <small>Welcome To Raise Hope</small>
-                            Small Actions Lead To Big changes
+                            <small><?php echo \App\Helpers::e($homeIntroLabel); ?></small>
+                            <?php echo \App\Helpers::e($homeIntroTitle); ?>
                         </h1>
-                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
+                        <p><?php echo \App\Helpers::e($homeIntroDesc); ?></p>
                     </div>
                 </div>
             </div>
