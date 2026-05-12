@@ -482,6 +482,7 @@ $socials = [
     <script src="<?php echo Helpers::e(Helpers::siteUrl('assets/library/jquery-easing/jquery.easing.min.js')); ?>"></script>
     <script src="<?php echo Helpers::e(Helpers::siteUrl('assets/library/jquery.counterup/jquery.counterup.min.js')); ?>"></script>
     <script src="<?php echo Helpers::e(Helpers::siteUrl('assets/library/jquery-validate/jquery.validate.min.js')); ?>"></script>
+    <script src="<?php echo Helpers::e(Helpers::siteUrl('assets/js/home-slider.js')); ?>"></script>
     <script src="<?php echo Helpers::e(Helpers::siteUrl('assets/js/site-custom.js')); ?>"></script>
 </body>
 </html>

@@ -984,45 +984,6 @@ $homeCoreValues = [
         </section>
         <!-- Images Gallery Style End -->
 
-        <!-- About Us Style Start -->
-        <section class="wide-tb-100 home-about-summary">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-7 col-md-12">
-                        <div class="summary-collage">
-                            <div class="summary-card main">
-                                <img src="<?php echo \App\Helpers::e($homeAboutSettings['about_img_1'] ?? 'assets/images/about_img.png'); ?>" alt="About us main image">
-                            </div>
-                            <div class="summary-card secondary">
-                                <img src="<?php echo \App\Helpers::e($homeAboutSettings['about_img_2'] ?? ($homeAboutSettings['about_img_1'] ?? 'assets/images/about_img_2.jpg')); ?>" alt="About us supporting image">
-                            </div>
-                            <div class="summary-card accent">
-                                <img src="<?php echo \App\Helpers::e($homeAboutSettings['about_img_3'] ?? ($homeAboutSettings['about_img_2'] ?? 'assets/images/about_img_2.jpg')); ?>" alt="About us community image">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-5 col-md-12">
-                        <div class="summary-copy">
-                            <div class="summary-kicker"><?php echo \App\Helpers::e($homeAboutSettings['about_hero_label'] ?? 'About Us'); ?></div>
-                            <h2 class="summary-title"><?php echo $homeAboutTitleHtml; ?></h2>
-                            <p class="summary-text">
-                                <?php
-                                $homeSummary = mb_strlen($homeAboutDesc) > 210
-                                    ? rtrim(mb_substr($homeAboutDesc, 0, 210)) . '...'
-                                    : $homeAboutDesc;
-                                echo \App\Helpers::e($homeSummary);
-                                ?>
-                            </p>
-                            <a class="summary-link" href="about-us.php">
-                                Discover our story <i data-feather="arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- About Us Style Start -->
-
         <section class="wide-tb-100 home-identity-section">
             <div class="container">
                 <div class="row align-items-start">
@@ -1038,9 +999,6 @@ $homeCoreValues = [
                                     <div class="identity-line"><?php echo \App\Helpers::e($storyLine); ?></div>
                                 <?php endforeach; ?>
                             </div>
-                            <a class="summary-link" href="about-us.php">
-                                Read our full story <i data-feather="arrow-right"></i>
-                            </a>
                             <div class="identity-trust">
                                 Until no child loses access to school because of unpaid fees, no patient is trapped by hospital bills, and no underserved community feels forgotten, our hearts will continue to answer the call.
                             </div>
@@ -1059,6 +1017,11 @@ $homeCoreValues = [
                                         <p><?php echo \App\Helpers::e($value['text']); ?></p>
                                     </div>
                                 <?php endforeach; ?>
+                            </div>
+                            <div style="margin-top:24px;">
+                                <a class="summary-link" href="about-us.php">
+                                    Discover our story <i data-feather="arrow-right"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -1446,108 +1409,4 @@ $homeCoreValues = [
         <!-- Our Partners End -->
         
            
-    </main>
     <?php require __DIR__ . "/includes/site-footer.php"; ?>
-
-    <!-- Main Footer Start -->
-    <footer class="wide-tb-70 pb-0 mb-spacer-md footer-second" style="display:none">
-        <div class="container bg-effect pos-rel">
-            <div class="row">
-                <!-- Column First -->
-                <div class="col-lg-4 col-md-12">
-                    <div class="logo-footer">
-                        <a href="index.php">
-                            <img class="site-logo site-logo--footer" src="<?php echo htmlspecialchars($brandLogo); ?>" alt="<?php echo htmlspecialchars($brandName); ?>">
-                        </a>
-                    </div>
-                    <p>This is Photoshop�s version of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet</p>
-
-                    <div class="footer-widget-contact">
-                        <ul class="list-unstyled">
-                            <li>
-                                <div><i data-feather="map-pin"></i> </div>
-                                <div>Envato Pty Ltd, 13/2 Elizabeth St Melbourne VIC 3000, Australia</div>
-                            </li>
-                            <li>
-                                <div><i data-feather="phone"></i> </div>
-                                <div><a href="tel:+1234567899">+1234567899</a></div>
-                            </li>
-                            <li>
-                                <div><i data-feather="mail"></i> </div>
-                                <div><a href="/cdn-cgi/l/email-protection#aec7c0c8c1eec6c1decbdccfc7ddcb80cdc1c3"><span class="__cf_email__" data-cfemail="2f464149406f47405f4a5d4e465c4a014c4042">[email&#160;protected]</span></a></div>
-                            </li>
-                            <li>
-                                <div><i data-feather="clock"></i> </div>
-                                <div>Mon-Fri  /  9:00 AM - 19:00 PM</div>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    <div class="social-icons">
-                        <ul class="list-unstyled list-group list-group-horizontal">
-                            <li><a href="#"><i class="icofont-facebook"></i></a></li>
-                            <li><a href="#"><i class="icofont-twitter"></i></a></li>
-                            <li><a href="#"><i class="icofont-instagram"></i></a></li>
-                            <li><a href="#"><i class="icofont-behance"></i></a></li>
-                            <li><a href="#"><i class="icofont-youtube-play"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- Column First -->
-
-                <!-- Column Second -->
-                <div class="col-lg-7 offset-lg-1 col-md-12">
-                    <div class="footer-subscribe">
-                        <h3>Newsletter</h3>
-                        <h2>Get Update Every Week</h2>
-                        <div class="input-wrap">
-                            <input type="text" name="name" placeholder="Enter Your Email">
-                            <button type="submit" class="btn btn-secondary">Subscribe now</button>
-                        </div>
-                    </div>  
-
-                    <div class="row">
-                        <div class="col-md-8">
-                            <h3>Our Photostream</h3>
-                            <ul id="basicuse" class="photo-thumbs"></ul>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="footer-widget-menu">
-                                <ul class="list-unstyled">
-                                    <li><a href="#"><i class="icofont-simple-right"></i> <span>About Us</span></a></li>
-                                    <li><a href="#"><i class="icofont-simple-right"></i> <span>Our History</span></a></li>
-                                    <li><a href="#"><i class="icofont-simple-right"></i> <span>Our Services</span></a></li>
-                                    <li><a href="#"><i class="icofont-simple-right"></i> <span>Meet Doctors</span></a></li>
-                                </ul>
-                            </div>
-
-                            <div class="give-us-call">
-                                <i data-feather="phone"></i>
-                                <h4>Give us a call</h4>
-                                <h3><a href="tel:+1234567899">+1234567899</a></h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    
-                </div>                
-                <!-- Column Second -->
-            </div>
-        </div>  
-
-        <div class="copyright-wrap">
-            <div class="container pos-rel">
-                <div class="row text-md-start text-center">
-                    <div class="col-sm-12 col-md-auto copyright-text">
-                        � Copyright <span class="txt-blue">Gracious</span> <span id="yearText"></span>.   |   Created by <a href="https://mannatstudio.com/" target="_blank">MannatStudio</a>
-                    </div>
-                    <div class="col-sm-12 col-md-auto ms-md-auto text-md-end text-center copyright-links">
-                        <a href="#">Terms & Condition</a> | <a href="#">Privacy Policy</a> | <a href="#">Legal</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-    <!-- Main Footer End -->
-
-
