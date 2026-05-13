@@ -1425,7 +1425,7 @@ if ($dbAvail) {
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HopeConnect NGO — Admin Dashboard</title>
+<title><?php echo Helpers::e($siteName); ?> - Admin Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 <style>
@@ -1525,6 +1525,11 @@ body{
   border-bottom:1px solid var(--border);
   flex-shrink:0;
 }
+.brand-link{
+  display:flex;align-items:center;gap:12px;
+  text-decoration:none;color:inherit;width:100%;
+}
+.brand-link:hover .brand-name{color:var(--brand)}
 .brand-logo-img{
   display:block;
   width:min(100%, 190px);
@@ -1670,10 +1675,20 @@ body{
 .page-title{font-size:.95rem;font-weight:700;color:var(--dark);line-height:1}
 .breadcrumb{
   font-size:.72rem;color:var(--muted);
-  display:flex;align-items:center;gap:5px;margin-top:2px;
+  display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;
 }
 .breadcrumb span, .breadcrumb strong{color:var(--dark)}
 .breadcrumb i{font-size:.55rem;color:var(--muted)}
+.crumb-pill{
+  display:inline-flex;align-items:center;
+  padding:4px 10px;border-radius:999px;
+  background:var(--brand-bg);color:var(--brand) !important;
+  border:1px solid var(--brand-dim);font-weight:700;
+}
+.crumb-current{
+  color:var(--muted) !important;
+  font-weight:600;
+}
 
 .topbar-search{
   flex:1;max-width:340px;margin-left:auto;position:relative;
@@ -2528,6 +2543,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
 <!-- ══════════ SIDEBAR ══════════ -->
 <aside class="sidebar" id="sidebar">
   <div class="brand">
+    <a href="<?php echo Helpers::e(Helpers::adminUrl('index.php?page=dashboard')); ?>" class="brand-link" aria-label="Go to dashboard">
 <?php
       $logoPath = $adminBrandLogo;
       if ($brandAssetExists($logoPath)) {
@@ -2536,6 +2552,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
           echo '<span class="brand-name">'.Helpers::e($siteName).'</span>';
       }
 ?>
+    </a>
   </div>
 
   <nav class="nav-scroll">
@@ -2632,9 +2649,9 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     <div class="page-heading">
       <div class="page-title" id="pageTitle">Dashboard</div>
       <div class="breadcrumb">
-        <span>HopeConnect</span>
+        <span class="crumb-pill"><?php echo Helpers::e($siteName); ?></span>
         <i class="fas fa-chevron-right"></i>
-        <span id="breadSub">Overview</span>
+        <span class="crumb-current" id="breadSub">Overview</span>
       </div>
     </div>
     <div class="topbar-search">
