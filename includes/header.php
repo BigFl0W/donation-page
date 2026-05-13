@@ -12,7 +12,7 @@ $breadcrumb_title = $breadcrumb_title ?? $page_title;
 $hero_title = $hero_title ?? $page_title;
 $hero_label = $hero_label ?? "Explore";
 $section_title = $section_title ?? "Explore";
-$section_url = $section_url ?? "gallery.php";
+$section_url = $section_url ?? "gallery";
 ?>
 <!doctype html>
 <html lang="en">
@@ -62,13 +62,13 @@ $section_url = $section_url ?? "gallery.php";
         <nav class="navbar navbar-expand-lg header-fullpage">
             <div class="container text-nowrap">
                 <div class="d-flex align-items-center w-100 col p-0 logo-brand">
-                    <a class="navbar-brand rounded-bottom light-bg" href="index.php">
+                    <a class="navbar-brand rounded-bottom light-bg" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl()); ?>">
                         <img class="site-logo site-logo--header" src="<?php echo htmlspecialchars($brand_logo); ?>" alt="<?php echo htmlspecialchars($brand_name); ?>">
                     </a>
                 </div>
                 <div class="d-inline-flex request-btn order-lg-last col-auto p-0 align-items-center">
                     <a class="btn-outline-primary btn ms-3" href="#" id="search_home"><i data-feather="search"></i></a>
-                    <a class="nav-link btn btn-default ms-3 donate-btn" href="donation-page.php">Donate</a>
+                    <a class="nav-link btn btn-default ms-3 donate-btn" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('donation-page')); ?>">Donate</a>
                     <button class="navbar-toggler x collapsed" type="button" data-bs-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -78,37 +78,37 @@ $section_url = $section_url ?? "gallery.php";
 
                 <div class="navbar-collapse">
                     <div class="offcanvas-header">
-                        <a href="index.php" class="logo-small">
+                        <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl()); ?>" class="logo-small">
                             <img class="site-logo site-logo--header" src="<?php echo htmlspecialchars($brand_logo); ?>" alt="<?php echo htmlspecialchars($brand_name); ?>">
                         </a>
                     </div>
                     <div class="offcanvas-body">
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item">
-                                <a class="nav-link" href="index.php">Home</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl()); ?>">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="about-us.php">About Us</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('about-us')); ?>">About Us</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link has-children" href="gallery.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
+                                <a class="nav-link has-children" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('gallery')); ?>" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="gallery">Photo &amp; Video Gallery</a></li>
-                                    <li><a class="dropdown-item" href="partners-sponsors">Partners &amp; Sponsors</a></li>
-                                    <li><a class="dropdown-item" href="causes-projects">Our Causes</a></li>
-                                    <li><a class="dropdown-item" href="programme">Programme</a></li>
-                                    <li><a class="dropdown-item" href="volunteer.php">Volunteer</a></li>
-                                    <li><a class="dropdown-item" href="faqs">FAQs</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('gallery')); ?>">Photo &amp; Video Gallery</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('partners-sponsors')); ?>">Partners &amp; Sponsors</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('causes-projects')); ?>">Our Causes</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('programme')); ?>">Programme</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('volunteer')); ?>">Volunteer</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('faqs')); ?>">FAQs</a></li>
                                 </ul>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="events.php">Events</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('events')); ?>">Events</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="blog.php">Blog</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('blog')); ?>">Blog</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="contact-us.php">Contact</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('contact-us')); ?>">Contact</a>
                             </li>
                         </ul>
                     </div>
@@ -124,7 +124,7 @@ $section_url = $section_url ?? "gallery.php";
                 <h1><?php echo htmlspecialchars($hero_title); ?></h1>
                 <nav aria-label="breadcrumb" class="breadcrumb-wrap">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+                        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl()); ?>">Home</a></li>
                         <?php if ($section_title !== "" && $section_title !== $breadcrumb_title): ?>
                             <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($section_url); ?>"><?php echo htmlspecialchars($section_title); ?></a></li>
                         <?php endif; ?>

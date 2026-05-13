@@ -3,6 +3,8 @@ require_once __DIR__ . '/config/autoload.php';
 $brandName = \App\Helpers::brandName("Gracious Charity");
 $brandLogo = \App\Helpers::brandLogoPath("assets/images/logo_dark.svg");
 $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
+$contactMetaTitle = (string)\App\Helpers::setting('contact_meta_title', 'Contact Us | ' . $brandName);
+$contactMetaDescription = (string)\App\Helpers::setting('contact_meta_description', 'Contact Friends at Heart Welfare Initiative for support, partnership enquiries, donations and community outreach conversations.');
 ?>
 <!doctype html>
 <html lang="en">
@@ -14,10 +16,10 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
     
     <!-- xxx Change With Your Information xxx -->    
     <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
-    <title>Gracious - Charity and Donation HTML Template</title>
-    <meta name="author" content="Mannat Studio">     
-    <meta name="description" content="Gracious is a Responsive HTML5 Template for Charity and NGO related services.">
-    <meta name="keywords" content="Gracious, responsive, html5, charity, charity agency, charity foundation, charity template, church, donate, donation, fundraiser, fundraising, mosque, ngo, non-profit, nonprofit, organization, volunteer">
+    <title><?php echo htmlspecialchars($contactMetaTitle); ?></title>
+    <meta name="author" content="<?php echo htmlspecialchars($brandName); ?>">     
+    <meta name="description" content="<?php echo htmlspecialchars($contactMetaDescription); ?>">
+    <meta name="keywords" content="Friends at Heart Welfare Initiative contact, FAHWI contact, charity contact, NGO contact, Aba Abia State charity">
     
     <!-- Favicon -->    
     <link rel="shortcut icon" type="image/x-icon" href="<?php echo htmlspecialchars($brandFavicon); ?>">
@@ -63,7 +65,7 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
         <nav class="navbar navbar-expand-lg header-fullpage">
             <div class="container text-nowrap">
                 <div class="d-flex align-items-center w-100 col p-0 logo-brand">
-                    <a class="navbar-brand rounded-bottom light-bg" href="index.php">
+                    <a class="navbar-brand rounded-bottom light-bg" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl()); ?>">
                         <img class="site-logo site-logo--header" src="<?php echo htmlspecialchars($brandLogo); ?>" alt="<?php echo htmlspecialchars($brandName); ?>">
                     </a> 
                 </div>
@@ -71,7 +73,7 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
                 <div class="d-inline-flex request-btn order-lg-last col-auto p-0 align-items-center"> 
                     <a class="btn-outline-primary btn ms-3" href="#" id="search_home"><i data-feather="search"></i></a>
 
-                    <a class="nav-link btn btn-default ms-3 donate-btn" href="donation-page.php">Donate</a>
+                    <a class="nav-link btn btn-default ms-3 donate-btn" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('donation-page')); ?>">Donate</a>
 
                     <!-- Toggle Button Start -->
                     <button class="navbar-toggler x collapsed" type="button" data-bs-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,7 +88,7 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
                 <div class="navbar-collapse">
                     <!-- Mobile Logo -->
                     <div class="offcanvas-header">
-                        <a href="index.php" class="logo-small">
+                        <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl()); ?>" class="logo-small">
                             <img class="site-logo site-logo--header" src="<?php echo htmlspecialchars($brandLogo); ?>" alt="<?php echo htmlspecialchars($brandName); ?>">
                         </a>                        
                     </div>
@@ -95,29 +97,29 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
                     <div class="offcanvas-body">
                         <ul class="navbar-nav ms-auto">
                                                         <li class="nav-item">
-                                <a class="nav-link" href="index.php">Home</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl()); ?>">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="about-us.php">About Us</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('about-us')); ?>">About Us</a>
                             </li>
                             
                                                         <li class="nav-item dropdown">
-                                <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
+                                <a class="nav-link has-children" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('gallery')); ?>" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="gallery.php">Photo & Video Gallery</a></li>
-                                    <li><a class="dropdown-item" href="partners-sponsors.php">Partners & Sponsors</a></li>
-                                    <li><a class="dropdown-item" href="projects-programmes.php">Projects & Programmes</a></li>
-                                    <li><a class="dropdown-item" href="faqs.php">FAQs</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('gallery')); ?>">Photo & Video Gallery</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('partners-sponsors')); ?>">Partners & Sponsors</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('programme')); ?>">Projects & Programmes</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('faqs')); ?>">FAQs</a></li>
                                 </ul>
                             </li>
                                                         <li class="nav-item">
-                                <a class="nav-link" href="events.php">Events</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('events')); ?>">Events</a>
                             </li>                        
                                                         <li class="nav-item">
-                                <a class="nav-link" href="blog.php">Blog</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('blog')); ?>">Blog</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="contact-us.php">Contact</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('contact-us')); ?>">Contact</a>
                             </li>
                             
                         </ul>
@@ -139,7 +141,7 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
                 <h1>Contact Us</h1>
                 <nav aria-label="breadcrumb" class="breadcrumb-wrap">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+                        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl()); ?>">Home</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Contact Us</li>
                     </ol>
                 </nav>  
@@ -268,7 +270,7 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
                                         <h2>Let Us Come Together To Make A Difference</h2>
                                     </div>
                                     <div class="icon">
-                                        <a href="donation-page.php" class="btn btn-default">Donate Now</a>
+                                        <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('donation-page')); ?>" class="btn btn-default">Donate Now</a>
                                     </div>
                                 </div>
                             </div>
@@ -310,7 +312,7 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
                 <!-- Column First -->
                 <div class="col-lg-3 col-md-6">
                     <div class="logo-footer">
-                        <a href="index.php">
+                        <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl()); ?>">
                             <img class="site-logo site-logo--footer" src="<?php echo htmlspecialchars($brandLogo); ?>" alt="<?php echo htmlspecialchars($brandName); ?>">
                         </a>
                     </div>

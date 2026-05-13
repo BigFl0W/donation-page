@@ -3,6 +3,8 @@ require_once __DIR__ . '/config/autoload.php';
 $brandName = \App\Helpers::brandName("Gracious Charity");
 $brandLogo = \App\Helpers::brandLogoPath("assets/images/logo_dark.svg");
 $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
+$donationMetaTitle = (string)\App\Helpers::setting('donation_meta_title', 'Donate | ' . $brandName);
+$donationMetaDescription = (string)\App\Helpers::setting('donation_meta_description', 'Support Friends at Heart Welfare Initiative by donating to children, families and community care programmes that restore dignity and hope.');
 ?>
 <!doctype html>
 <html lang="en">
@@ -14,10 +16,10 @@ $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
     
     <!-- xxx Change With Your Information xxx -->    
     <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
-    <title>Gracious - Charity and Donation HTML Template</title>
-    <meta name="author" content="Mannat Studio">     
-    <meta name="description" content="Gracious is a Responsive HTML5 Template for Charity and NGO related services.">
-    <meta name="keywords" content="Gracious, responsive, html5, charity, charity agency, charity foundation, charity template, church, donate, donation, fundraiser, fundraising, mosque, ngo, non-profit, nonprofit, organization, volunteer">
+    <title><?php echo htmlspecialchars($donationMetaTitle); ?></title>
+    <meta name="author" content="<?php echo htmlspecialchars($brandName); ?>">     
+    <meta name="description" content="<?php echo htmlspecialchars($donationMetaDescription); ?>">
+    <meta name="keywords" content="donate to Friends at Heart Welfare Initiative, FAHWI donation, charity donation, NGO donation, support families, support children">
     
     <!-- Favicon -->    
     <link rel="shortcut icon" type="image/x-icon" href="<?php echo htmlspecialchars($brandFavicon); ?>">

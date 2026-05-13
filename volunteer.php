@@ -26,9 +26,9 @@ $heroLabel = $settingValue($settings, 'volunteer_hero_label', 'Serve With Us');
 $heroDescription = $settingValue($settings, 'volunteer_hero_description', 'Join a compassionate network of volunteers helping children, patients and underserved families through practical community support.');
 $heroImage = $settingValue($settings, 'volunteer_hero_image', 'assets/images/about_img.png');
 $primaryCtaLabel = $settingValue($settings, 'volunteer_primary_cta_label', 'Apply to Volunteer');
-$primaryCtaUrl = $settingValue($settings, 'volunteer_primary_cta_url', 'contact-us.php');
+$primaryCtaUrl = $settingValue($settings, 'volunteer_primary_cta_url', 'contact-us');
 $secondaryCtaLabel = $settingValue($settings, 'volunteer_secondary_cta_label', 'Speak With Our Team');
-$secondaryCtaUrl = $settingValue($settings, 'volunteer_secondary_cta_url', 'contact-us.php');
+$secondaryCtaUrl = $settingValue($settings, 'volunteer_secondary_cta_url', 'contact-us');
 $introTitle = $settingValue($settings, 'volunteer_intro_title', 'Where your time can make a real difference');
 $introDescription = $settingValue($settings, 'volunteer_intro_description', 'Our volunteers support outreach logistics, beneficiary care, event coordination, fundraising campaigns and administrative follow-through. We welcome people who are dependable, compassionate and ready to serve with dignity.');
 $opportunitiesTitle = $settingValue($settings, 'volunteer_opportunities_title', 'Volunteer opportunities');
@@ -76,11 +76,11 @@ $impactLines = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|
 
 $page_title = $pageTitle;
 $page_description = $pageDescription;
-$canonical_url = Helpers::siteUrl('volunteer.php');
+$canonical_url = Helpers::siteUrl('volunteer');
 $breadcrumb_title = 'Volunteer';
 $hero_title = $heroTitle;
 $section_title = 'Explore';
-$section_url = 'gallery.php';
+$section_url = 'gallery';
 
 require __DIR__ . '/includes/header.php';
 ?>

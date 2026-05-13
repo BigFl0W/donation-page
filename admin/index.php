@@ -49,6 +49,27 @@ $galleryDefaults = require __DIR__ . "/../config/gallery_defaults.php";
 $adminBrandLogo = Helpers::brandLogoPath();
 $siteName = Helpers::brandName();
 $adminFavicon = Helpers::brandFaviconPath();
+$resolveBrandAssetUrl = static function (?string $path): string {
+    $path = trim((string)$path);
+    if ($path === '') {
+        return '';
+    }
+    if (preg_match('#^https?://#i', $path)) {
+        return $path;
+    }
+    return Helpers::siteUrl(ltrim($path, '/'));
+};
+$brandAssetExists = static function (?string $path): bool {
+    $path = trim((string)$path);
+    if ($path === '') {
+        return false;
+    }
+    if (preg_match('#^https?://#i', $path)) {
+        return true;
+    }
+    $relativePath = ltrim($path, '/');
+    return is_file(__DIR__ . '/../' . $relativePath);
+};
 
 $totalDonationsYear = 0; $totalDonationsCurrency = "USD";
 $totalDonationsAll = 0; $totalTxCount = 0;
@@ -985,6 +1006,12 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $siteName = trim((string) ($_POST["site_name"] ?? ""));
         $contactEmail = trim((string) ($_POST["contact_email"] ?? ""));
         $contactPhone = trim((string) ($_POST["contact_phone"] ?? ""));
+        $homeMetaTitle = trim((string) ($_POST["home_meta_title"] ?? ""));
+        $homeMetaDescription = trim((string) ($_POST["home_meta_description"] ?? ""));
+        $contactMetaTitle = trim((string) ($_POST["contact_meta_title"] ?? ""));
+        $contactMetaDescription = trim((string) ($_POST["contact_meta_description"] ?? ""));
+        $donationMetaTitle = trim((string) ($_POST["donation_meta_title"] ?? ""));
+        $donationMetaDescription = trim((string) ($_POST["donation_meta_description"] ?? ""));
         
         // Create upload directory if it doesn't exist
         $uploadsDir = __DIR__ . "/../assets/uploads/branding";
@@ -1161,6 +1188,28 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                 ['group' => 'site', 'key' => 'contact_phone', 'value' => $contactPhone]
             )) {
                 $settings['contact_phone'] = $contactPhone;
+            }
+        }
+
+        if ($dbAvail) {
+            $metaSettings = [
+                'home_meta_title' => $homeMetaTitle,
+                'home_meta_description' => $homeMetaDescription,
+                'contact_meta_title' => $contactMetaTitle,
+                'contact_meta_description' => $contactMetaDescription,
+                'donation_meta_title' => $donationMetaTitle,
+                'donation_meta_description' => $donationMetaDescription,
+            ];
+
+            foreach ($metaSettings as $metaKey => $metaValue) {
+                if (Database::execute(
+                    "INSERT INTO settings (setting_group, setting_key, setting_value)
+                     VALUES (:group, :key, :value)
+                     ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                    ['group' => 'site', 'key' => $metaKey, 'value' => $metaValue]
+                )) {
+                    $settings[$metaKey] = $metaValue;
+                }
             }
         }
     }
@@ -2407,8 +2456,8 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
   <div class="brand">
 <?php
       $logoPath = $adminBrandLogo;
-      if ($logoPath && file_exists(__DIR__.'/../'.$logoPath)) {
-          echo '<img src="../'.Helpers::e($logoPath).'" alt="'.Helpers::e($siteName).'" class="brand-logo-img">';
+      if ($brandAssetExists($logoPath)) {
+          echo '<img src="'.Helpers::e($resolveBrandAssetUrl($logoPath)).'" alt="'.Helpers::e($siteName).'" class="brand-logo-img">';
       } else {
           echo '<span class="brand-name">'.Helpers::e($siteName).'</span>';
       }
@@ -2896,7 +2945,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
                   <h1 class="print-title">Donation Statement</h1>
                   <p style="margin:5px 0 0; color:#666;"><?php echo Helpers::e($siteName); ?></p>
               </div>
-              <img src="../<?php echo Helpers::e($adminBrandLogo); ?>" class="print-logo" alt="Logo">
+              <img src="<?php echo Helpers::e($resolveBrandAssetUrl($adminBrandLogo)); ?>" class="print-logo" alt="Logo">
           </div>
 
           <div class="print-summary">
@@ -4424,13 +4473,11 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
               <label class="form-label">Current Logo</label>
               <div style="padding:14px;border:1px solid var(--border);border-radius:12px;background:#101726;display:flex;align-items:center;justify-content:center;min-height:100px">
                 <?php 
-                  // FIXED: Use realpath for proper path resolution
-                  $logoFullPath = realpath(__DIR__ . '/../') . '/' . $adminBrandLogo;
-                  $logoExists = $adminBrandLogo && file_exists($logoFullPath);
+                  $logoExists = $brandAssetExists($adminBrandLogo);
                   
                   if ($logoExists): 
                 ?>
-                  <img src="../<?php echo Helpers::e($adminBrandLogo); ?>" alt="<?php echo Helpers::e($siteName); ?>" style="max-width:220px;max-height:72px;width:auto;height:auto;display:block">
+                  <img src="<?php echo Helpers::e($resolveBrandAssetUrl($adminBrandLogo)); ?>" alt="<?php echo Helpers::e($siteName); ?>" style="max-width:220px;max-height:72px;width:auto;height:auto;display:block">
                 <?php else: ?>
                   <span style="color:var(--soft)">No logo uploaded</span>
                 <?php endif; ?>
@@ -4462,6 +4509,33 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
               <label class="form-label">Upload Favicon (ICO, PNG, SVG)</label>
               <input class="form-input" name="site_favicon" type="file" accept=".ico,.png,.svg"/>
               <div style="font-size:.75rem;color:var(--soft);margin-top:6px">Recommended: Square ICO or PNG, at least 64x64. Max 1MB.</div>
+            </div>
+            <div class="card" style="padding:18px;background:var(--surface);margin-top:18px;">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px;">Page Meta Settings</h3>
+              <div class="form-field">
+                <label class="form-label">Homepage Meta Title</label>
+                <input class="form-input" name="home_meta_title" value="<?php echo Helpers::e($settings["home_meta_title"] ?? ($settings["site_name"] ?? "Friends At Heart Welfare Initiative")); ?>"/>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Homepage Meta Description</label>
+                <textarea class="form-input" name="home_meta_description" rows="3"><?php echo Helpers::e($settings["home_meta_description"] ?? "Friends at Heart Welfare Initiative supports children, families and underserved communities through compassionate outreach, practical care and transparent giving."); ?></textarea>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Contact Page Meta Title</label>
+                <input class="form-input" name="contact_meta_title" value="<?php echo Helpers::e($settings["contact_meta_title"] ?? "Contact Us | " . ($settings["site_name"] ?? "Friends At Heart Welfare Initiative")); ?>"/>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Contact Page Meta Description</label>
+                <textarea class="form-input" name="contact_meta_description" rows="3"><?php echo Helpers::e($settings["contact_meta_description"] ?? "Contact Friends at Heart Welfare Initiative for support, partnership enquiries, donations and community outreach conversations."); ?></textarea>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Donation Page Meta Title</label>
+                <input class="form-input" name="donation_meta_title" value="<?php echo Helpers::e($settings["donation_meta_title"] ?? "Donate | " . ($settings["site_name"] ?? "Friends At Heart Welfare Initiative")); ?>"/>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Donation Page Meta Description</label>
+                <textarea class="form-input" name="donation_meta_description" rows="3"><?php echo Helpers::e($settings["donation_meta_description"] ?? "Support Friends at Heart Welfare Initiative by donating to children, families and community care programmes that restore dignity and hope."); ?></textarea>
+              </div>
             </div>
           </form>
         </div>

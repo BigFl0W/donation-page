@@ -29,8 +29,8 @@ require __DIR__ . "/includes/header.php";
                     <h2 class="mb-3">Stories from the field, captured with clarity and purpose.</h2>
                     <p class="mb-4">Browse a live collection of outreach moments, campaign highlights, and field documentation curated directly from the admin gallery.</p>
                     <div class="d-flex flex-wrap gap-3">
-                        <a href="donation-page.php" class="btn btn-default">Support a Story</a>
-                        <a href="contact-us.php" class="btn btn-outline-dark">Request Media Pack</a>
+                        <a href="<?php echo Helpers::e(Helpers::siteUrl('donation-page')); ?>" class="btn btn-default">Support a Story</a>
+                        <a href="<?php echo Helpers::e(Helpers::siteUrl('contact-us')); ?>" class="btn btn-outline-dark">Request Media Pack</a>
                     </div>
                 </div>
             </div>

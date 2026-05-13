@@ -4,6 +4,8 @@ $totalDonations = \App\Payment::getTotalDonations();
 $brandName = \App\Helpers::brandName("Gracious Charity");
 $brandLogo = \App\Helpers::brandLogoPath("assets/images/logo_dark.svg");
 $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
+$homeMetaTitle = (string)\App\Helpers::setting('home_meta_title', $brandName);
+$homeMetaDescription = (string)\App\Helpers::setting('home_meta_description', 'Friends at Heart Welfare Initiative supports children, families and underserved communities through compassionate outreach, practical care and transparent giving.');
 $recentCauses = \App\Database::fetchAll("SELECT * FROM programmes WHERE status = 'published' ORDER BY created_at DESC LIMIT 4");
 $homeEvents = \App\Database::fetchAll(
     "SELECT e.*, COALESCE(a.full_name, 'Events Desk') AS organizer
@@ -45,7 +47,7 @@ $homeIntroStat2Label = trim((string)($homeAboutSettings['about_home_intro_stat_2
 $homeSliderKicker = trim((string)($homeAboutSettings['about_home_slider_kicker'] ?? 'Restoring Hope'));
 $homeSliderTitle = trim((string)($homeAboutSettings['about_home_slider_title'] ?? 'For Children And Families'));
 $homeSliderPrimaryLabel = trim((string)($homeAboutSettings['about_home_slider_primary_label'] ?? 'Join Us Now'));
-$homeSliderPrimaryUrl = trim((string)($homeAboutSettings['about_home_slider_primary_url'] ?? 'causes-list.php'));
+$homeSliderPrimaryUrl = trim((string)($homeAboutSettings['about_home_slider_primary_url'] ?? 'causes-projects'));
 $homeSliderVideoLabel = trim((string)($homeAboutSettings['about_home_slider_video_label'] ?? 'Watch the video'));
 $homeSliderVideoUrl = trim((string)($homeAboutSettings['about_home_slider_video_url'] ?? 'https://player.vimeo.com/video/7449107'));
 $homeSliderImage1 = trim((string)($homeAboutSettings['about_home_slider_image_1'] ?? 'assets/images/slider/slider_home_first_1.jpg'));
@@ -84,10 +86,10 @@ $homeCoreValues = [
     
     <!-- xxx Change With Your Information xxx -->    
     <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
-    <title>Gracious - Charity and Donation HTML Template</title>
-    <meta name="author" content="Mannat Studio">     
-    <meta name="description" content="Gracious is a Responsive HTML5 Template for Charity and NGO related services.">
-    <meta name="keywords" content="Gracious, responsive, html5, charity, charity agency, charity foundation, charity template, church, donate, donation, fundraiser, fundraising, mosque, ngo, non-profit, nonprofit, organization, volunteer">
+    <title><?php echo htmlspecialchars($homeMetaTitle); ?></title>
+    <meta name="author" content="<?php echo htmlspecialchars($brandName); ?>">     
+    <meta name="description" content="<?php echo htmlspecialchars($homeMetaDescription); ?>">
+    <meta name="keywords" content="Friends at Heart Welfare Initiative, FAHWI, charity, donation, NGO, community support, school fees support, hospital bill support, outreach, volunteer">
     
     <!-- Favicon -->    
     <link rel="shortcut icon" type="image/x-icon" href="<?php echo htmlspecialchars($brandFavicon); ?>">
@@ -423,7 +425,7 @@ $homeCoreValues = [
         <nav class="navbar navbar-expand-lg header-fullpage">
             <div class="container text-nowrap">
                 <div class="d-flex align-items-center w-100 col p-0 logo-brand">
-                    <a class="navbar-brand rounded-bottom light-bg" href="index.php">
+                    <a class="navbar-brand rounded-bottom light-bg" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl()); ?>">
                         <img class="site-logo site-logo--header" src="<?php echo htmlspecialchars($brandLogo); ?>" alt="<?php echo htmlspecialchars($brandName); ?>">
                     </a> 
                 </div>
@@ -431,7 +433,7 @@ $homeCoreValues = [
                 <div class="d-inline-flex request-btn order-lg-last col-auto p-0 align-items-center"> 
                     <a class="btn-outline-primary btn ms-3" href="#" id="search_home"><i data-feather="search"></i></a>
 
-                    <a class="nav-link btn btn-default ms-3 donate-btn" href="donation-page.php">Donate</a>
+                    <a class="nav-link btn btn-default ms-3 donate-btn" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('donation-page')); ?>">Donate</a>
 
                     <!-- Toggle Button Start -->
                     <button class="navbar-toggler x collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -446,7 +448,7 @@ $homeCoreValues = [
                 <div class="navbar-collapse">
                     <!-- Mobile Logo -->
                     <div class="offcanvas-header">
-                        <a href="index.php" class="logo-small">
+                        <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl()); ?>" class="logo-small">
                             <img class="site-logo site-logo--header" src="<?php echo htmlspecialchars($brandLogo); ?>" alt="<?php echo htmlspecialchars($brandName); ?>">
                         </a>                        
                     </div>
@@ -455,31 +457,31 @@ $homeCoreValues = [
                     <div class="offcanvas-body">
                         <ul class="navbar-nav ms-auto">
                                                         <li class="nav-item">
-                                <a class="nav-link" href="index.php">Home</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl()); ?>">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="about-us.php">About Us</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('about-us')); ?>">About Us</a>
                             </li>
                             
                                                         <li class="nav-item dropdown">
-                                <a class="nav-link has-children" href="index.php" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
+                                <a class="nav-link has-children" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('gallery')); ?>" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="gallery">Photo & Video Gallery</a></li>
                                     <li><a class="dropdown-item" href="partners-sponsors">Partners & Sponsors</a></li>
                                     <li><a class="dropdown-item" href="causes-projects">Our Causes</a></li>
                                     <li><a class="dropdown-item" href="programme">Programme</a></li>
-                                    <li><a class="dropdown-item" href="volunteer.php">Volunteer</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('volunteer')); ?>">Volunteer</a></li>
                                     <li><a class="dropdown-item" href="faqs">FAQs</a></li>
                                 </ul>
                             </li>
                                                         <li class="nav-item">
-                                <a class="nav-link" href="events.php">Events</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('events')); ?>">Events</a>
                             </li>                        
                                                         <li class="nav-item">
-                                <a class="nav-link" href="blog.php">Blog</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('blog')); ?>">Blog</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="contact-us.php">Contact</a>
+                                <a class="nav-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('contact-us')); ?>">Contact</a>
                             </li>
                             
                         </ul>
@@ -718,7 +720,7 @@ $homeCoreValues = [
                                 <!-- Map Icons Start -->
                             </div>
 
-                            <a href="volunteer.php" class="btn btn-outline-default">Become a Volunteer</a>
+                            <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('volunteer')); ?>" class="btn btn-outline-default">Become a Volunteer</a>
                         </div>
                     </div>
 
@@ -866,7 +868,7 @@ $homeCoreValues = [
                             <small>Help Other People</small>
                             We Dream to Create A Bright Future Of The Underprivileged Children
                         </h1>
-                        <a href="donation-page.php" class="btn btn-default">Donate Now</a>
+                        <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('donation-page')); ?>" class="btn btn-default">Donate Now</a>
                     </div>
                 </div>
             </div>
@@ -955,7 +957,7 @@ $homeCoreValues = [
                                 <?php endforeach; ?>
                             </div>
                             <div style="margin-top:24px;">
-                                <a class="summary-link" href="about-us.php">
+                                <a class="summary-link" href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('about-us')); ?>">
                                     Discover our story <i data-feather="arrow-right"></i>
                                 </a>
                             </div>
@@ -987,9 +989,9 @@ $homeCoreValues = [
                                 <span><?php echo \App\Helpers::e(date("M", strtotime($homeEvent["event_start"] ?? "now"))); ?></span>
                             </div>
                             <div class="img-wrap">
-                                <a href="event.php?slug=<?php echo urlencode($homeEvent["slug"] ?? ""); ?>"><img src="<?php echo \App\Helpers::e($homeEvent["featured_image"] ?: "assets/images/events/event_alternate_img_1.jpg"); ?>" alt="<?php echo \App\Helpers::e($homeEvent["title"] ?? "Event"); ?>"></a>
+                                <a href="<?php echo \App\Helpers::e(\App\Helpers::siteUrl('event/' . rawurlencode((string)($homeEvent["slug"] ?? '')))); ?>"><img src="<?php echo \App\Helpers::e($homeEvent["featured_image"] ?: "assets/images/events/event_alternate_img_1.jpg"); ?>" alt="<?php echo \App\Helpers::e($homeEvent["title"] ?? "Event"); ?>"></a>
                                 <div class="content-wrap">
-                                    <h3><a href="event.php?slug=<?php echo urlencode($homeEvent["slug"] ?? ""); ?>"><?php echo \App\Helpers::e($homeEvent["title"] ?? "Upcoming Event"); ?></a></h3>
+                                    <h3><a href="<?php echo \App\Helpers::e(\App\Helpers::siteUrl('event/' . rawurlencode((string)($homeEvent["slug"] ?? '')))); ?>"><?php echo \App\Helpers::e($homeEvent["title"] ?? "Upcoming Event"); ?></a></h3>
                                     <div class="event-details">
                                         <div><i data-feather="clock"></i> <?php echo \App\Helpers::e(\App\Content::formatEventTime($homeEvent["event_start"] ?? "")); ?></div>
                                         <div><i data-feather="map-pin"></i> <?php echo \App\Helpers::e(($homeEvent["city"] ?: $homeEvent["venue"]) ?? "Venue TBA"); ?></div>
@@ -1008,7 +1010,7 @@ $homeCoreValues = [
                 <?php endif; ?>
 
                 <div class="text-center mt-5">
-                    <a href="events.php" class="btn btn-outline-dark">View All Events</a>
+                    <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('events')); ?>" class="btn btn-outline-dark">View All Events</a>
                 </div>
             </div>
         </section>
@@ -1025,7 +1027,7 @@ $homeCoreValues = [
                         </h1>
                     </div>
                     <div class="col-lg-8 col-md-6 text-md-end btn-team">
-                        <a href="volunteer.php" class="btn btn-outline-dark">View All Members</a>
+                        <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('volunteer')); ?>" class="btn btn-outline-dark">View All Members</a>
                     </div>
                 </div>
 
@@ -1218,7 +1220,7 @@ $homeCoreValues = [
                         </h1>
                     </div>
                     <div class="col-md-4 col-lg-6 col-12 blog-section-actions">
-                        <a href="blog.php" class="btn btn-default d-inline-flex align-items-center px-4 blog-cta">View All Posts</a>
+                        <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('blog')); ?>" class="btn btn-default d-inline-flex align-items-center px-4 blog-cta">View All Posts</a>
                     </div>
                 </div>
                 <div class="row">
@@ -1255,10 +1257,10 @@ $homeCoreValues = [
                                     <div class="post-wrap">
                                         <div class="post-content">
                                             <div class="post-date">Editorial Desk</div>
-                                            <h3 class="post-title"><a href="blog.php">No published stories yet</a></h3>
+                                            <h3 class="post-title"><a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('blog')); ?>">No published stories yet</a></h3>
                                             <div class="post-category">Blog</div>
                                             <div class="text-md-end">
-                                                <a href="blog.php" class="read-more-line"><span>Open Blog</span></a>
+                                                <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('blog')); ?>" class="read-more-line"><span>Open Blog</span></a>
                                             </div>
                                         </div>
                                     </div>
@@ -1275,7 +1277,7 @@ $homeCoreValues = [
         <!-- Google Map Style Start -->   
         <section class="wide-tb-100 pb-0">
             <div class="map-frame">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d2965.0824050173574!2d-93.63905729999999!3d41.998507000000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sWebFilings%2C+University+Boulevard%2C+Ames%2C+IA!5e0!3m2!1sen!2sus!4v1390839289319"></iframe>
+                <iframe src="https://www.google.com/maps?q=137%20Market%20Road%2C%20Aba%2C%20Abia%20State%2C%20Nigeria&z=15&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
             <div class="container">
                 <div class="row">
@@ -1291,7 +1293,7 @@ $homeCoreValues = [
                                         <h2>Let Us Come Together To Make A Difference</h2>
                                     </div>
                                     <div class="icon">
-                                        <a href="donation-page.php" class="btn btn-default">Donate Now</a>
+                                        <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('donation-page')); ?>" class="btn btn-default">Donate Now</a>
                                     </div>
                                 </div>
                             </div>

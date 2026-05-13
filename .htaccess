@@ -8,6 +8,48 @@ DirectoryIndex index.php
 ErrorDocument 404 /404-page.php
 
 # ------------------------------------------------------------------
+# Redirect explicit .php requests to clean public URLs.
+# ------------------------------------------------------------------
+RewriteCond %{THE_REQUEST} \s/+index\.php[\s?] [NC]
+RewriteRule ^index\.php$ / [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+about-us\.php[\s?] [NC]
+RewriteRule ^about-us\.php$ /about-us [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+blog\.php[\s?] [NC]
+RewriteRule ^blog\.php$ /blog [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+events\.php[\s?] [NC]
+RewriteRule ^events\.php$ /events [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+gallery\.php[\s?] [NC]
+RewriteRule ^gallery\.php$ /gallery [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+faqs\.php[\s?] [NC]
+RewriteRule ^faqs\.php$ /faqs [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+contact-us\.php[\s?] [NC]
+RewriteRule ^contact-us\.php$ /contact-us [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+donation-page\.php[\s?] [NC]
+RewriteRule ^donation-page\.php$ /donation-page [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+programme\.php[\s?] [NC]
+RewriteRule ^programme\.php$ /programme [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+causes\.php[\s?] [NC]
+RewriteRule ^causes\.php$ /causes-projects [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+partners-sponsors\.php[\s?] [NC]
+RewriteRule ^partners-sponsors\.php$ /partners-sponsors [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+volunteer\.php[\s?] [NC]
+RewriteRule ^volunteer\.php$ /volunteer [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+success\.php[\s?] [NC]
+RewriteRule ^success\.php$ /success [R=301,L]
+
+# ------------------------------------------------------------------
 # Existing files & directories – serve them directly.
 # ------------------------------------------------------------------
 RewriteCond %{REQUEST_FILENAME} -f [OR]
@@ -29,6 +71,7 @@ RewriteRule ^event/([a-zA-Z0-9-]+)/?$                            event.php?slug=
 # Gallery & FAQs
 RewriteRule ^gallery/?$                                          gallery.php [L,QSA]
 RewriteRule ^faqs/?$                                             faqs.php [L,QSA]
+RewriteRule ^success/?$                                          success.php [L,QSA]
 
 # Contact & About
 RewriteRule ^contact-us/?$                                       contact-us.php [L,QSA]

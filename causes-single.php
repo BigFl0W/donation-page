@@ -225,15 +225,19 @@ if (payBtn) {
                 })
             }).then(res => res.json()).then(data => {
                 if (data.status === 'success') {
-                    alert('Donation successful! Thank you.');
-                    location.reload();
+                    const successUrl = new URL('<?php echo \App\Helpers::siteUrl('success'); ?>');
+                    successUrl.searchParams.set('amount', amount);
+                    successUrl.searchParams.set('currency', 'NGN');
+                    successUrl.searchParams.set('ref', response.reference);
+                    successUrl.searchParams.set('campaign', '<?php echo addslashes($cause['title']); ?>');
+                    window.location.href = successUrl.toString();
                 } else {
                     alert('Payment verification failed.');
                 }
             });
         },
         onClose: function() {
-            alert('Window closed.');
+            console.log('Paystack window closed.');
         }
     });
     handler.openIframe();
