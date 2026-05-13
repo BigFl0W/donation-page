@@ -895,6 +895,27 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
+    if ($action === "save_faq_page") {
+        $saveOk = true;
+        if (isset($_POST["settings"]) && is_array($_POST["settings"])) {
+            foreach ($_POST["settings"] as $key => $val) {
+                $saved = Database::execute(
+                    "INSERT INTO settings (setting_group, setting_key, setting_value)
+                     VALUES ('faq', :key, :val)
+                     ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                    ["key" => "faq_" . $key, "val" => is_string($val) ? trim($val) : $val]
+                );
+                if (!$saved) {
+                    $saveOk = false;
+                }
+            }
+        }
+        $flashMsg = $saveOk ? "FAQ page updated successfully" : "FAQ page update failed. Please try again.";
+        $flashType = $saveOk ? "success" : "danger";
+        header("Location: index.php?msg=" . urlencode($flashMsg) . "&type=" . $flashType . "&page=faqs");
+        exit;
+    }
+
     if ($action === "create_admin") {
         $fullName = trim((string) ($_POST["full_name"] ?? ""));
         $email = trim((string) ($_POST["email"] ?? ""));
@@ -2512,6 +2533,10 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     <div class="nav-item" onclick="showPage('volunteer',this)">
       <i class="fas fa-hands-helping nav-icon"></i>
       <span class="nav-text">Volunteer</span>
+    </div>
+    <div class="nav-item" onclick="showPage('faqs',this)">
+      <i class="fas fa-circle-question nav-icon"></i>
+      <span class="nav-text">FAQs</span>
     </div>
     <div class="nav-item" onclick="showPage('footer',this)">
       <i class="fas fa-window-maximize nav-icon"></i>
@@ -4392,6 +4417,107 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       </form>
     </div>
   </div>
+  <div class="content" id="page-faqs">
+    <div class="card" style="padding:0; overflow:hidden;">
+      <form method="POST" style="padding:22px;">
+        <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
+        <input type="hidden" name="_action" value="save_faq_page">
+
+        <div style="margin-bottom:25px; display:flex; justify-content:space-between; align-items:center; background:var(--brand-bg); padding:15px; border-radius:12px; border:1px solid var(--brand-dim);">
+          <div>
+            <h4 style="color:var(--brand); margin:0;">FAQ Page Builder</h4>
+            <p style="font-size:0.75rem; color:var(--mid); margin:0;">Manage the public FAQ page and replace hardcoded answers with live content.</p>
+          </div>
+          <button type="submit" class="btn-primary" style="padding:10px 30px; border-radius:10px; font-weight:800;">
+            <i class="fas fa-floppy-disk" style="margin-right:8px;"></i>Publish Changes
+          </button>
+        </div>
+
+        <div class="two-col">
+          <div style="display:flex; flex-direction:column; gap:18px;">
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Page Intro</h3>
+              <div class="form-field">
+                <label class="form-label">Browser Title</label>
+                <input class="form-input" name="settings[page_title]" value="<?php echo Helpers::e($settings['faq_page_title'] ?? 'FAQs'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Hero Label</label>
+                <input class="form-input" name="settings[hero_kicker]" value="<?php echo Helpers::e($settings['faq_hero_kicker'] ?? 'Helpful Answers'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Hero Title</label>
+                <input class="form-input" name="settings[hero_title]" value="<?php echo Helpers::e($settings['faq_hero_title'] ?? 'Frequently Asked Questions'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Hero Intro</label>
+                <textarea class="form-input" name="settings[hero_intro]" rows="4"><?php echo Helpers::e($settings['faq_hero_intro'] ?? 'Clear information for donors, volunteers, partners, and beneficiaries.'); ?></textarea>
+              </div>
+            </div>
+
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Support Card</h3>
+              <div class="form-field">
+                <label class="form-label">Support Label</label>
+                <input class="form-input" name="settings[contact_kicker]" value="<?php echo Helpers::e($settings['faq_contact_kicker'] ?? 'Need More Help?'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Support Title</label>
+                <input class="form-input" name="settings[contact_title]" value="<?php echo Helpers::e($settings['faq_contact_title'] ?? 'Speak with the team directly.'); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Support Text</label>
+                <textarea class="form-input" name="settings[contact_text]" rows="3"><?php echo Helpers::e($settings['faq_contact_text'] ?? 'Still need clarity? Reach out and our team will guide you directly.'); ?></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-field">
+                  <label class="form-label">Button Label</label>
+                  <input class="form-input" name="settings[contact_button_label]" value="<?php echo Helpers::e($settings['faq_contact_button_label'] ?? 'Contact Us'); ?>">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Button URL</label>
+                  <input class="form-input" name="settings[contact_button_url]" value="<?php echo Helpers::e($settings['faq_contact_button_url'] ?? 'contact-us'); ?>">
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">Popular Topics</h3>
+              <div class="form-field">
+                <label class="form-label">Section Label</label>
+                <input class="form-input" name="settings[topics_kicker]" value="<?php echo Helpers::e($settings['faq_topics_kicker'] ?? 'Popular Topics'); ?>">
+              </div>
+              <?php for ($i = 1; $i <= 5; $i++): ?>
+              <div class="form-field">
+                <label class="form-label">Topic <?php echo $i; ?></label>
+                <input class="form-input" name="settings[topic_<?php echo $i; ?>]" value="<?php echo Helpers::e($settings["faq_topic_{$i}"] ?? ([1 => 'Donations and receipts', 2 => 'Volunteering and onboarding', 3 => 'Partnership enquiries', 4 => 'Programme eligibility questions', 5 => 'Support response timelines'][$i] ?? '')); ?>">
+              </div>
+              <?php endfor; ?>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:18px;">
+            <div class="card" style="padding:18px;background:var(--surface)">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px">FAQ Items</h3>
+              <?php for ($i = 1; $i <= 6; $i++): ?>
+              <div style="padding:14px; border:1px solid var(--line); border-radius:12px; margin-bottom:14px;">
+                <h4 style="font-size:.85rem; font-weight:700; margin:0 0 12px;">Question <?php echo $i; ?></h4>
+                <div class="form-field">
+                  <label class="form-label">Question</label>
+                  <input class="form-input" name="settings[item_<?php echo $i; ?>_question]" value="<?php echo Helpers::e($settings["faq_item_{$i}_question"] ?? ([1 => 'How can someone support the organisation?', 2 => 'Can partners sponsor a specific project or campaign?', 3 => 'How will updates be shared with supporters?', 4 => 'Can the admin edit this section later?', 5 => 'Do donors receive receipts after giving?', 6 => 'How can volunteers get started?'][$i] ?? '')); ?>">
+                </div>
+                <div class="form-field" style="margin-bottom:0;">
+                  <label class="form-label">Answer</label>
+                  <textarea class="form-input" name="settings[item_<?php echo $i; ?>_answer]" rows="4"><?php echo Helpers::e($settings["faq_item_{$i}_answer"] ?? ([1 => 'Support can come through donations, sponsorships, volunteering, media partnerships, or programme collaboration.', 2 => 'Yes. We welcome aligned partners who want to support specific interventions, campaigns, or beneficiary groups.', 3 => 'Updates can be shared through the gallery, blog posts, programme pages, newsletters, and direct communication.', 4 => 'Yes. The FAQ page is now managed from the admin dashboard so the team can update it without editing code.', 5 => 'Yes. Successful donors receive an email receipt automatically once the payment is confirmed.', 6 => 'Interested volunteers can use the volunteer page or contact page to begin the conversation with our team.'][$i] ?? '')); ?></textarea>
+                </div>
+              </div>
+              <?php endfor; ?>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
   <div class="content" id="page-security">
     <div class="stats-grid">
       <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-server"></i></div><span class="stat-trend up">Healthy</span></div><div class="stat-value">99.8%</div><div class="stat-label">System Uptime</div></div>
@@ -4784,7 +4910,7 @@ const PAGES = {
   dashboard:'Dashboard',donations:'Donations',users:'Users',
   programmes:'Programmes',partners:'Partners',blog:'Blog & News',
   events:'Events',gallery:'Gallery',security:'Security',settings:'Settings',
-  profile:'My Profile',messages:'Messages', about:'About Page Builder', programme:'Programme Builder', volunteer:'Volunteer Builder', footer:'Footer Builder'
+  profile:'My Profile',messages:'Messages', about:'About Page Builder', programme:'Programme Builder', volunteer:'Volunteer Builder', faqs:'FAQ Builder', footer:'Footer Builder'
 };
 
 function previewAvatar(input) {
