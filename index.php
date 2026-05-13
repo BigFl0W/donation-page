@@ -1017,15 +1017,56 @@ $homeCoreValues = [
         <!-- Event Style End -->
 
         <!-- Testimonials Style Start -->
+        <?php
+            $testimonialSectionLabel = trim((string)\App\Helpers::setting('testimonial_section_label', 'Our Testimonials'));
+            $testimonialSectionTitle = trim((string)\App\Helpers::setting('testimonial_section_title', 'What People Say'));
+            $testimonialItems = [];
+            for ($i = 1; $i <= 3; $i++) {
+                $quote = trim((string)\App\Helpers::setting("testimonial_item_{$i}_quote", ''));
+                $name = trim((string)\App\Helpers::setting("testimonial_item_{$i}_name", ''));
+                $role = trim((string)\App\Helpers::setting("testimonial_item_{$i}_role", ''));
+                $image = trim((string)\App\Helpers::setting("testimonial_item_{$i}_image", ''));
+                if ($quote === '' && $name === '' && $role === '' && $image === '') {
+                    continue;
+                }
+                $testimonialItems[] = [
+                    'quote' => $quote,
+                    'name' => $name,
+                    'role' => $role,
+                    'image' => $image !== '' ? $image : 'assets/images/team_1.jpg',
+                ];
+            }
+            if (!$testimonialItems) {
+                $testimonialItems = [
+                    [
+                        'quote' => 'Friends at Heart Welfare Initiative showed up with compassion, urgency and practical support when it mattered most.',
+                        'name' => 'Community Beneficiary',
+                        'role' => 'Programme Recipient',
+                        'image' => 'assets/images/team_1.jpg',
+                    ],
+                    [
+                        'quote' => 'Their team communicates clearly, follows through responsibly and treats every intervention with dignity.',
+                        'name' => 'Partner Organisation',
+                        'role' => 'Community Partner',
+                        'image' => 'assets/images/team_2.jpg',
+                    ],
+                    [
+                        'quote' => 'Volunteering with Friends at Heart has been deeply meaningful because the mission is genuine and people-centered.',
+                        'name' => 'Volunteer',
+                        'role' => 'Field Support Volunteer',
+                        'image' => 'assets/images/team_1.jpg',
+                    ],
+                ];
+            }
+        ?>
         <section class="wide-tb-100 pattern-green pb-0 home-second-testimonials-wrap">
             <div class="container">
                 <h1 class="heading-main light-mode green">
-                    <small>Our Testimonials</small>
-                    What People Say
+                    <small><?php echo \App\Helpers::e($testimonialSectionLabel); ?></small>
+                    <?php echo \App\Helpers::e($testimonialSectionTitle); ?>
                 </h1>
                 <div class="owl-carousel owl-theme nav-light" id="home-second-testimonials">
-                        
-                    <!-- Client Testimonials Alternate Slider Item -->
+                    <?php foreach ($testimonialItems as $testimonial): ?>
                     <div class="item">
                         <div class="container">
                             <div class="row">
@@ -1033,73 +1074,21 @@ $homeCoreValues = [
                                     <div class="client-testimonial-alternate">
                                         <div class="client-inner-content">
                                             <i class="charity-quotes"></i>
-                                            <p>Gracious is a nonpro?t organization supported by community leaders, corporate sponsors, churches,
-                                                helpless etc. and concerned citizens</p>
+                                            <p><?php echo \App\Helpers::e($testimonial['quote']); ?></p>
                                         </div>
                                         <div class="client-testimonial-icon">
-                                            <img src="assets/images/team_1.jpg" alt="">
+                                            <img src="<?php echo \App\Helpers::e($testimonial['image']); ?>" alt="<?php echo \App\Helpers::e($testimonial['name'] ?: 'Testimonial profile'); ?>">
                                             <div class="text">
-                                                <div class="name">Josefin Fashkin</div>
-                                                <div class="post">Senior Activist</div>
+                                                <div class="name"><?php echo \App\Helpers::e($testimonial['name']); ?></div>
+                                                <div class="post"><?php echo \App\Helpers::e($testimonial['role']); ?></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>                        
+                        </div>
                     </div>
-                    <!-- Client Testimonials Alternate Slider Item -->
-                
-                    <!-- Client Testimonials Alternate Slider Item -->
-                    <div class="item">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-lg-8 col-md-11 mx-auto">
-                                    <div class="client-testimonial-alternate">
-                                        <div class="client-inner-content">
-                                            <i class="charity-quotes"></i>
-                                            <p>Gracious is a nonpro?t organization supported by community leaders, corporate sponsors, churches,
-                                                helpless etc. and concerned citizens</p>
-                                        </div>
-                                        <div class="client-testimonial-icon">
-                                            <img src="assets/images/team_2.jpg" alt="">
-                                            <div class="text">
-                                                <div class="name">Josefin Fashkin</div>
-                                                <div class="post">Senior Activist</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>                        
-                    </div>
-                    <!-- Client Testimonials Alternate Slider Item -->
-                
-                    <!-- Client Testimonials Alternate Slider Item -->
-                    <div class="item">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-lg-8 col-md-11 mx-auto">
-                                    <div class="client-testimonial-alternate">
-                                        <div class="client-inner-content">
-                                            <i class="charity-quotes"></i>
-                                            <p>Gracious is a nonpro?t organization supported by community leaders, corporate sponsors, churches,
-                                                helpless etc. and concerned citizens</p>
-                                        </div>
-                                        <div class="client-testimonial-icon">
-                                            <img src="assets/images/team_1.jpg" alt="">
-                                            <div class="text">
-                                                <div class="name">Josefin Fashkin</div>
-                                                <div class="post">Senior Activist</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>                        
-                    </div>
-                    <!-- Client Testimonials Alternate Slider Item -->
-                
+                    <?php endforeach; ?>
                 </div>
             </div>
         </section>

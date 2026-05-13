@@ -916,6 +916,59 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
+    if ($action === "save_testimonial_page") {
+        $saveOk = true;
+        if (isset($_POST["settings"]) && is_array($_POST["settings"])) {
+            foreach ($_POST["settings"] as $key => $val) {
+                $saved = Database::execute(
+                    "INSERT INTO settings (setting_group, setting_key, setting_value)
+                     VALUES ('testimonial', :key, :val)
+                     ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                    ["key" => "testimonial_" . $key, "val" => is_string($val) ? trim($val) : $val]
+                );
+                if (!$saved) {
+                    $saveOk = false;
+                }
+            }
+        }
+
+        if (isset($_FILES["testimonial_images"]) && is_array($_FILES["testimonial_images"]["name"] ?? null)) {
+            foreach ($_FILES["testimonial_images"]["name"] as $key => $name) {
+                if (($name ?? "") === "") {
+                    continue;
+                }
+                $tmp = $_FILES["testimonial_images"]["tmp_name"][$key] ?? "";
+                if (!is_uploaded_file($tmp)) {
+                    continue;
+                }
+                $ext = strtolower(pathinfo((string)$name, PATHINFO_EXTENSION));
+                $safeExt = $ext !== "" ? $ext : "jpg";
+                $uploadDir = __DIR__ . "/../assets/images/testimonials";
+                if (!is_dir($uploadDir)) {
+                    @mkdir($uploadDir, 0775, true);
+                }
+                $filename = "testimonial-" . preg_replace('/[^a-z0-9_-]/i', '-', (string)$key) . "-" . time() . "." . $safeExt;
+                $relative = "assets/images/testimonials/" . $filename;
+                $target = $uploadDir . "/" . $filename;
+                if (@move_uploaded_file($tmp, $target)) {
+                    Database::execute(
+                        "INSERT INTO settings (setting_group, setting_key, setting_value)
+                         VALUES ('testimonial', :key, :val)
+                         ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                        ["key" => "testimonial_" . $key, "val" => $relative]
+                    );
+                } else {
+                    $saveOk = false;
+                }
+            }
+        }
+
+        $flashMsg = $saveOk ? "Homepage testimonials updated successfully" : "Homepage testimonials update failed. Please try again.";
+        $flashType = $saveOk ? "success" : "danger";
+        header("Location: index.php?msg=" . urlencode($flashMsg) . "&type=" . $flashType . "&page=testimonials");
+        exit;
+    }
+
     if ($action === "create_admin") {
         $fullName = trim((string) ($_POST["full_name"] ?? ""));
         $email = trim((string) ($_POST["email"] ?? ""));
@@ -2537,6 +2590,10 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
     <div class="nav-item" onclick="showPage('faqs',this)">
       <i class="fas fa-circle-question nav-icon"></i>
       <span class="nav-text">FAQs</span>
+    </div>
+    <div class="nav-item" onclick="showPage('testimonials',this)">
+      <i class="fas fa-comments nav-icon"></i>
+      <span class="nav-text">Testimonials</span>
     </div>
     <div class="nav-item" onclick="showPage('footer',this)">
       <i class="fas fa-window-maximize nav-icon"></i>
@@ -4518,6 +4575,65 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       </form>
     </div>
   </div>
+  <div class="content" id="page-testimonials">
+    <div class="card" style="padding:0; overflow:hidden;">
+      <form method="POST" enctype="multipart/form-data" style="padding:22px;">
+        <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
+        <input type="hidden" name="_action" value="save_testimonial_page">
+
+        <div style="margin-bottom:25px; display:flex; justify-content:space-between; align-items:center; background:var(--brand-bg); padding:15px; border-radius:12px; border:1px solid var(--brand-dim);">
+          <div>
+            <h4 style="color:var(--brand); margin:0;">Homepage Testimonials Builder</h4>
+            <p style="font-size:0.75rem; color:var(--mid); margin:0;">Update the testimonial slider shown on the homepage.</p>
+          </div>
+          <button type="submit" class="btn-primary" style="padding:10px 30px; border-radius:10px; font-weight:800;">
+            <i class="fas fa-floppy-disk" style="margin-right:8px;"></i>Publish Changes
+          </button>
+        </div>
+
+        <div class="card" style="padding:18px;background:var(--surface); margin-bottom:18px;">
+          <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px;">Section Heading</h3>
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-label">Small Label</label>
+              <input class="form-input" name="settings[section_label]" value="<?php echo Helpers::e($settings['testimonial_section_label'] ?? 'Our Testimonials'); ?>">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Main Title</label>
+              <input class="form-input" name="settings[section_title]" value="<?php echo Helpers::e($settings['testimonial_section_title'] ?? 'What People Say'); ?>">
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <?php for ($i = 1; $i <= 3; $i++): ?>
+          <div class="card" style="padding:18px;background:var(--surface);">
+            <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px;">Testimonial <?php echo $i; ?></h3>
+            <div class="form-field">
+              <label class="form-label">Quote</label>
+              <textarea class="form-input" name="settings[item_<?php echo $i; ?>_quote]" rows="4"><?php echo Helpers::e($settings["testimonial_item_{$i}_quote"] ?? ''); ?></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label">Name</label>
+                <input class="form-input" name="settings[item_<?php echo $i; ?>_name]" value="<?php echo Helpers::e($settings["testimonial_item_{$i}_name"] ?? ''); ?>">
+              </div>
+              <div class="form-field">
+                <label class="form-label">Role</label>
+                <input class="form-input" name="settings[item_<?php echo $i; ?>_role]" value="<?php echo Helpers::e($settings["testimonial_item_{$i}_role"] ?? ''); ?>">
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Photo</label>
+              <input class="form-input" type="file" name="testimonial_images[item_<?php echo $i; ?>_image]" accept=".jpg,.jpeg,.png,.gif,.webp,.svg">
+              <div style="font-size:.75rem;color:var(--soft);margin-top:6px;">Current: <?php echo Helpers::e($settings["testimonial_item_{$i}_image"] ?? 'Not set'); ?></div>
+            </div>
+          </div>
+          <?php endfor; ?>
+        </div>
+      </form>
+    </div>
+  </div>
   <div class="content" id="page-security">
     <div class="stats-grid">
       <div class="stat-card t1"><div class="stat-top"><div class="stat-icon-wrap"><i class="fas fa-server"></i></div><span class="stat-trend up">Healthy</span></div><div class="stat-value">99.8%</div><div class="stat-label">System Uptime</div></div>
@@ -4910,7 +5026,7 @@ const PAGES = {
   dashboard:'Dashboard',donations:'Donations',users:'Users',
   programmes:'Programmes',partners:'Partners',blog:'Blog & News',
   events:'Events',gallery:'Gallery',security:'Security',settings:'Settings',
-  profile:'My Profile',messages:'Messages', about:'About Page Builder', programme:'Programme Builder', volunteer:'Volunteer Builder', faqs:'FAQ Builder', footer:'Footer Builder'
+  profile:'My Profile',messages:'Messages', about:'About Page Builder', programme:'Programme Builder', volunteer:'Volunteer Builder', faqs:'FAQ Builder', testimonials:'Testimonials Builder', footer:'Footer Builder'
 };
 
 function previewAvatar(input) {
