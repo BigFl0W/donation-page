@@ -2080,6 +2080,41 @@ body{
 .action-btn:hover.view{border-color:var(--blue);color:var(--blue);background:var(--blue-bg)}
 .action-btn:hover.edit{border-color:var(--brand);color:var(--brand);background:var(--brand-bg)}
 .action-btn:hover.del{border-color:var(--rose);color:var(--rose);background:var(--rose-bg)}
+.receipt-sheet{
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  background:#fff;
+}
+.receipt-head{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:18px;
+  padding:18px 20px;background:linear-gradient(135deg,var(--brand-bg),#ffffff);
+  border-bottom:1px solid var(--border);
+}
+.receipt-kicker{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--brand);font-weight:800}
+.receipt-title{font-size:1.05rem;font-weight:800;color:var(--dark);margin-top:6px}
+.receipt-sub{font-size:.8rem;color:var(--muted);margin-top:6px}
+.receipt-amount{font-size:1.7rem;font-weight:900;color:var(--dark);line-height:1}
+.receipt-status{
+  display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 10px;border-radius:999px;
+  font-size:.72rem;font-weight:700;border:1px solid var(--border);background:#fff;
+}
+.receipt-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:18px 20px;
+}
+.receipt-field{
+  padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surface);
+}
+.receipt-field label{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:800;margin-bottom:6px}
+.receipt-field .value{font-size:.9rem;color:var(--dark);font-weight:600;word-break:break-word}
+.receipt-note{
+  margin:0 20px 20px;padding:14px 16px;border-radius:12px;background:var(--brand-bg);border:1px solid var(--brand-dim);
+  color:var(--mid);font-size:.82rem;line-height:1.6;
+}
+@media(max-width:767px){
+  .receipt-head{flex-direction:column}
+  .receipt-grid{grid-template-columns:1fr}
+}
 
 .pagination{
   display:flex;align-items:center;gap:5px;
@@ -3027,7 +3062,14 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
                 <td data-label="Reference" class="mono"><?php echo Helpers::e((string)($d["payment_reference"] ?? "—")); ?></td>
                 <td data-label="Date" class="mono"><?php echo Helpers::e(Helpers::ta($d["dt"] ?? null)); ?></td>
                 <td data-label="Status"><span class="badge <?php echo Helpers::e($st === "successful" ? "success" : ($st === "pending" ? "warning" : ($st === "failed" ? "danger" : "neutral"))); ?>"><i class="fas fa-<?php echo Helpers::e($st === "successful" ? "check" : ($st === "pending" ? "clock" : ($st === "failed" ? "xmark" : "circle"))); ?>"></i><?php echo Helpers::e(ucfirst($st)); ?></span></td>
-                <td data-label="Actions"><div class="action-btns"><button class="action-btn view" onclick="openModal('donation',<?php echo (int)$d['id']; ?>)"><i class="fas fa-eye"></i></button><button class="action-btn edit" onclick="openModal('donation',<?php echo (int)$d['id']; ?>)"><i class="fas fa-pen"></i></button></div></td>
+                <td data-label="Actions">
+                  <div class="action-btns">
+                    <button type="button" class="action-btn view" title="View Receipt" onclick="openDonationReceipt(<?php echo (int)$d['id']; ?>)"><i class="fas fa-eye"></i></button>
+                    <?php if ($st !== "successful"): ?>
+                    <button type="button" class="action-btn edit" title="Review Donation" onclick="openModal('donation',<?php echo (int)$d['id']; ?>)"><i class="fas fa-pen"></i></button>
+                    <?php endif; ?>
+                  </div>
+                </td>
               </tr>
               <?php endforeach; ?>
             <?php else: ?>
@@ -5262,6 +5304,126 @@ function editPartner(p) {
   form.elements['description'].value = p.description;
 }
 
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function formatAdminDateTime(value) {
+  if (!value) return 'Not recorded';
+  const date = new Date(String(value).replace(' ', 'T'));
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString('en-NG', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  });
+}
+
+function formatAdminMoney(amount, currency = 'NGN') {
+  const numeric = Number(amount || 0);
+  try {
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: currency || 'NGN',
+      maximumFractionDigits: 0
+    }).format(numeric);
+  } catch (error) {
+    return `${currency || 'NGN'} ${numeric.toLocaleString('en-NG')}`;
+  }
+}
+
+function setReceiptModalLoading(isLoading) {
+  const modalForm = document.getElementById('modalForm');
+  const spinner = document.getElementById('modalSpinner');
+  if (isLoading) {
+    modalForm.style.display = 'none';
+    spinner.classList.remove('hidden');
+  } else {
+    modalForm.style.display = '';
+    spinner.classList.add('hidden');
+  }
+}
+
+function openDonationReceipt(id) {
+  editId = id || 0;
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalForm = document.getElementById('modalForm');
+  const modalBody = document.getElementById('modalBody');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalSubmit = document.getElementById('modalSubmit');
+  const cancelBtn = modalForm.querySelector('.btn-secondary');
+
+  modalTitle.textContent = 'Donation Receipt';
+  modalBody.innerHTML = '';
+  modalSubmit.style.display = 'none';
+  cancelBtn.textContent = 'Close';
+  modalOverlay.classList.add('show');
+  setReceiptModalLoading(true);
+
+  fetch(`index.php?ajax=get_item&type=donation&id=${id}`)
+    .then(r => {
+      if (!r.ok) throw new Error('Network error');
+      return r.json();
+    })
+    .then(item => {
+      setReceiptModalLoading(false);
+      if (!item || !item.id) {
+        modalBody.innerHTML = '<div class="empty-state"><i class="fas fa-receipt"></i><p>Receipt could not be loaded.</p></div>';
+        return;
+      }
+      const status = String(item.status || 'pending').toLowerCase();
+      const statusIcon = status === 'successful' ? 'fa-check-circle' : (status === 'pending' ? 'fa-clock' : 'fa-circle-xmark');
+      const statusColor = status === 'successful' ? '#059669' : (status === 'pending' ? '#d97706' : '#dc2626');
+      const donorName = item.donor_name || 'Anonymous Supporter';
+      const donorEmail = item.donor_email || 'No email provided';
+      const receiptRef = item.payment_reference || 'Not available';
+      const paidAt = item.paid_at || item.created_at || '';
+      const gateway = item.gateway || 'manual';
+      const currency = item.currency || 'NGN';
+      const amount = formatAdminMoney(item.amount, currency);
+
+      modalBody.innerHTML = `
+        <div class="receipt-sheet">
+          <div class="receipt-head">
+            <div>
+              <div class="receipt-kicker">Donation Receipt</div>
+              <div class="receipt-title">${escapeHtml(<?php echo json_encode($siteName); ?>)}</div>
+              <div class="receipt-sub">Professional transaction summary for admin review.</div>
+            </div>
+            <div style="text-align:right">
+              <div class="receipt-amount">${escapeHtml(amount)}</div>
+              <div class="receipt-status" style="color:${statusColor}">
+                <i class="fas ${statusIcon}"></i>${escapeHtml(status.charAt(0).toUpperCase() + status.slice(1))}
+              </div>
+            </div>
+          </div>
+          <div class="receipt-grid">
+            <div class="receipt-field"><label>Donor</label><div class="value">${escapeHtml(donorName)}</div></div>
+            <div class="receipt-field"><label>Email Address</label><div class="value">${escapeHtml(donorEmail)}</div></div>
+            <div class="receipt-field"><label>Gateway</label><div class="value">${escapeHtml(gateway.charAt(0).toUpperCase() + gateway.slice(1))}</div></div>
+            <div class="receipt-field"><label>Reference</label><div class="value">${escapeHtml(receiptRef)}</div></div>
+            <div class="receipt-field"><label>Paid At</label><div class="value">${escapeHtml(formatAdminDateTime(paidAt))}</div></div>
+            <div class="receipt-field"><label>Currency</label><div class="value">${escapeHtml(currency)}</div></div>
+          </div>
+          <div class="receipt-note">
+            This view is intended for quick verification and record-keeping. Use the edit action only when you need to correct status or transaction metadata.
+          </div>
+        </div>
+      `;
+    })
+    .catch(() => {
+      setReceiptModalLoading(false);
+      modalBody.innerHTML = '<div class="empty-state"><i class="fas fa-receipt"></i><p>Receipt could not be loaded.</p><div class="sub">Please try again.</div></div>';
+    });
+}
+
 function openModal(type, id) {
   editId = id || 0;
   const currentPage = document.querySelector('.content.active')?.id?.replace('page-', '') || 'dashboard';
@@ -5271,6 +5433,8 @@ function openModal(type, id) {
   const isEdit = editId > 0;
   document.getElementById('modalTitle').textContent = (isEdit ? 'Edit ' : 'New ') + config.title;
   document.getElementById('modalSubmit').innerHTML = '<i class="fas fa-floppy-disk"></i> ' + (isEdit ? 'Update' : 'Save');
+  document.getElementById('modalSubmit').style.display = '';
+  document.getElementById('modalForm').querySelector('.btn-secondary').textContent = 'Cancel';
 
   let html = '';
   let actionValue = config.action.replace('create_', isEdit ? 'update_' : 'create_');
