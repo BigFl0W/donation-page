@@ -89,8 +89,24 @@ $recentNotifications = [];
 $unreadMsgCount = 0;
 $recentMessages = [];
 $selectedMessage = null;
+$selectedMessageReplies = [];
 
 if ($dbAvail) {
+    Database::execute(
+        "CREATE TABLE IF NOT EXISTS contact_message_replies (
+            id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            contact_message_id BIGINT UNSIGNED NOT NULL,
+            admin_id BIGINT UNSIGNED NULL,
+            admin_name VARCHAR(190) NOT NULL,
+            admin_email VARCHAR(190) NULL,
+            reply_body TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            KEY idx_contact_message_replies_message_id (contact_message_id),
+            CONSTRAINT fk_contact_message_replies_message FOREIGN KEY (contact_message_id) REFERENCES contact_messages(id) ON DELETE CASCADE,
+            CONSTRAINT fk_contact_message_replies_admin FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE SET NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    );
+
     // Notifications for current admin
     $unreadNotifCount = (int)(Database::fetchOne("SELECT COUNT(*) as t FROM admin_notifications WHERE (admin_id IS NULL OR admin_id = ?) AND is_read = 0", [$admin['id']])['t'] ?? 0);
     $recentNotifications = Database::fetchAll("SELECT * FROM admin_notifications WHERE (admin_id IS NULL OR admin_id = ?) ORDER BY created_at DESC LIMIT 5", [$admin['id']]) ?: [];
@@ -235,6 +251,18 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                     <p>Warm regards,<br>{$brandName}</p>
                 ";
                 if (Mailer::send($senderEmail, $emailSubject, $htmlReply, $replyBody)) {
+                    Database::execute(
+                        "INSERT INTO contact_message_replies
+                         (contact_message_id, admin_id, admin_name, admin_email, reply_body, created_at)
+                         VALUES (:message_id, :admin_id, :admin_name, :admin_email, :reply_body, NOW())",
+                        [
+                            "message_id" => $messageId,
+                            "admin_id" => $adminId ?: null,
+                            "admin_name" => $adminName ?: 'Admin Team',
+                            "admin_email" => $adminEmail ?: null,
+                            "reply_body" => $replyBody,
+                        ]
+                    );
                     Database::execute(
                         "UPDATE contact_messages
                          SET admin_reply = :reply, replied_at = NOW(), status = 'replied'
@@ -1359,6 +1387,16 @@ if ($dbAvail && (string)($_GET["page"] ?? "") === "messages" && (int)($_GET["id"
         Database::execute("UPDATE contact_messages SET status = 'read' WHERE id = :id", ["id" => $selectedMessageId]);
         $selectedMessage["status"] = "read";
         $unreadMsgCount = max(0, $unreadMsgCount - 1);
+    }
+    if ($selectedMessage) {
+        $selectedMessageReplies = Database::fetchAll(
+            "SELECT contact_message_replies.*, admins.full_name AS linked_admin_name
+             FROM contact_message_replies
+             LEFT JOIN admins ON admins.id = contact_message_replies.admin_id
+             WHERE contact_message_id = :id
+             ORDER BY created_at ASC",
+            ["id" => $selectedMessageId]
+        ) ?: [];
     }
 }
 
@@ -4950,20 +4988,41 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       </div>
       <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;">
         <div>
-          <div style="padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--soft-bg);line-height:1.8;color:var(--mid);">
-            <?php echo nl2br(Helpers::e($selectedMessage["message"] ?? "")); ?>
-          </div>
-          <?php if (!empty($selectedMessage["admin_reply"])): ?>
-            <div style="margin-top:16px;">
-              <h4 style="font-size:0.95rem;margin-bottom:8px;">Last Reply Sent</h4>
-              <div style="padding:16px;border:1px solid rgba(15,118,110,.16);border-radius:18px;background:#f0fdfa;line-height:1.8;color:var(--mid);">
-                <?php echo nl2br(Helpers::e($selectedMessage["admin_reply"])); ?>
+          <h4 style="font-size:0.95rem;margin-bottom:10px;">Conversation Thread</h4>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div style="padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--soft-bg);line-height:1.8;color:var(--mid);">
+              <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:8px;">
+                <strong style="color:var(--dark);"><?php echo Helpers::e($selectedMessage["name"] ?? "Website Visitor"); ?></strong>
+                <span style="font-size:0.82rem;color:var(--muted);"><?php echo Helpers::e(Helpers::ta($selectedMessage["created_at"] ?? "")); ?></span>
               </div>
-              <p style="margin-top:8px;font-size:0.82rem;color:var(--muted);">Sent <?php echo Helpers::e(Helpers::ta($selectedMessage["replied_at"] ?? "")); ?></p>
+              <?php echo nl2br(Helpers::e($selectedMessage["message"] ?? "")); ?>
             </div>
-          <?php endif; ?>
+            <?php foreach ($selectedMessageReplies as $reply): ?>
+              <?php
+                $replyAuthor = (string)($reply["linked_admin_name"] ?: $reply["admin_name"] ?: "Admin Team");
+                $replyEmail = (string)($reply["admin_email"] ?? "");
+              ?>
+              <div style="padding:16px;border:1px solid rgba(15,118,110,.16);border-radius:18px;background:#f0fdfa;line-height:1.8;color:var(--mid);">
+                <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:8px;">
+                  <div>
+                    <strong style="color:var(--brand);"><?php echo Helpers::e($replyAuthor); ?></strong>
+                    <?php if ($replyEmail !== ''): ?>
+                    <div style="font-size:0.78rem;color:var(--muted);"><?php echo Helpers::e($replyEmail); ?></div>
+                    <?php endif; ?>
+                  </div>
+                  <span style="font-size:0.82rem;color:var(--muted);"><?php echo Helpers::e(Helpers::ta($reply["created_at"] ?? "")); ?></span>
+                </div>
+                <?php echo nl2br(Helpers::e($reply["reply_body"] ?? "")); ?>
+              </div>
+            <?php endforeach; ?>
+          </div>
         </div>
         <div>
+          <?php if (!empty($selectedMessageReplies)): ?>
+          <div style="margin-bottom:14px;padding:12px 14px;border-radius:12px;background:var(--brand-bg);border:1px solid var(--brand-dim);font-size:0.82rem;color:var(--mid);line-height:1.6;">
+            This conversation already has reply history. Review it before sending another response so the user does not receive duplicate answers.
+          </div>
+          <?php endif; ?>
           <form method="post">
             <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
             <input type="hidden" name="_page" value="messages">

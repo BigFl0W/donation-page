@@ -36,3 +36,16 @@ CREATE TABLE IF NOT EXISTS blog_comments (
     CONSTRAINT fk_blog_comments_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
     CONSTRAINT fk_blog_comments_parent FOREIGN KEY (parent_id) REFERENCES blog_comments(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS contact_message_replies (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    contact_message_id BIGINT UNSIGNED NOT NULL,
+    admin_id BIGINT UNSIGNED NULL,
+    admin_name VARCHAR(190) NOT NULL,
+    admin_email VARCHAR(190) NULL,
+    reply_body TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_contact_message_replies_message_id (contact_message_id),
+    CONSTRAINT fk_contact_message_replies_message FOREIGN KEY (contact_message_id) REFERENCES contact_messages(id) ON DELETE CASCADE,
+    CONSTRAINT fk_contact_message_replies_admin FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE SET NULL
+);
