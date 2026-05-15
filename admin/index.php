@@ -3603,7 +3603,9 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
              <div class="action-btns">
                 <button class="action-btn edit" onclick="editPartner(<?php echo htmlspecialchars(json_encode($p)); ?>)" title="Edit"><i class="fas fa-pen"></i></button>
                 <form method="POST" style="display:inline;" onsubmit="return confirm('Delete this partner?')">
+                    <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
                     <input type="hidden" name="_action" value="delete_partner">
+                    <input type="hidden" name="_page" value="partners">
                     <input type="hidden" name="id" value="<?php echo $p['id']; ?>">
                     <button class="action-btn del" type="submit" title="Delete"><i class="fas fa-trash"></i></button>
                 </form>
