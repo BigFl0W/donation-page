@@ -86,8 +86,10 @@ $programmes = []; $allDonations = [];
 // ─── NOTIFICATIONS & MESSAGES (PROFESSIONAL) ───────
 $unreadNotifCount = 0;
 $recentNotifications = [];
+$readNotifCount = 0;
 $unreadMsgCount = 0;
 $recentMessages = [];
+$handledMsgCount = 0;
 $selectedMessage = null;
 $selectedMessageReplies = [];
 
@@ -109,16 +111,30 @@ if ($dbAvail) {
 
     // Notifications for current admin
     $unreadNotifCount = (int)(Database::fetchOne("SELECT COUNT(*) as t FROM admin_notifications WHERE (admin_id IS NULL OR admin_id = ?) AND is_read = 0", [$admin['id']])['t'] ?? 0);
+    $readNotifCount = (int)(Database::fetchOne("SELECT COUNT(*) as t FROM admin_notifications WHERE (admin_id IS NULL OR admin_id = ?) AND is_read = 1", [$admin['id']])['t'] ?? 0);
     $recentNotifications = Database::fetchAll("SELECT * FROM admin_notifications WHERE (admin_id IS NULL OR admin_id = ?) ORDER BY created_at DESC LIMIT 5", [$admin['id']]) ?: [];
 
     // Messages from contact form
     $unreadMsgCount = (int)(Database::fetchOne("SELECT COUNT(*) as t FROM contact_messages WHERE status = 'unread'")['t'] ?? 0);
+    $handledMsgCount = (int)(Database::fetchOne("SELECT COUNT(*) as t FROM contact_messages WHERE status = 'replied'")['t'] ?? 0);
     $recentMessages = Database::fetchAll("SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT 5") ?: [];
 
     // Mark all as read action
     if (isset($_GET['action']) && $_GET['action'] === 'mark_notifs_read') {
         Database::execute("UPDATE admin_notifications SET is_read = 1 WHERE (admin_id IS NULL OR admin_id = ?)", [$adminId]);
         header("Location: index.php?msg=All notifications marked as read&type=success");
+        exit;
+    }
+
+    if (isset($_GET['action']) && $_GET['action'] === 'clear_read_notifs') {
+        Database::execute("DELETE FROM admin_notifications WHERE (admin_id IS NULL OR admin_id = ?) AND is_read = 1", [$adminId]);
+        header("Location: index.php?msg=Read notifications cleared&type=success");
+        exit;
+    }
+
+    if (isset($_GET['action']) && $_GET['action'] === 'clear_replied_messages') {
+        Database::execute("DELETE FROM contact_messages WHERE status = 'replied'");
+        header("Location: index.php?msg=Handled messages cleared&type=success");
         exit;
     }
 }
@@ -216,9 +232,57 @@ if ($dbAvail) {
     foreach ($rawAbout as $s) {
         $aboutSettings[$s['setting_key']] = $s['setting_value'];
     }
+
+    $aboutMilestoneDefaults = [
+        1 => [
+            'year' => '2024',
+            'title' => 'Foundation and formal launch',
+            'desc' => "Official creation of Friends At Heart Welfare Initiative.\nDevelopment of the NGO's vision, mission and core values.\nRegistration with the Corporate Affairs Commission and other regulatory agencies.\nFormation of the leadership and volunteer team.\nCharity visits to Ngwa Road Motherless Babies Home and Father Basil Motherless Babies Home in Aba.\nSupport for vulnerable children and widows through food and clothing distribution programmes.",
+        ],
+        2 => [
+            'year' => '2025',
+            'title' => 'Education and outreach expansion',
+            'desc' => "Love in Action visit to Joy Rita International Foundation, Aba, Abia State.\nPayment of school fees for less privileged students.\nDistribution of educational materials to underserved learners.",
+        ],
+        3 => [
+            'year' => '2026',
+            'title' => 'Medical care, partnerships and public presence',
+            'desc' => "Settlement of hospital bills for individuals in need at Abia State Teaching Hospital, Aba.\nCare and support outreach to Victims of Need Social Home and Joy Rita Motherless International Foundation.\nSupport for emergency medical needs and vulnerable individuals.\nExpansion of volunteer membership, partnerships and community participation.\nLaunch of social media platforms, press visibility, official website and professional communication channels.\nRegistration with the Nigeria Network of NGOs.",
+        ],
+        4 => [
+            'year' => '',
+            'title' => '',
+            'desc' => '',
+        ],
+    ];
 }
 
 // ─── HANDLE FORM SUBMISSIONS ───────────────────────
+if (!isset($aboutMilestoneDefaults)) {
+    $aboutMilestoneDefaults = [
+        1 => [
+            'year' => '2024',
+            'title' => 'Foundation and formal launch',
+            'desc' => "Official creation of Friends At Heart Welfare Initiative.\nDevelopment of the NGO's vision, mission and core values.\nRegistration with the Corporate Affairs Commission and other regulatory agencies.\nFormation of the leadership and volunteer team.\nCharity visits to Ngwa Road Motherless Babies Home and Father Basil Motherless Babies Home in Aba.\nSupport for vulnerable children and widows through food and clothing distribution programmes.",
+        ],
+        2 => [
+            'year' => '2025',
+            'title' => 'Education and outreach expansion',
+            'desc' => "Love in Action visit to Joy Rita International Foundation, Aba, Abia State.\nPayment of school fees for less privileged students.\nDistribution of educational materials to underserved learners.",
+        ],
+        3 => [
+            'year' => '2026',
+            'title' => 'Medical care, partnerships and public presence',
+            'desc' => "Settlement of hospital bills for individuals in need at Abia State Teaching Hospital, Aba.\nCare and support outreach to Victims of Need Social Home and Joy Rita Motherless International Foundation.\nSupport for emergency medical needs and vulnerable individuals.\nExpansion of volunteer membership, partnerships and community participation.\nLaunch of social media platforms, press visibility, official website and professional communication channels.\nRegistration with the Nigeria Network of NGOs.",
+        ],
+        4 => [
+            'year' => '',
+            'title' => '',
+            'desc' => '',
+        ],
+    ];
+}
+
 $flashMsg = ""; $flashType = "";
 
 $csrfError = "";
@@ -2831,6 +2895,13 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
               <?php if ($unreadNotifCount > 0): ?>
                 <a href="?action=mark_notifs_read" class="dd-link-sm">Mark all as read</a>
               <?php endif; ?>
+              <?php if ($readNotifCount > 0): ?>
+                <a
+                  href="?action=clear_read_notifs"
+                  class="dd-link-sm"
+                  onclick="return confirmNavigation(this, 'Clear all read notifications from the list?', { title: 'Clear Read Notifications', confirmText: 'Clear Notifications', confirmIcon: 'fa-broom', confirmStyle: 'danger' });"
+                >Clear read</a>
+              <?php endif; ?>
             </div>
           </div>
           <div class="dd-body">
@@ -2866,7 +2937,16 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
         <div class="tb-dropdown" id="dd-messages">
           <div class="dd-header">
             <h4>Messages</h4>
-            <span class="badge bg-soft-brand"><?php echo $unreadMsgCount; ?> Unread</span>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span class="badge bg-soft-brand"><?php echo $unreadMsgCount; ?> Unread</span>
+              <?php if ($handledMsgCount > 0): ?>
+                <a
+                  href="?action=clear_replied_messages"
+                  class="dd-link-sm"
+                  onclick="return confirmNavigation(this, 'Clear all handled messages from the inbox?', { title: 'Clear Handled Messages', confirmText: 'Clear Messages', confirmIcon: 'fa-broom', confirmStyle: 'danger' });"
+                >Clear handled</a>
+              <?php endif; ?>
+            </div>
           </div>
           <div class="dd-body">
             <?php if (empty($recentMessages)): ?>
@@ -3428,7 +3508,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
 
           <div class="cmp-footer">
             <button class="btn-secondary" style="padding:6px 14px; font-size:0.78rem;" onclick="openModal('programme', <?php echo $p['id']; ?>)"><i class="fas fa-edit"></i> Edit</button>
-            <form method="post" style="display:inline" onsubmit="return confirm('Delete this cause?');">
+            <form method="post" style="display:inline" onsubmit="return confirmFormSubmit(this, 'Delete this cause and remove it from the public site?', { title: 'Delete Cause', confirmText: 'Delete Cause', confirmIcon: 'fa-trash', confirmStyle: 'danger' });">
                <input type="hidden" name="_action" value="delete_programme">
                <input type="hidden" name="id" value="<?php echo $p['id']; ?>">
                <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
@@ -3602,7 +3682,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
              <span class="badge <?php echo $status === "published" ? "success" : "warning"; ?>"><?php echo ucfirst($status); ?></span>
              <div class="action-btns">
                 <button class="action-btn edit" onclick="editPartner(<?php echo htmlspecialchars(json_encode($p)); ?>)" title="Edit"><i class="fas fa-pen"></i></button>
-                <form method="POST" style="display:inline;" onsubmit="return confirm('Delete this partner?')">
+                <form method="POST" style="display:inline;" onsubmit="return confirmFormSubmit(this, 'Delete this partner record from the dashboard?', { title: 'Delete Partner', confirmText: 'Delete Partner', confirmIcon: 'fa-trash', confirmStyle: 'danger' })">
                     <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
                     <input type="hidden" name="_action" value="delete_partner">
                     <input type="hidden" name="_page" value="partners">
@@ -4084,22 +4164,43 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
 
         <!-- Pane: Timeline -->
         <div class="about-pane" id="about-pane-timeline" style="display:none">
+          <div class="card" style="padding:20px; background:var(--surface); margin-bottom:18px;">
+            <h4 style="margin:0 0 14px; color:var(--primary-color);">Milestone Section Heading</h4>
+            <div class="form-field">
+              <label class="form-label">Section Label</label>
+              <input class="form-input" name="settings[timeline_label]" value="<?php echo Helpers::e($aboutSettings['about_timeline_label'] ?? 'Milestones of Impact'); ?>"/>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Section Title</label>
+              <textarea class="form-input" name="settings[timeline_title]" rows="2"><?php echo Helpers::e($aboutSettings['about_timeline_title'] ?? 'Our milestones in service, care and community action.'); ?></textarea>
+            </div>
+            <div class="form-field" style="margin-bottom:0;">
+              <label class="form-label">Section Introduction</label>
+              <textarea class="form-input" name="settings[timeline_intro]" rows="3"><?php echo Helpers::e($aboutSettings['about_timeline_intro'] ?? 'A growing record of compassionate action, institutional development and community outreach that continues to shape the mission of Friends At Heart Welfare Initiative.'); ?></textarea>
+            </div>
+          </div>
+
           <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:20px;">
             <?php for($i=1; $i<=4; $i++): ?>
             <div class="card" style="padding:20px; background:var(--surface)">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <h4 style="margin:0; color:var(--dark);">Milestone <?php echo $i; ?></h4>
+                <span class="badge <?php echo !empty($aboutMilestoneDefaults[$i]['year']) ? 'success' : 'warning'; ?>"><?php echo !empty($aboutMilestoneDefaults[$i]['year']) ? 'Recommended' : 'Optional'; ?></span>
+              </div>
               <div style="display:grid; grid-template-columns:80px 1fr; gap:15px;">
                 <div class="form-field">
                   <label class="form-label">Year</label>
-                  <input class="form-input" name="settings[time_<?php echo $i; ?>_year]" value="<?php echo Helpers::e($aboutSettings["about_time_{$i}_year"] ?? ''); ?>"/>
+                  <input class="form-input" name="settings[time_<?php echo $i; ?>_year]" value="<?php echo Helpers::e($aboutSettings["about_time_{$i}_year"] ?? ($aboutMilestoneDefaults[$i]['year'] ?? '')); ?>"/>
                 </div>
                 <div class="form-field">
-                  <label class="form-label">Milestone Title</label>
-                  <input class="form-input" name="settings[time_<?php echo $i; ?>_title]" value="<?php echo Helpers::e($aboutSettings["about_time_{$i}_title"] ?? ''); ?>"/>
+                  <label class="form-label">Milestone Heading</label>
+                  <input class="form-input" name="settings[time_<?php echo $i; ?>_title]" value="<?php echo Helpers::e($aboutSettings["about_time_{$i}_title"] ?? ($aboutMilestoneDefaults[$i]['title'] ?? '')); ?>"/>
                 </div>
               </div>
               <div class="form-field">
-                <label class="form-label">Description</label>
-                <textarea class="form-input" name="settings[time_<?php echo $i; ?>_desc]" rows="2"><?php echo Helpers::e($aboutSettings["about_time_{$i}_desc"] ?? ''); ?></textarea>
+                <label class="form-label">Milestone Achievements</label>
+                <textarea class="form-input" name="settings[time_<?php echo $i; ?>_desc]" rows="10"><?php echo Helpers::e($aboutSettings["about_time_{$i}_desc"] ?? ($aboutMilestoneDefaults[$i]['desc'] ?? '')); ?></textarea>
+                <div style="font-size:0.78rem; color:var(--mid); margin-top:8px;">Enter one achievement per line. Each line will appear as a separate point on the About page.</div>
               </div>
             </div>
             <?php endfor; ?>
@@ -5182,12 +5283,12 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
                 <td data-label="Actions">
                   <div class="action-btns">
                     <a class="action-btn view" title="Read Message" href="index.php?page=messages&id=<?php echo (int)$m['id']; ?>"><i class="fas fa-eye"></i></a>
-                    <form method="post" style="display:inline;">
+                    <form method="post" style="display:inline;" onsubmit="return confirmFormSubmit(this, 'Delete this message from the shared inbox?', { title: 'Delete Message', confirmText: 'Delete Message', confirmIcon: 'fa-trash', confirmStyle: 'danger' });">
                       <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
                       <input type="hidden" name="_page" value="messages">
                       <input type="hidden" name="_action" value="delete_contact_message">
                       <input type="hidden" name="message_id" value="<?php echo (int)$m['id']; ?>">
-                      <button type="submit" class="action-btn del" title="Delete" onclick="return confirm('Delete this message?');"><i class="fas fa-trash"></i></button>
+                      <button type="submit" class="action-btn del" title="Delete"><i class="fas fa-trash"></i></button>
                     </form>
                   </div>
                 </td>
@@ -5747,6 +5848,20 @@ function closeConfirm() {
   pendingConfirm = null;
 }
 
+function confirmNavigation(link, message, options = {}) {
+  showConfirm(message, () => {
+    window.location.href = link.href;
+  }, options);
+  return false;
+}
+
+function confirmFormSubmit(form, message, options = {}) {
+  showConfirm(message, () => {
+    form.submit();
+  }, options);
+  return false;
+}
+
 // ─── DELETE ITEM ─────────────────────────────────
 function deleteItem(type, id) {
   const labels = {admin:'admin user',post:'blog post',event:'event',gallery:'gallery item'};
@@ -5927,7 +6042,7 @@ document.querySelectorAll('.tb-dropdown').forEach(dd => {
 });
 
 function removeImg(key, btn) {
-  if (confirm('Remove this image?')) {
+  showConfirm('Remove this image from the current page builder?', () => {
     const form = document.getElementById('saveAboutForm');
     const h = document.createElement('input');
     h.type = 'hidden';
@@ -5935,7 +6050,7 @@ function removeImg(key, btn) {
     h.value = key;
     form.appendChild(h);
     btn.parentElement.style.display = 'none';
-  }
+  }, { title: 'Remove Image', confirmText: 'Remove Image', confirmIcon: 'fa-image', confirmStyle: 'danger' });
 }
 
 // Resize handler
