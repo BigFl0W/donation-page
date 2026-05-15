@@ -13,6 +13,8 @@ $hero_title = $hero_title ?? $page_title;
 $hero_label = $hero_label ?? "Explore";
 $section_title = $section_title ?? "Explore";
 $section_url = $section_url ?? "gallery";
+$default_inner_page_banner = \App\Helpers::setting("inner_page_banner_image", "assets/images/breadcrumbs_bg.jpg");
+$hero_bg_image = $hero_bg_image ?? $default_inner_page_banner;
 ?>
 <!doctype html>
 <html lang="en">
@@ -123,7 +125,7 @@ $section_url = $section_url ?? "gallery";
     </header>
 
     <section class="breadcrumbs-page-wrap">
-        <div class="bg-fixed pos-rel breadcrumbs-page">
+        <div class="bg-fixed pos-rel breadcrumbs-page" style="background-image: url('<?php echo htmlspecialchars($hero_bg_image); ?>');">
             <div class="container">
                 <h1><?php echo htmlspecialchars($hero_title); ?></h1>
                 <nav aria-label="breadcrumb" class="breadcrumb-wrap">

@@ -56,6 +56,9 @@ $homeSliderImage3 = trim((string)($homeAboutSettings['about_home_slider_image_3'
 $homeSliderImages = [$homeSliderImage1, $homeSliderImage2, $homeSliderImage3];
 $homeDonationHighlightValue = trim((string)($homeAboutSettings['about_home_donation_highlight_value'] ?? '100'));
 $homeDonationHighlightLabel = trim((string)($homeAboutSettings['about_home_donation_highlight_label'] ?? 'Lives Supported'));
+$homeCalloutLabel = trim((string)($homeAboutSettings['about_home_callout_label'] ?? 'Help Other People'));
+$homeCalloutTitle = trim((string)($homeAboutSettings['about_home_callout_title'] ?? 'We Dream to Create A Bright Future Of The Underprivileged Children'));
+$homeCalloutImage = trim((string)\App\Helpers::setting('inner_page_banner_image', 'assets/images/breadcrumbs_bg.jpg'));
 $homeStoryHighlights = [
     "Friends at Heart Welfare Initiative was born from moments that broke our hearts.",
     "We saw the suffering. We felt it. And we chose not to look away.",
@@ -859,14 +862,14 @@ $homeCoreValues = [
         
 
         <!-- Callout Style Start -->
-        <section class="wide-tb-100 bg-scroll bg-img-1 pos-rel callout-style-1">
+        <section class="wide-tb-100 bg-scroll pos-rel callout-style-1" style="background-image: url('<?php echo htmlspecialchars($homeCalloutImage); ?>'); background-position:center; background-size:cover; background-repeat:no-repeat;">
             <div class="bg-overlay black opacity-50"></div>
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-7">
                         <h1 class="heading-main light-mode orange">
-                            <small>Help Other People</small>
-                            We Dream to Create A Bright Future Of The Underprivileged Children
+                            <small><?php echo htmlspecialchars($homeCalloutLabel); ?></small>
+                            <?php echo nl2br(htmlspecialchars($homeCalloutTitle)); ?>
                         </h1>
                         <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('donation-page')); ?>" class="btn btn-default">Donate Now</a>
                     </div>

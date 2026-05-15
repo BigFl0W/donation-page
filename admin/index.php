@@ -668,6 +668,24 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                 if (!$saved) $saveOk = false;
             }
         }
+        if (isset($_FILES['gallery_media']['name']['hero_image']) && ($_FILES['gallery_media']['error']['hero_image'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+            $uploadDir = __DIR__ . "/../assets/uploads/gallery";
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+            $originalName = (string)$_FILES['gallery_media']['name']['hero_image'];
+            $fileName = "gallery_hero_" . time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($originalName));
+            $target = $uploadDir . "/" . $fileName;
+            if (move_uploaded_file($_FILES['gallery_media']['tmp_name']['hero_image'], $target)) {
+                $saved = Database::execute(
+                    "INSERT INTO settings (setting_group, setting_key, setting_value)
+                     VALUES ('gallery', 'gallery_hero_image', :val)
+                     ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                    ["val" => "assets/uploads/gallery/" . $fileName]
+                );
+                if (!$saved) $saveOk = false;
+            } else {
+                $saveOk = false;
+            }
+        }
         $flashMsg = $saveOk ? "Gallery page updated successfully" : "Gallery page update failed. Please try again.";
         $flashType = $saveOk ? "success" : "danger";
         header("Location: index.php?msg=" . urlencode($flashMsg) . "&type=" . $flashType . "&page=gallery");
@@ -790,6 +808,25 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                         if (!$saved) $saveOk = false;
                     }
                 }
+            }
+        }
+
+        if (isset($_FILES['images']['name']['home_callout_image']) && ($_FILES['images']['error']['home_callout_image'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+            $calloutName = (string)$_FILES['images']['name']['home_callout_image'];
+            $calloutFile = "about_" . time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($calloutName));
+            $calloutDest = __DIR__ . "/../assets/images/about/" . $calloutFile;
+            if (!is_dir(dirname($calloutDest))) mkdir(dirname($calloutDest), 0777, true);
+            if (move_uploaded_file($_FILES['images']['tmp_name']['home_callout_image'], $calloutDest)) {
+                $calloutPath = "assets/images/about/" . $calloutFile;
+                $saved = Database::execute(
+                    "INSERT INTO settings (setting_group, setting_key, setting_value) 
+                     VALUES ('about', :key, :val) 
+                     ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                    ['key' => 'about_home_callout_image', 'val' => $calloutPath]
+                );
+                if (!$saved) $saveOk = false;
+            } else {
+                $saveOk = false;
             }
         }
         $flashMsg = $saveOk ? "About Page published successfully" : "About Page publish failed. Please try again.";
@@ -1114,6 +1151,7 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $contactMetaDescription = trim((string) ($_POST["contact_meta_description"] ?? ""));
         $donationMetaTitle = trim((string) ($_POST["donation_meta_title"] ?? ""));
         $donationMetaDescription = trim((string) ($_POST["donation_meta_description"] ?? ""));
+        $innerPageBannerPath = $settings['inner_page_banner_image'] ?? 'assets/images/breadcrumbs_bg.jpg';
         
         // Create upload directory if it doesn't exist
         $uploadsDir = __DIR__ . "/../assets/uploads/branding";
@@ -1311,6 +1349,53 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                     ['group' => 'site', 'key' => $metaKey, 'value' => $metaValue]
                 )) {
                     $settings[$metaKey] = $metaValue;
+                }
+            }
+        }
+
+        if ($flashMsg === "" && isset($_FILES['inner_page_banner']) && $_FILES['inner_page_banner']['error'] === UPLOAD_ERR_OK) {
+            $bannerFile = $_FILES['inner_page_banner'];
+            $bannerAllowedMimes = ['image/svg+xml', 'image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+            $bannerAllowedExts = ['svg', 'png', 'jpg', 'jpeg', 'gif', 'webp'];
+            if ($bannerFile['size'] > 3145728) {
+                $flashMsg = "Inner page banner file too large. Maximum 3MB allowed.";
+                $flashType = "danger";
+            } else {
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mimeType = finfo_file($finfo, $bannerFile['tmp_name']);
+                finfo_close($finfo);
+                $fileExt = strtolower(pathinfo($bannerFile['name'], PATHINFO_EXTENSION));
+                if (in_array($mimeType, $bannerAllowedMimes) && in_array($fileExt, $bannerAllowedExts)) {
+                    $newBannerName = 'inner_banner_' . time() . '.' . $fileExt;
+                    $newBannerPath = $uploadsDir . '/' . $newBannerName;
+                    if (move_uploaded_file($bannerFile['tmp_name'], $newBannerPath) && file_exists($newBannerPath)) {
+                        $innerPageBannerPath = 'assets/uploads/branding/' . $newBannerName;
+                        $saved = true;
+                        if ($dbAvail) {
+                            $saved = Database::execute(
+                                "INSERT INTO settings (setting_group, setting_key, setting_value)
+                                 VALUES (:group, :key, :value)
+                                 ON DUPLICATE KEY UPDATE setting_group = VALUES(setting_group), setting_value = VALUES(setting_value)",
+                                ['group' => 'site', 'key' => 'inner_page_banner_image', 'value' => $innerPageBannerPath]
+                            );
+                        }
+                        if ($saved) {
+                            $settings['inner_page_banner_image'] = $innerPageBannerPath;
+                            if ($flashMsg === "") {
+                                $flashMsg = "Inner page banner updated successfully";
+                                $flashType = "success";
+                            }
+                        } else {
+                            $flashMsg = "Inner page banner uploaded but could not be saved to the database.";
+                            $flashType = "danger";
+                        }
+                    } else {
+                        $flashMsg = "Failed to upload inner page banner. Check directory permissions.";
+                        $flashType = "danger";
+                    }
+                } else {
+                    $flashMsg = "Invalid inner page banner format. Use SVG, PNG, JPG, GIF, or WebP";
+                    $flashType = "danger";
                 }
             }
         }
@@ -3409,7 +3494,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
       <div class="section-hd">
         <div><h2>Partners Page Builder</h2><p>Control the public-facing partnership registration content</p></div>
       </div>
-      <form method="post">
+      <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="_action" value="save_partner_page">
         <input type="hidden" name="_csrf_token" value="<?php echo Helpers::e($_SESSION["_csrf_token"] ?? ""); ?>">
         <div class="grid-2" style="gap:18px;">
@@ -3712,6 +3797,11 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
               <label class="form-label">Description</label>
               <textarea class="form-input" name="settings[hero_description]" rows="4"><?php echo Helpers::e($galleryPageSettings['gallery_hero_description'] ?? $galleryDefaults['hero_description']); ?></textarea>
             </div>
+            <div class="form-field">
+              <label class="form-label">Banner Image</label>
+              <input class="form-input" type="text" value="<?php echo Helpers::e($settings['inner_page_banner_image'] ?? 'assets/images/breadcrumbs_bg.jpg'); ?>" readonly>
+              <div style="font-size:.75rem;color:var(--soft);margin-top:6px;">This page uses the shared inner page banner from Settings so the same image can appear consistently anywhere this artwork is reused.</div>
+            </div>
             <div class="form-row">
               <div class="form-field">
                 <label class="form-label">Primary Button Label</label>
@@ -3918,6 +4008,22 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
                 </div>
                 <?php endfor; ?>
                 <div style="font-size:0.8rem; color:var(--mid);">Upload one image for each homepage slide. Text and buttons stay synchronized across all three slides.</div>
+              </div>
+              <div class="card" style="padding:20px; background:var(--surface); margin-bottom:18px;">
+                <h4 style="margin:0 0 14px; color:var(--primary-color);">Homepage Donation Callout</h4>
+                <div class="form-field">
+                  <label class="form-label">Callout Label</label>
+                  <input class="form-input" name="settings[home_callout_label]" value="<?php echo Helpers::e($aboutSettings['about_home_callout_label'] ?? 'Help Other People'); ?>"/>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Callout Title</label>
+                  <textarea class="form-input" name="settings[home_callout_title]" rows="3"><?php echo Helpers::e($aboutSettings['about_home_callout_title'] ?? 'We Dream to Create A Bright Future Of The Underprivileged Children'); ?></textarea>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Background Image Source</label>
+                  <input class="form-input" type="text" value="<?php echo Helpers::e($settings['inner_page_banner_image'] ?? 'assets/images/breadcrumbs_bg.jpg'); ?>" readonly>
+                  <div style="font-size:.75rem;color:var(--soft);margin-top:6px;">This callout now uses the same shared image from Settings so one uploaded banner can stay consistent across the website.</div>
+                </div>
               </div>
               <div class="card" style="padding:20px; background:var(--surface); margin-bottom:18px;">
                 <div class="form-field">
@@ -4848,6 +4954,15 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
               <label class="form-label">Upload Favicon (ICO, PNG, SVG)</label>
               <input class="form-input" name="site_favicon" type="file" accept=".ico,.png,.svg"/>
               <div style="font-size:.75rem;color:var(--soft);margin-top:6px">Recommended: Square ICO or PNG, at least 64x64. Max 1MB.</div>
+            </div>
+            <div class="card" style="padding:18px;background:var(--surface);margin-top:18px;">
+              <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px;">Shared Inner Page Banner</h3>
+              <div class="form-field">
+                <label class="form-label">Shared Website Banner Image</label>
+                <input class="form-input" type="file" name="inner_page_banner" accept=".jpg,.jpeg,.png,.webp,.gif,.svg"/>
+                <div style="font-size:.75rem;color:var(--soft);margin-top:6px;">Current: <?php echo Helpers::e($settings["inner_page_banner_image"] ?? "assets/images/breadcrumbs_bg.jpg"); ?></div>
+                <div style="font-size:.75rem;color:var(--soft);margin-top:6px;">This single image is used anywhere the shared hero/banner artwork appears, including Events, Gallery, and the homepage callout block.</div>
+              </div>
             </div>
             <div class="card" style="padding:18px;background:var(--surface);margin-top:18px;">
               <h3 style="font-size:.92rem;font-weight:700;margin-bottom:14px;">Page Meta Settings</h3>
