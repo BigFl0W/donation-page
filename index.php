@@ -23,6 +23,9 @@ $homePartners = \App\Database::fetchAll(
      ORDER BY sort_order ASC, name ASC
      LIMIT 12"
 ) ?: [];
+$homePartnerLogos = array_values(array_filter($homePartners, static function ($partner) {
+    return trim((string)($partner['logo_path'] ?? '')) !== '';
+}));
 $homeGalleryItems = \App\Database::fetchAll(
     "SELECT title, media_type, media_path, description
      FROM gallery_items
@@ -1199,40 +1202,72 @@ $homeCoreValues = [
                 <div class="row align-items-center">
                     <div class="col-lg-12">
                         <h1 class="heading-main">
-                            <small>Global Providers</small>
-                            Our World Wide Partner
+                            <small>Partnership Network</small>
+                            Organisations and supporters helping us extend our reach
                         </h1>
                     </div>
                     <div class="col-sm-12">
+                        <?php if ($homePartnerLogos): ?>
                         <div class="owl-carousel owl-theme" id="home-clients">
-                            <?php if ($homePartners): ?>
-                                <?php foreach ($homePartners as $partner): ?>
+                                <?php foreach ($homePartnerLogos as $partner): ?>
                                     <div class="item">
                                         <div class="clients-logo">
                                             <?php if (!empty($partner['website_url'])): ?>
                                                 <a href="<?php echo htmlspecialchars($partner['website_url']); ?>" target="_blank" rel="noopener">
-                                                    <img src="<?php echo htmlspecialchars($partner['logo_path'] ?: 'assets/images/clients/client1.png'); ?>" alt="<?php echo htmlspecialchars($partner['name'] ?: 'Partner'); ?>">
+                                                    <img src="<?php echo htmlspecialchars($partner['logo_path']); ?>" alt="<?php echo htmlspecialchars($partner['name'] ?: 'Partner'); ?>">
                                                 </a>
                                             <?php else: ?>
-                                                <img src="<?php echo htmlspecialchars($partner['logo_path'] ?: 'assets/images/clients/client1.png'); ?>" alt="<?php echo htmlspecialchars($partner['name'] ?: 'Partner'); ?>">
+                                                <img src="<?php echo htmlspecialchars($partner['logo_path']); ?>" alt="<?php echo htmlspecialchars($partner['name'] ?: 'Partner'); ?>">
                                             <?php endif; ?>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="item">
-                                    <div class="clients-logo">
-                                        <img src="assets/images/clients/client1.png" alt="Partner placeholder">
+                        </div>
+                        <?php else: ?>
+                        <div class="explore-accent-block partner-fallback-block" style="padding:40px 42px; border-radius:30px;">
+                            <div class="row align-items-center g-4">
+                                <div class="col-lg-8">
+                                    <div class="explore-kicker">Partnerships and Institutional Alignment</div>
+                                    <h3 class="mb-3">We are building a strong network of individuals, organisations and mission-aligned supporters.</h3>
+                                    <p class="mb-0">As partnerships are confirmed and logo permissions are received, approved partner identities will appear here. Until then, this section reflects our active commitment to credible collaboration and responsible growth.</p>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="partner-fallback-actions">
+                                        <a href="partners-sponsors" class="btn btn-default">Become a Partner</a>
+                                        <a href="contact-us" class="btn btn-outline-dark">Contact Us</a>
                                     </div>
                                 </div>
-                            <?php endif; ?>
-
+                            </div>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </section>
         <!-- Our Partners End -->
+
+        <style>
+            .partner-fallback-block .partner-fallback-actions{
+                display:flex;
+                flex-direction:column;
+                align-items:flex-end;
+                gap:16px;
+            }
+            .partner-fallback-block .partner-fallback-actions .btn{
+                min-width:260px;
+                justify-content:center;
+                text-align:center;
+            }
+            @media (max-width: 991px){
+                .partner-fallback-block .partner-fallback-actions{
+                    align-items:stretch;
+                }
+                .partner-fallback-block .partner-fallback-actions .btn{
+                    width:100%;
+                    min-width:0;
+                }
+            }
+        </style>
         
            
     <?php require __DIR__ . "/includes/site-footer.php"; ?>
