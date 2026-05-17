@@ -30,9 +30,9 @@ ALTER TABLE posts ADD COLUMN IF NOT EXISTS canonical_url VARCHAR(255) NULL AFTER
 
 INSERT INTO post_categories (name, slug, description, seo_title, seo_description)
 VALUES
-('Impact Stories', 'impact-stories', 'Stories that show measurable programme impact and donor outcomes.', 'Impact Stories | Gracious Charity', 'Impact stories and measurable outcomes from Gracious Charity initiatives.'),
-('News', 'news', 'Latest platform news, updates, and announcements.', 'News | Gracious Charity', 'Latest news and field updates from Gracious Charity.'),
-('Announcements', 'announcements', 'Important programme launches, notices, and public announcements.', 'Announcements | Gracious Charity', 'Official announcements and initiative launches from Gracious Charity.')
+('Impact Stories', 'impact-stories', 'Stories that show measurable programme impact and donor outcomes.', 'Impact Stories | Friends At Heart Welfare Initiative', 'Impact stories and measurable outcomes from Friends At Heart Welfare Initiative initiatives.'),
+('News', 'news', 'Latest platform news, updates, and announcements.', 'News | Friends At Heart Welfare Initiative', 'Latest news and field updates from Friends At Heart Welfare Initiative.'),
+('Announcements', 'announcements', 'Important programme launches, notices, and public announcements.', 'Announcements | Friends At Heart Welfare Initiative', 'Official announcements and initiative launches from Friends At Heart Welfare Initiative.')
 ON DUPLICATE KEY UPDATE
     description = VALUES(description),
     seo_title = VALUES(seo_title),
@@ -42,7 +42,7 @@ UPDATE posts p
 LEFT JOIN post_categories c ON c.name = p.category
 SET p.primary_category_id = c.id,
     p.permalink_path = CONCAT('blog/', c.slug, '/', p.slug),
-    p.meta_title = COALESCE(NULLIF(p.meta_title, ''), CONCAT(p.title, ' | Gracious Charity Blog')),
+    p.meta_title = COALESCE(NULLIF(p.meta_title, ''), CONCAT(p.title, ' | Friends At Heart Welfare Initiative Blog')),
     p.meta_description = COALESCE(NULLIF(p.meta_description, ''), LEFT(COALESCE(NULLIF(p.excerpt, ''), p.title), 250)),
     p.seo_keywords = COALESCE(NULLIF(p.seo_keywords, ''), CONCAT(REPLACE(COALESCE(c.name, 'updates'), ' ', '-'), ', gracious charity')),
     p.canonical_url = COALESCE(NULLIF(p.canonical_url, ''), CONCAT('http://localhost/donation-page/blog/', c.slug, '/', p.slug))

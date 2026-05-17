@@ -84,7 +84,9 @@ class Content
         if ($post === null) return null;
 
         $hydrated = self::hydrateTaxonomy([$post]);
-        return $hydrated[0] ?? $post;
+        $post = $hydrated[0] ?? $post;
+        $post["media_gallery"] = self::postMedia((int) ($post["id"] ?? 0), (string) ($post["featured_image"] ?? ""));
+        return $post;
     }
 
     public static function adminPosts(): array
@@ -240,7 +242,7 @@ class Content
             return null;
         }
 
-        return Database::fetchOne(
+        $event = Database::fetchOne(
             "SELECT e.*, COALESCE(a.full_name, 'Events Desk') AS organizer
              FROM events e
              LEFT JOIN admins a ON a.id = e.created_by
@@ -248,6 +250,13 @@ class Content
              LIMIT 1",
             ["slug" => $slug]
         ) ?: null;
+
+        if ($event === null) {
+            return null;
+        }
+
+        $event["media_gallery"] = self::eventMedia((int) ($event["id"] ?? 0), (string) ($event["featured_image"] ?? ""));
+        return $event;
     }
 
     public static function adminEvents(): array
@@ -390,6 +399,74 @@ class Content
             }
             return $post;
         }, $posts);
+    }
+
+    private static function postMedia(int $postId, string $featuredImage = ""): array
+    {
+        if (!Database::available() || $postId <= 0 || !Database::tableExists("post_media")) {
+            return $featuredImage !== "" ? [[
+                "media_type" => self::inferMediaType($featuredImage),
+                "media_path" => $featuredImage,
+                "caption" => "",
+                "sort_order" => 0,
+            ]] : [];
+        }
+
+        $rows = Database::fetchAll(
+            "SELECT media_type, media_path, caption, sort_order
+             FROM post_media
+             WHERE post_id = :post_id
+             ORDER BY sort_order ASC, id ASC",
+            ["post_id" => $postId]
+        ) ?: [];
+
+        if ($rows === [] && $featuredImage !== "") {
+            return [[
+                "media_type" => self::inferMediaType($featuredImage),
+                "media_path" => $featuredImage,
+                "caption" => "",
+                "sort_order" => 0,
+            ]];
+        }
+
+        return $rows;
+    }
+
+    private static function eventMedia(int $eventId, string $featuredImage = ""): array
+    {
+        if (!Database::available() || $eventId <= 0 || !Database::tableExists("event_media")) {
+            return $featuredImage !== "" ? [[
+                "media_type" => self::inferMediaType($featuredImage),
+                "media_path" => $featuredImage,
+                "caption" => "",
+                "sort_order" => 0,
+            ]] : [];
+        }
+
+        $rows = Database::fetchAll(
+            "SELECT media_type, media_path, caption, sort_order
+             FROM event_media
+             WHERE event_id = :event_id
+             ORDER BY sort_order ASC, id ASC",
+            ["event_id" => $eventId]
+        ) ?: [];
+
+        if ($rows === [] && $featuredImage !== "") {
+            return [[
+                "media_type" => self::inferMediaType($featuredImage),
+                "media_path" => $featuredImage,
+                "caption" => "",
+                "sort_order" => 0,
+            ]];
+        }
+
+        return $rows;
+    }
+
+    private static function inferMediaType(string $path): string
+    {
+        $ext = strtolower((string) pathinfo($path, PATHINFO_EXTENSION));
+        return in_array($ext, ["mp4", "webm", "mov", "avi", "mkv"], true) ? "video" : "image";
     }
 
     private static function sanitizeLimit(int $limit): int

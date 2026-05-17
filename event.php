@@ -24,6 +24,36 @@ $section_url = "events.php";
 require __DIR__ . "/includes/header.php";
 ?>
 
+<style>
+    .event-media-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-top: 30px;
+    }
+    .event-media-card {
+        background: #fff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 14px 36px rgba(19, 34, 56, 0.08);
+        border: 1px solid rgba(19, 34, 56, 0.08);
+    }
+    .event-media-card img,
+    .event-media-card video {
+        width: 100%;
+        height: 240px;
+        display: block;
+        object-fit: cover;
+        background: #0f172a;
+    }
+    .event-media-caption {
+        padding: 14px 16px;
+        color: #64748b;
+        font-size: 0.92rem;
+        line-height: 1.6;
+    }
+</style>
+
 <section class="wide-tb-100">
     <div class="container">
         <div class="row g-4">
@@ -44,6 +74,25 @@ require __DIR__ . "/includes/header.php";
                         <div class="event-detail-content">
                             <?php echo $event["content"] ?? ""; ?>
                         </div>
+                        <?php if (!empty($event["media_gallery"])): ?>
+                            <div class="event-media-gallery">
+                                <?php foreach (($event["media_gallery"] ?? []) as $mediaItem): ?>
+                                    <?php $mediaPath = Helpers::siteUrl((string) ($mediaItem["media_path"] ?? "")); ?>
+                                    <div class="event-media-card">
+                                        <?php if (($mediaItem["media_type"] ?? "image") === "video"): ?>
+                                            <video controls preload="metadata">
+                                                <source src="<?php echo Helpers::e($mediaPath); ?>">
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="<?php echo Helpers::e($mediaPath); ?>" alt="<?php echo Helpers::e((string) ($mediaItem["caption"] ?? $event["title"] ?? "")); ?>">
+                                        <?php endif; ?>
+                                        <?php if (!empty($mediaItem["caption"])): ?>
+                                            <div class="event-media-caption"><?php echo Helpers::e((string) $mediaItem["caption"]); ?></div>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

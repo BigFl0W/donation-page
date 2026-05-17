@@ -71,7 +71,7 @@ class Helpers
         self::$settingsCache = null;
     }
 
-    public static function brandName(string $default = "Gracious Charity"): string
+    public static function brandName(string $default = "Friends At Heart Welfare Initiative"): string
     {
         $value = (string) self::setting("site_name", $default);
         return trim($value) !== "" ? $value : $default;

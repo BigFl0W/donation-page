@@ -12,7 +12,7 @@ if (Auth::isLoggedIn()) {
 
 $databaseReady = Auth::databaseReady();
 $setupRequired = Auth::setupRequired();
-$brandName = Helpers::brandName("Gracious Charity");
+$brandName = Helpers::brandName();
 $brandLogo = Helpers::brandLogoPath("assets/images/logo_dark.svg");
 $brandFavicon = Helpers::brandFaviconPath("assets/images/favicon.ico");
 $error = "";

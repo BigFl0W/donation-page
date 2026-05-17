@@ -49,3 +49,27 @@ CREATE TABLE IF NOT EXISTS contact_message_replies (
     CONSTRAINT fk_contact_message_replies_message FOREIGN KEY (contact_message_id) REFERENCES contact_messages(id) ON DELETE CASCADE,
     CONSTRAINT fk_contact_message_replies_admin FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE SET NULL
 );
+
+CREATE TABLE IF NOT EXISTS post_media (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    post_id BIGINT UNSIGNED NOT NULL,
+    media_type ENUM('image', 'video') NOT NULL DEFAULT 'image',
+    media_path VARCHAR(255) NOT NULL,
+    caption VARCHAR(255) NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_post_media_post_id (post_id),
+    CONSTRAINT fk_post_media_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS event_media (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    event_id BIGINT UNSIGNED NOT NULL,
+    media_type ENUM('image', 'video') NOT NULL DEFAULT 'image',
+    media_path VARCHAR(255) NOT NULL,
+    caption VARCHAR(255) NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_event_media_event_id (event_id),
+    CONSTRAINT fk_event_media_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+);

@@ -478,9 +478,9 @@ CREATE TABLE `post_categories` (
 --
 
 INSERT INTO `post_categories` (`id`, `name`, `slug`, `description`, `seo_title`, `seo_description`, `created_at`, `updated_at`) VALUES
-(1, 'Impact Stories', 'impact-stories', 'Stories that show measurable programme impact and donor outcomes.', 'Impact Stories | Gracious Charity', 'Impact stories and measurable outcomes from Gracious Charity initiatives.', '2026-05-07 17:03:41', '2026-05-07 17:03:41'),
-(2, 'News', 'news', 'Latest platform news, updates, and announcements.', 'News | Gracious Charity', 'Latest news and field updates from Gracious Charity.', '2026-05-07 17:03:41', '2026-05-07 17:03:41'),
-(3, 'Announcements', 'announcements', 'Important programme launches, notices, and public announcements.', 'Announcements | Gracious Charity', 'Official announcements and initiative launches from Gracious Charity.', '2026-05-07 17:03:41', '2026-05-07 17:03:41');
+(1, 'Impact Stories', 'impact-stories', 'Stories that show measurable programme impact and donor outcomes.', 'Impact Stories | Friends At Heart Welfare Initiative', 'Impact stories and measurable outcomes from Friends At Heart Welfare Initiative initiatives.', '2026-05-07 17:03:41', '2026-05-07 17:03:41'),
+(2, 'News', 'news', 'Latest platform news, updates, and announcements.', 'News | Friends At Heart Welfare Initiative', 'Latest news and field updates from Friends At Heart Welfare Initiative.', '2026-05-07 17:03:41', '2026-05-07 17:03:41'),
+(3, 'Announcements', 'announcements', 'Important programme launches, notices, and public announcements.', 'Announcements | Friends At Heart Welfare Initiative', 'Official announcements and initiative launches from Friends At Heart Welfare Initiative.', '2026-05-07 17:03:41', '2026-05-07 17:03:41');
 
 -- --------------------------------------------------------
 

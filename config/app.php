@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 return [
-    "app_name" => (string) \App\Env::get("APP_NAME", "Gracious Charity Platform"),
+    "app_name" => (string) \App\Env::get("APP_NAME", "Friends At Heart Welfare Initiative"),
     "app_url" => (string) \App\Env::get("APP_URL", "http://localhost/donation-page"),
     "admin_path" => (string) \App\Env::get("ADMIN_PATH", "admin"),
     "session_name" => (string) \App\Env::get("SESSION_NAME", "gracious_admin_session"),

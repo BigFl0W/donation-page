@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/config/autoload.php';
-$brandName = \App\Helpers::brandName("Gracious Charity");
+$brandName = \App\Helpers::brandName();
 $brandLogo = \App\Helpers::brandLogoPath("assets/images/logo_dark.svg");
 $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
 $contactMetaTitle = (string)\App\Helpers::setting('contact_meta_title', 'Contact Us | ' . $brandName);

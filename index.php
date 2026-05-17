@@ -1,7 +1,7 @@
 <?php
 require_once 'config/autoload.php';
 $totalDonations = \App\Payment::getTotalDonations();
-$brandName = \App\Helpers::brandName("Gracious Charity");
+$brandName = \App\Helpers::brandName();
 $brandLogo = \App\Helpers::brandLogoPath("assets/images/logo_dark.svg");
 $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
 $homeMetaTitle = (string)\App\Helpers::setting('home_meta_title', $brandName);

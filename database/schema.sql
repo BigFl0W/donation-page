@@ -167,6 +167,18 @@ CREATE TABLE post_tag_map (
     CONSTRAINT fk_post_tag_map_tag FOREIGN KEY (tag_id) REFERENCES post_tags(id) ON DELETE CASCADE
 );
 
+CREATE TABLE post_media (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    post_id BIGINT UNSIGNED NOT NULL,
+    media_type ENUM('image', 'video') NOT NULL DEFAULT 'image',
+    media_path VARCHAR(255) NOT NULL,
+    caption VARCHAR(255) NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_post_media_post_id (post_id),
+    CONSTRAINT fk_post_media_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+);
+
 CREATE TABLE blog_comments (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     post_id BIGINT UNSIGNED NOT NULL,
@@ -204,6 +216,18 @@ CREATE TABLE events (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_events_created_by FOREIGN KEY (created_by) REFERENCES admins(id)
+);
+
+CREATE TABLE event_media (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    event_id BIGINT UNSIGNED NOT NULL,
+    media_type ENUM('image', 'video') NOT NULL DEFAULT 'image',
+    media_path VARCHAR(255) NOT NULL,
+    caption VARCHAR(255) NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_event_media_event_id (event_id),
+    CONSTRAINT fk_event_media_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
 );
 
 CREATE TABLE donations (
@@ -298,7 +322,7 @@ INSERT INTO admins (id, role_id, full_name, email, password_hash, status) VALUES
 (1, 1, 'Super Admin', 'admin@graciouscharity.org', '$2y$10$EXDcifSr0hpOFQaPDU9Lbexiv6vkSyHytEynBiA5IlyPNIMCnabA2', 'active');
 
 INSERT INTO settings (setting_group, setting_key, setting_value) VALUES
-('site', 'site_name', 'Gracious Charity Platform'),
+('site', 'site_name', 'Friends At Heart Welfare Initiative'),
 ('site', 'contact_email', 'info@graciouscharity.org'),
 ('site', 'contact_phone', '+1234567899'),
 ('payments', 'paystack_public_key', ''),
@@ -307,9 +331,9 @@ INSERT INTO settings (setting_group, setting_key, setting_value) VALUES
 ('payments', 'stripe_secret_key', '');
 
 INSERT INTO post_categories (id, name, slug, description, seo_title, seo_description) VALUES
-(1, 'Impact Stories', 'impact-stories', 'Stories that show measurable programme impact and donor outcomes.', 'Impact Stories | Gracious Charity', 'Impact stories and measurable outcomes from Gracious Charity initiatives.'),
-(2, 'News', 'news', 'Latest platform news, updates, and announcements.', 'News | Gracious Charity', 'Latest news and field updates from Gracious Charity.'),
-(3, 'Announcements', 'announcements', 'Important programme launches, notices, and public announcements.', 'Announcements | Gracious Charity', 'Official announcements and initiative launches from Gracious Charity.');
+(1, 'Impact Stories', 'impact-stories', 'Stories that show measurable programme impact and donor outcomes.', 'Impact Stories | Friends At Heart Welfare Initiative', 'Impact stories and measurable outcomes from Friends At Heart Welfare Initiative initiatives.'),
+(2, 'News', 'news', 'Latest platform news, updates, and announcements.', 'News | Friends At Heart Welfare Initiative', 'Latest news and field updates from Friends At Heart Welfare Initiative.'),
+(3, 'Announcements', 'announcements', 'Important programme launches, notices, and public announcements.', 'Announcements | Friends At Heart Welfare Initiative', 'Official announcements and initiative launches from Friends At Heart Welfare Initiative.');
 
 INSERT INTO post_tags (id, name, slug) VALUES
 (1, 'Community Impact', 'community-impact'),
@@ -320,9 +344,9 @@ INSERT INTO post_tags (id, name, slug) VALUES
 (6, 'Programmes', 'programmes');
 
 INSERT INTO posts (id, author_id, primary_category_id, title, slug, permalink_path, excerpt, content, featured_image, category, author_name, status, meta_title, meta_description, seo_keywords, canonical_url, published_at) VALUES
-(1, 1, 1, 'Grant Distributions Continue to Increase', 'grant-distributions-continue-to-increase', 'blog/impact-stories/grant-distributions-continue-to-increase', 'How stronger donor coordination is helping programmes reach more families with measurable impact.', '<p>Our latest grant cycle has expanded support across education, health, and nutrition programmes. By coordinating donor reporting more effectively, the organisation is now able to serve more communities with clearer visibility into outcomes and milestones.</p><p>This article structure is database-ready, which means admins can later edit the full story, update featured media, and control publishing without touching code.</p>', 'assets/images/blogs/blog_img_1.jpg', 'Impact Stories', 'Admin Team', 'published', 'Grant Distributions Continue to Increase | Gracious Charity Blog', 'How stronger donor coordination is helping programmes reach more families with measurable impact.', 'charity impact, donor reporting, community support', NULL, '2026-05-01 09:00:00'),
-(2, 1, 2, 'Community Volunteers Drive New Outreach Success', 'community-volunteers-drive-new-outreach-success', 'blog/news/community-volunteers-drive-new-outreach-success', 'A closer look at how trained volunteers improved delivery and participation during outreach week.', '<p>Volunteer coordination played a central role in the latest outreach campaign. From beneficiary onboarding to field logistics, the team helped improve both efficiency and trust.</p><p>Future admin editing will make it easy to update this story with quotes, outcome metrics, and partner mentions.</p>', 'assets/images/blogs/blog_img_2.jpg', 'News', 'Communications Desk', 'published', 'Community Volunteers Drive New Outreach Success | Gracious Charity Blog', 'A closer look at how trained volunteers improved delivery and participation during outreach week.', 'volunteers, outreach, charity news', NULL, '2026-05-03 11:30:00'),
-(3, 1, 3, 'New Learning Support Initiative Launches This Quarter', 'new-learning-support-initiative-launches-this-quarter', 'blog/announcements/new-learning-support-initiative-launches-this-quarter', 'Programme teams are preparing a broader school support initiative with local partners and sponsors.', '<p>The education team is launching a new initiative focused on classroom readiness, study materials, and community-based mentorship. The effort is designed to support children who need consistent access to learning resources.</p>', 'assets/images/blogs/blog_img_3.jpg', 'Announcements', 'Programme Office', 'published', 'New Learning Support Initiative Launches This Quarter | Gracious Charity Blog', 'Programme teams are preparing a broader school support initiative with local partners and sponsors.', 'education support, programme launch, charity announcements', NULL, '2026-05-05 08:15:00');
+(1, 1, 1, 'Grant Distributions Continue to Increase', 'grant-distributions-continue-to-increase', 'blog/impact-stories/grant-distributions-continue-to-increase', 'How stronger donor coordination is helping programmes reach more families with measurable impact.', '<p>Our latest grant cycle has expanded support across education, health, and nutrition programmes. By coordinating donor reporting more effectively, the organisation is now able to serve more communities with clearer visibility into outcomes and milestones.</p><p>This article structure is database-ready, which means admins can later edit the full story, update featured media, and control publishing without touching code.</p>', 'assets/images/blogs/blog_img_1.jpg', 'Impact Stories', 'Admin Team', 'published', 'Grant Distributions Continue to Increase | Friends At Heart Welfare Initiative Blog', 'How stronger donor coordination is helping programmes reach more families with measurable impact.', 'charity impact, donor reporting, community support', NULL, '2026-05-01 09:00:00'),
+(2, 1, 2, 'Community Volunteers Drive New Outreach Success', 'community-volunteers-drive-new-outreach-success', 'blog/news/community-volunteers-drive-new-outreach-success', 'A closer look at how trained volunteers improved delivery and participation during outreach week.', '<p>Volunteer coordination played a central role in the latest outreach campaign. From beneficiary onboarding to field logistics, the team helped improve both efficiency and trust.</p><p>Future admin editing will make it easy to update this story with quotes, outcome metrics, and partner mentions.</p>', 'assets/images/blogs/blog_img_2.jpg', 'News', 'Communications Desk', 'published', 'Community Volunteers Drive New Outreach Success | Friends At Heart Welfare Initiative Blog', 'A closer look at how trained volunteers improved delivery and participation during outreach week.', 'volunteers, outreach, charity news', NULL, '2026-05-03 11:30:00'),
+(3, 1, 3, 'New Learning Support Initiative Launches This Quarter', 'new-learning-support-initiative-launches-this-quarter', 'blog/announcements/new-learning-support-initiative-launches-this-quarter', 'Programme teams are preparing a broader school support initiative with local partners and sponsors.', '<p>The education team is launching a new initiative focused on classroom readiness, study materials, and community-based mentorship. The effort is designed to support children who need consistent access to learning resources.</p>', 'assets/images/blogs/blog_img_3.jpg', 'Announcements', 'Programme Office', 'published', 'New Learning Support Initiative Launches This Quarter | Friends At Heart Welfare Initiative Blog', 'Programme teams are preparing a broader school support initiative with local partners and sponsors.', 'education support, programme launch, charity announcements', NULL, '2026-05-05 08:15:00');
 
 INSERT INTO post_tag_map (post_id, tag_id) VALUES
 (1, 1),

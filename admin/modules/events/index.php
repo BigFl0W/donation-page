@@ -8,6 +8,136 @@ $isEditing = $action === "edit" && $eventId > 0;
 $pdoReady = database_available() && db_table_exists("events");
 $error = "";
 
+if (!function_exists("event_media_table_ready")) {
+    function event_media_table_ready(): bool
+    {
+        if (!database_available()) {
+            return false;
+        }
+
+        db_execute(
+            "CREATE TABLE IF NOT EXISTS event_media (
+                id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                event_id BIGINT UNSIGNED NOT NULL,
+                media_type ENUM('image', 'video') NOT NULL DEFAULT 'image',
+                media_path VARCHAR(255) NOT NULL,
+                caption VARCHAR(255) NULL,
+                sort_order INT NOT NULL DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                KEY idx_event_media_event_id (event_id),
+                CONSTRAINT fk_event_media_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+            )"
+        );
+
+        return db_table_exists("event_media");
+    }
+}
+
+if (!function_exists("event_media_type_from_path")) {
+    function event_media_type_from_path(string $path): string
+    {
+        $ext = strtolower((string) pathinfo($path, PATHINFO_EXTENSION));
+        return in_array($ext, ["mp4", "webm", "mov", "avi", "mkv"], true) ? "video" : "image";
+    }
+}
+
+if (!function_exists("event_media_rows")) {
+    function event_media_rows(int $eventId, string $featuredImage = ""): array
+    {
+        if ($eventId <= 0 || !event_media_table_ready()) {
+            return $featuredImage !== "" ? [[
+                "media_type" => event_media_type_from_path($featuredImage),
+                "media_path" => $featuredImage,
+                "caption" => "",
+            ]] : [];
+        }
+
+        $rows = db_fetch_all(
+            "SELECT media_type, media_path, caption
+             FROM event_media
+             WHERE event_id = :event_id
+             ORDER BY sort_order ASC, id ASC",
+            ["event_id" => $eventId]
+        ) ?: [];
+
+        if ($rows === [] && $featuredImage !== "") {
+            return [[
+                "media_type" => event_media_type_from_path($featuredImage),
+                "media_path" => $featuredImage,
+                "caption" => "",
+            ]];
+        }
+
+        return $rows;
+    }
+}
+
+if (!function_exists("event_uploaded_media_entries")) {
+    function event_uploaded_media_entries(array $files): array
+    {
+        $entries = [];
+        if (!isset($files["name"]) || !is_array($files["name"])) {
+            return $entries;
+        }
+
+        $uploadDir = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "uploads" . DIRECTORY_SEPARATOR . "events" . DIRECTORY_SEPARATOR;
+        if (!is_dir($uploadDir)) {
+            @mkdir($uploadDir, 0777, true);
+        }
+
+        foreach ($files["name"] as $index => $originalName) {
+            if (($files["error"][$index] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+                continue;
+            }
+
+            $safeName = time() . "_" . $index . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename((string) $originalName));
+            $targetPath = $uploadDir . $safeName;
+            if (!move_uploaded_file((string) $files["tmp_name"][$index], $targetPath)) {
+                continue;
+            }
+
+            $relativePath = "assets/uploads/events/" . $safeName;
+            $entries[] = [
+                "media_type" => event_media_type_from_path($relativePath),
+                "media_path" => $relativePath,
+                "caption" => "",
+            ];
+        }
+
+        return $entries;
+    }
+}
+
+if (!function_exists("sync_event_media_entries")) {
+    function sync_event_media_entries(int $eventId, array $entries): void
+    {
+        if ($eventId <= 0 || !event_media_table_ready()) {
+            return;
+        }
+
+        db_execute("DELETE FROM event_media WHERE event_id = :event_id", ["event_id" => $eventId]);
+        $sortOrder = 0;
+        foreach ($entries as $entry) {
+            $path = trim((string) ($entry["media_path"] ?? ""));
+            if ($path === "") {
+                continue;
+            }
+
+            db_execute(
+                "INSERT INTO event_media (event_id, media_type, media_path, caption, sort_order)
+                 VALUES (:event_id, :media_type, :media_path, :caption, :sort_order)",
+                [
+                    "event_id" => $eventId,
+                    "media_type" => (string) ($entry["media_type"] ?? event_media_type_from_path($path)),
+                    "media_path" => $path,
+                    "caption" => trim((string) ($entry["caption"] ?? "")),
+                    "sort_order" => $sortOrder++,
+                ]
+            );
+        }
+    }
+}
+
 $form = [
     "id" => 0,
     "title" => "",
@@ -22,6 +152,7 @@ $form = [
     "registration_url" => "contact-us.php",
     "status" => "draft",
     "is_featured" => 0,
+    "media_gallery" => [],
 ];
 
 if ($isEditing && $pdoReady) {
@@ -30,6 +161,7 @@ if ($isEditing && $pdoReady) {
         $form = array_merge($form, $record);
         $form["event_start"] = $record["event_start"] ? date("Y-m-d\TH:i", strtotime((string) $record["event_start"])) : "";
         $form["event_end"] = $record["event_end"] ? date("Y-m-d\TH:i", strtotime((string) $record["event_end"])) : "";
+        $form["media_gallery"] = event_media_rows($eventId, (string) ($record["featured_image"] ?? ""));
     }
 }
 
@@ -48,6 +180,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["save_event"])) {
     $registrationUrl = trim((string) ($_POST["registration_url"] ?? ""));
     $status = trim((string) ($_POST["status"] ?? "draft"));
     $isFeatured = isset($_POST["is_featured"]) ? 1 : 0;
+    $mediaTypes = $_POST["media_type"] ?? [];
+    $mediaPaths = $_POST["media_path"] ?? [];
+    $mediaCaptions = $_POST["media_caption"] ?? [];
+    $mediaEntries = [];
+
+    foreach ((array) $mediaPaths as $index => $mediaPath) {
+        $path = trim((string) $mediaPath);
+        if ($path === "") {
+            continue;
+        }
+
+        $mediaEntries[] = [
+            "media_type" => trim((string) (((array) $mediaTypes)[$index] ?? event_media_type_from_path($path))),
+            "media_path" => $path,
+            "caption" => trim((string) (((array) $mediaCaptions)[$index] ?? "")),
+        ];
+    }
+
+    $mediaEntries = array_merge($mediaEntries, event_uploaded_media_entries($_FILES["media_files"] ?? []));
+    if ($featuredImage === "" && $mediaEntries !== []) {
+        $featuredImage = (string) ($mediaEntries[0]["media_path"] ?? "");
+    }
 
     $form = [
         "id" => (int) ($_POST["id"] ?? 0),
@@ -63,6 +217,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["save_event"])) {
         "registration_url" => $registrationUrl,
         "status" => $status,
         "is_featured" => $isFeatured,
+        "media_gallery" => $mediaEntries,
     ];
 
     if (!$pdoReady) {
@@ -89,7 +244,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["save_event"])) {
 
         if ($form["id"] > 0) {
             $params["id"] = $form["id"];
-            db_execute(
+            $saved = db_execute(
                 "UPDATE events
                  SET title = :title, slug = :slug, summary = :summary, content = :content,
                      featured_image = :featured_image, venue = :venue, city = :city,
@@ -100,13 +255,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["save_event"])) {
                 $params
             );
         } else {
-            db_execute(
+            $saved = db_execute(
                 "INSERT INTO events
                     (created_by, title, slug, summary, content, featured_image, venue, city, event_start, event_end, registration_url, status, is_featured, meta_title, meta_description)
                  VALUES
                     (1, :title, :slug, :summary, :content, :featured_image, :venue, :city, :event_start, :event_end, :registration_url, :status, :is_featured, :meta_title, :meta_description)",
                 $params
             );
+            $eventIdForMedia = (int) (db_last_insert_id() ?? 0);
+        }
+
+        if (($saved ?? false) && !isset($eventIdForMedia)) {
+            $eventIdForMedia = (int) $form["id"];
+        }
+
+        if (($saved ?? false) && ($eventIdForMedia ?? 0) > 0) {
+            sync_event_media_entries((int) $eventIdForMedia, $mediaEntries);
         }
 
         header("Location: " . admin_url("index.php?page=events"));
@@ -137,7 +301,7 @@ $events = admin_events();
                 <div class="admin-section-title">
                     <h3><?php echo $isEditing ? "Edit Event" : "Create Event"; ?></h3>
                 </div>
-                <form method="post">
+                <form method="post" enctype="multipart/form-data">
                     <input type="hidden" name="id" value="<?php echo e((string) $form["id"]); ?>">
                     <div class="admin-grid-2">
                         <div class="admin-form-group">
@@ -171,6 +335,7 @@ $events = admin_events();
                         <div class="admin-form-group">
                             <label for="event-image">Featured Image</label>
                             <input id="event-image" name="featured_image" type="text" value="<?php echo e((string) $form["featured_image"]); ?>">
+                            <p class="admin-helper">This is the main cover media used for event cards and the featured event block.</p>
                         </div>
                     </div>
                     <div class="admin-form-group">
@@ -180,6 +345,65 @@ $events = admin_events();
                     <div class="admin-form-group">
                         <label for="event-content">Content</label>
                         <textarea id="event-content" name="content" rows="10"><?php echo e((string) $form["content"]); ?></textarea>
+                    </div>
+                    <div class="admin-panel side-panel" style="margin: 24px 0;">
+                        <div class="admin-section-title">
+                            <h3>Event Media Gallery</h3>
+                        </div>
+                        <div class="side-panel-content">
+                            <div class="admin-form-group">
+                                <label for="event-media-upload">Upload New Media</label>
+                                <input id="event-media-upload" name="media_files[]" type="file" multiple accept="image/*,video/*">
+                                <p class="admin-helper">Upload as many images and videos as you want. They will appear on the event detail page gallery.</p>
+                            </div>
+                            <div id="event-media-rows" class="admin-panel-stack">
+                                <?php foreach (($form["media_gallery"] ?? []) as $mediaItem): ?>
+                                    <div class="admin-panel side-panel event-media-row">
+                                        <div class="admin-grid-2">
+                                            <div class="admin-form-group">
+                                                <label>Media Type</label>
+                                                <select name="media_type[]">
+                                                    <option value="image" <?php echo (($mediaItem["media_type"] ?? "image") === "image") ? "selected" : ""; ?>>Image</option>
+                                                    <option value="video" <?php echo (($mediaItem["media_type"] ?? "") === "video") ? "selected" : ""; ?>>Video</option>
+                                                </select>
+                                            </div>
+                                            <div class="admin-form-group">
+                                                <label>Caption</label>
+                                                <input type="text" name="media_caption[]" value="<?php echo e((string) ($mediaItem["caption"] ?? "")); ?>" placeholder="Optional caption">
+                                            </div>
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label>Media URL / Path</label>
+                                            <input type="text" name="media_path[]" value="<?php echo e((string) ($mediaItem["media_path"] ?? "")); ?>" placeholder="assets/uploads/events/example.jpg">
+                                        </div>
+                                        <button type="button" class="admin-btn light event-media-remove">Remove Item</button>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <button type="button" class="admin-btn light" id="add-event-media">Add Media Row</button>
+                            <template id="event-media-template">
+                                <div class="admin-panel side-panel event-media-row">
+                                    <div class="admin-grid-2">
+                                        <div class="admin-form-group">
+                                            <label>Media Type</label>
+                                            <select name="media_type[]">
+                                                <option value="image">Image</option>
+                                                <option value="video">Video</option>
+                                            </select>
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label>Caption</label>
+                                            <input type="text" name="media_caption[]" value="" placeholder="Optional caption">
+                                        </div>
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label>Media URL / Path</label>
+                                        <input type="text" name="media_path[]" value="" placeholder="assets/uploads/events/example.jpg">
+                                    </div>
+                                    <button type="button" class="admin-btn light event-media-remove">Remove Item</button>
+                                </div>
+                            </template>
+                        </div>
                     </div>
                     <div class="admin-grid-2">
                         <div class="admin-form-group">
@@ -246,6 +470,32 @@ $events = admin_events();
             </section>
         </aside>
     </div>
+    <script>
+        (() => {
+            const addButton = document.getElementById('add-event-media');
+            const rowsContainer = document.getElementById('event-media-rows');
+            const template = document.getElementById('event-media-template');
+            if (!addButton || !rowsContainer || !template) return;
+
+            const bindRemoveButtons = () => {
+                rowsContainer.querySelectorAll('.event-media-remove').forEach((button) => {
+                    if (button.dataset.bound === '1') return;
+                    button.dataset.bound = '1';
+                    button.addEventListener('click', () => {
+                        const row = button.closest('.event-media-row');
+                        if (row) row.remove();
+                    });
+                });
+            };
+
+            addButton.addEventListener('click', () => {
+                rowsContainer.appendChild(template.content.cloneNode(true));
+                bindRemoveButtons();
+            });
+
+            bindRemoveButtons();
+        })();
+    </script>
 <?php else: ?>
     <div class="admin-workspace-grid">
         <div class="admin-workspace-main">

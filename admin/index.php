@@ -283,6 +283,184 @@ if (!isset($aboutMilestoneDefaults)) {
     ];
 }
 
+if (!function_exists("admin_content_media_table_ready")) {
+    function admin_content_media_table_ready(string $table): bool
+    {
+        if (!\App\Database::available()) {
+            return false;
+        }
+
+        if ($table === "post_media") {
+            \App\Database::execute(
+                "CREATE TABLE IF NOT EXISTS post_media (
+                    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    post_id BIGINT UNSIGNED NOT NULL,
+                    media_type ENUM('image', 'video') NOT NULL DEFAULT 'image',
+                    media_path VARCHAR(255) NOT NULL,
+                    caption VARCHAR(255) NULL,
+                    sort_order INT NOT NULL DEFAULT 0,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    KEY idx_post_media_post_id (post_id),
+                    CONSTRAINT fk_post_media_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+                )"
+            );
+        } elseif ($table === "event_media") {
+            \App\Database::execute(
+                "CREATE TABLE IF NOT EXISTS event_media (
+                    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    event_id BIGINT UNSIGNED NOT NULL,
+                    media_type ENUM('image', 'video') NOT NULL DEFAULT 'image',
+                    media_path VARCHAR(255) NOT NULL,
+                    caption VARCHAR(255) NULL,
+                    sort_order INT NOT NULL DEFAULT 0,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    KEY idx_event_media_event_id (event_id),
+                    CONSTRAINT fk_event_media_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+                )"
+            );
+        }
+
+        return \App\Database::tableExists($table);
+    }
+}
+
+if (!function_exists("admin_media_type_from_path")) {
+    function admin_media_type_from_path(string $path): string
+    {
+        $ext = strtolower((string) pathinfo($path, PATHINFO_EXTENSION));
+        return in_array($ext, ["mp4", "webm", "mov", "avi", "mkv"], true) ? "video" : "image";
+    }
+}
+
+if (!function_exists("admin_parse_media_paths")) {
+    function admin_parse_media_paths(string $raw): array
+    {
+        $entries = [];
+        $lines = preg_split('/\r\n|\r|\n/', $raw) ?: [];
+        foreach ($lines as $line) {
+            $path = trim($line);
+            if ($path === "") {
+                continue;
+            }
+            $entries[] = [
+                "media_type" => admin_media_type_from_path($path),
+                "media_path" => $path,
+                "caption" => "",
+            ];
+        }
+        return $entries;
+    }
+}
+
+if (!function_exists("admin_upload_media_entries")) {
+    function admin_upload_media_entries(array $files, string $folder): array
+    {
+        $entries = [];
+        if (!isset($files["name"]) || !is_array($files["name"])) {
+            return $entries;
+        }
+
+        $uploadDir = __DIR__ . "/../assets/uploads/{$folder}/";
+        if (!is_dir($uploadDir)) {
+            @mkdir($uploadDir, 0777, true);
+        }
+
+        foreach ($files["name"] as $index => $originalName) {
+            if (($files["error"][$index] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+                continue;
+            }
+
+            $safeName = time() . "_" . $index . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename((string) $originalName));
+            $dest = $uploadDir . $safeName;
+            if (!move_uploaded_file((string) $files["tmp_name"][$index], $dest)) {
+                continue;
+            }
+
+            $relativePath = "assets/uploads/{$folder}/" . $safeName;
+            $entries[] = [
+                "media_type" => admin_media_type_from_path($relativePath),
+                "media_path" => $relativePath,
+                "caption" => "",
+            ];
+        }
+
+        return $entries;
+    }
+}
+
+if (!function_exists("admin_sync_post_media")) {
+    function admin_sync_post_media(int $postId, array $entries): void
+    {
+        if ($postId <= 0 || !admin_content_media_table_ready("post_media")) {
+            return;
+        }
+        \App\Database::execute("DELETE FROM post_media WHERE post_id = :post_id", ["post_id" => $postId]);
+        $sortOrder = 0;
+        foreach ($entries as $entry) {
+            $path = trim((string) ($entry["media_path"] ?? ""));
+            if ($path === "") {
+                continue;
+            }
+            \App\Database::execute(
+                "INSERT INTO post_media (post_id, media_type, media_path, caption, sort_order)
+                 VALUES (:post_id, :media_type, :media_path, :caption, :sort_order)",
+                [
+                    "post_id" => $postId,
+                    "media_type" => (string) ($entry["media_type"] ?? admin_media_type_from_path($path)),
+                    "media_path" => $path,
+                    "caption" => trim((string) ($entry["caption"] ?? "")),
+                    "sort_order" => $sortOrder++,
+                ]
+            );
+        }
+    }
+}
+
+if (!function_exists("admin_sync_event_media")) {
+    function admin_sync_event_media(int $eventId, array $entries): void
+    {
+        if ($eventId <= 0 || !admin_content_media_table_ready("event_media")) {
+            return;
+        }
+        \App\Database::execute("DELETE FROM event_media WHERE event_id = :event_id", ["event_id" => $eventId]);
+        $sortOrder = 0;
+        foreach ($entries as $entry) {
+            $path = trim((string) ($entry["media_path"] ?? ""));
+            if ($path === "") {
+                continue;
+            }
+            \App\Database::execute(
+                "INSERT INTO event_media (event_id, media_type, media_path, caption, sort_order)
+                 VALUES (:event_id, :media_type, :media_path, :caption, :sort_order)",
+                [
+                    "event_id" => $eventId,
+                    "media_type" => (string) ($entry["media_type"] ?? admin_media_type_from_path($path)),
+                    "media_path" => $path,
+                    "caption" => trim((string) ($entry["caption"] ?? "")),
+                    "sort_order" => $sortOrder++,
+                ]
+            );
+        }
+    }
+}
+
+if (!function_exists("admin_fetch_media_paths")) {
+    function admin_fetch_media_paths(string $table, string $foreignKey, int $id, ?string $fallback = null): string
+    {
+        if ($id <= 0 || !admin_content_media_table_ready($table)) {
+            return trim((string) $fallback);
+        }
+        $rows = \App\Database::fetchAll(
+            "SELECT media_path FROM {$table} WHERE {$foreignKey} = :id ORDER BY sort_order ASC, id ASC",
+            ["id" => $id]
+        ) ?: [];
+        if ($rows === []) {
+            return trim((string) $fallback);
+        }
+        return implode("\n", array_map(static fn(array $row): string => (string) ($row["media_path"] ?? ""), $rows));
+    }
+}
+
 $flashMsg = ""; $flashType = "";
 
 $csrfError = "";
@@ -366,6 +544,11 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $seoKeywords = trim((string) ($_POST["seo_keywords"] ?? ""));
         $canonicalUrl = trim((string) ($_POST["canonical_url"] ?? ""));
         $tagsRaw = trim((string) ($_POST["tags"] ?? ""));
+        $mediaPathsRaw = trim((string) ($_POST["media_paths"] ?? ""));
+        $mediaEntries = array_merge(
+            admin_parse_media_paths($mediaPathsRaw),
+            admin_upload_media_entries($_FILES["media_files"] ?? [], "posts")
+        );
         $catSlug = Helpers::slugify($category);
         $permalink = "blog/" . $catSlug . "/" . $slug;
         $featuredImage = "";
@@ -378,6 +561,9 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
             if (move_uploaded_file($_FILES["featured_image"]["tmp_name"], $dest)) {
                 $featuredImage = "assets/images/blogs/" . $name;
             }
+        }
+        if ($featuredImage === "" && $mediaEntries !== []) {
+            $featuredImage = (string) ($mediaEntries[0]["media_path"] ?? "");
         }
 
         if ($title !== "") {
@@ -399,6 +585,7 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($newPostId > 0) {
                     $tagNames = array_filter(array_map("trim", explode(",", $tagsRaw)));
                     Content::syncPostTags($newPostId, $tagNames);
+                    admin_sync_post_media($newPostId, $mediaEntries);
                 }
                 $flashMsg = "Post created successfully"; $flashType = "success";
             } else { $flashMsg = "A post with this title already exists"; $flashType = "danger"; }
@@ -419,6 +606,11 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $seoKeywords = trim((string) ($_POST["seo_keywords"] ?? ""));
         $canonicalUrl = trim((string) ($_POST["canonical_url"] ?? ""));
         $tagsRaw = trim((string) ($_POST["tags"] ?? ""));
+        $mediaPathsRaw = trim((string) ($_POST["media_paths"] ?? ""));
+        $mediaEntries = array_merge(
+            admin_parse_media_paths($mediaPathsRaw),
+            admin_upload_media_entries($_FILES["media_files"] ?? [], "posts")
+        );
         $catSlug = Helpers::slugify($category);
         $permalink = "blog/" . $catSlug . "/" . $slug;
         $featuredImage = "";
@@ -442,6 +634,9 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                 $existing = Database::fetchOne("SELECT featured_image FROM posts WHERE id = :id", ["id" => $id]);
                 if ($existing) $featuredImage = (string)($existing["featured_image"] ?? "");
             }
+            if ($featuredImage === "" && $mediaEntries !== []) {
+                $featuredImage = (string) ($mediaEntries[0]["media_path"] ?? "");
+            }
             $categoryRow = Content::ensurePostCategory($category);
             $publishedAtSql = $status === "published"
                 ? "published_at=IF(published_at IS NULL,NOW(),published_at)"
@@ -464,6 +659,7 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
             if ($updated) {
                 $tagNames = array_filter(array_map("trim", explode(",", $tagsRaw)));
                 Content::syncPostTags($id, $tagNames);
+                admin_sync_post_media($id, $mediaEntries);
                 $flashMsg = "Post updated successfully"; $flashType = "success";
             } else {
                 $flashMsg = "Post update failed. Please try again."; $flashType = "danger";
@@ -567,6 +763,11 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $metaDescription = trim((string) ($_POST["meta_description"] ?? ""));
         $isFeatured = isset($_POST["is_featured"]) ? 1 : 0;
         $status = (string) ($_POST["status"] ?? "draft");
+        $mediaPathsRaw = trim((string) ($_POST["media_paths"] ?? ""));
+        $mediaEntries = array_merge(
+            admin_parse_media_paths($mediaPathsRaw),
+            admin_upload_media_entries($_FILES["media_files"] ?? [], "events")
+        );
         $featuredImage = "";
 
         if (isset($_FILES["featured_image"]) && $_FILES["featured_image"]["error"] === UPLOAD_ERR_OK) {
@@ -576,6 +777,9 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
             if (move_uploaded_file($_FILES["featured_image"]["tmp_name"], $dest)) {
                 $featuredImage = "assets/images/events/" . $name;
             }
+        }
+        if ($featuredImage === "" && $mediaEntries !== []) {
+            $featuredImage = (string) ($mediaEntries[0]["media_path"] ?? "");
         }
 
         if ($title !== "" && $eventStart !== "") {
@@ -593,6 +797,10 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                      "status" => $status, "is_featured" => $isFeatured, "meta_title" => $metaTitle ?: null,
                      "meta_description" => $metaDescription ?: null, "created_by" => (int)($admin["id"] ?? 0)]
                 );
+                $newEventId = (int)(Database::lastInsertId() ?? 0);
+                if ($newEventId > 0) {
+                    admin_sync_event_media($newEventId, $mediaEntries);
+                }
                 $flashMsg = "Event created successfully"; $flashType = "success";
             } else { $flashMsg = "An event with this title already exists"; $flashType = "danger"; }
         } else { $flashMsg = "Title and start date are required"; $flashType = "danger"; }
@@ -613,6 +821,11 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
         $metaDescription = trim((string) ($_POST["meta_description"] ?? ""));
         $isFeatured = isset($_POST["is_featured"]) ? 1 : 0;
         $status = (string) ($_POST["status"] ?? "draft");
+        $mediaPathsRaw = trim((string) ($_POST["media_paths"] ?? ""));
+        $mediaEntries = array_merge(
+            admin_parse_media_paths($mediaPathsRaw),
+            admin_upload_media_entries($_FILES["media_files"] ?? [], "events")
+        );
         $featuredImage = "";
 
         if (isset($_FILES["featured_image"]) && $_FILES["featured_image"]["error"] === UPLOAD_ERR_OK) {
@@ -629,6 +842,9 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                 $existing = Database::fetchOne("SELECT featured_image FROM events WHERE id = :id", ["id" => $id]);
                 if ($existing) $featuredImage = $existing["featured_image"];
             }
+            if ($featuredImage === "" && $mediaEntries !== []) {
+                $featuredImage = (string) ($mediaEntries[0]["media_path"] ?? "");
+            }
             if ($isFeatured) {
                 Database::execute("UPDATE events SET is_featured = 0 WHERE id <> :id", ["id" => $id]);
             }
@@ -643,6 +859,7 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                  "status" => $status, "is_featured" => $isFeatured, "meta_title" => $metaTitle ?: null,
                  "meta_description" => $metaDescription ?: null, "id" => $id]
             );
+            admin_sync_event_media($id, $mediaEntries);
             $flashMsg = "Event updated successfully"; $flashType = "success";
         } else { $flashMsg = "Invalid request"; $flashType = "danger"; }
     }
@@ -1143,7 +1360,7 @@ if ($dbAvail && $_SERVER["REQUEST_METHOD"] === "POST") {
                             </ul>
                             <p><strong>Please log in and change your password immediately.</strong></p>
                             <div class='footer'>
-                                <p>&copy; " . date('Y') . " Gracious Charity. All rights reserved.</p>
+                                <p>&copy; " . date('Y') . " " . Helpers::e($siteName) . ". All rights reserved.</p>
                             </div>
                         </div>
                     </body>
@@ -1567,9 +1784,13 @@ if ($dbAvail && isset($_GET["ajax"]) && $_GET["ajax"] === "get_item") {
             $item = Database::fetchOne("SELECT * FROM posts WHERE id = :id", ["id" => $id]);
             if ($item) {
                 $item["tags"] = implode(", ", Content::adminPostTagNames((int)($item["id"] ?? 0)));
+                $item["media_paths"] = admin_fetch_media_paths("post_media", "post_id", (int) ($item["id"] ?? 0), (string) ($item["featured_image"] ?? ""));
             }
         } elseif ($type === "event") {
             $item = Database::fetchOne("SELECT * FROM events WHERE id = :id", ["id" => $id]);
+            if ($item) {
+                $item["media_paths"] = admin_fetch_media_paths("event_media", "event_id", (int) ($item["id"] ?? 0), (string) ($item["featured_image"] ?? ""));
+            }
         } elseif ($type === "gallery") {
             $item = Database::fetchOne("SELECT * FROM gallery_items WHERE id = :id", ["id" => $id]);
         } elseif ($type === "admin") {
@@ -4540,7 +4761,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
               </div>
               <div class="form-field">
                 <label class="form-label">Copyright Label</label>
-                <input class="form-input" name="settings[copyright]" value="<?php echo Helpers::e($settings['footer_copyright'] ?? 'Gracious Charity'); ?>">
+                <input class="form-input" name="settings[copyright]" value="<?php echo Helpers::e($settings['footer_copyright'] ?? $siteName); ?>">
               </div>
               <div class="form-field">
                 <label class="form-label">Quick Links Column Title</label>
@@ -5007,7 +5228,7 @@ select.form-control{cursor:pointer;appearance:none;background-image:url("data:im
             </div>
             <div class="form-field">
               <label class="form-label">Organization Name</label>
-              <input class="form-input" name="site_name" value="<?php echo Helpers::e($settings["site_name"] ?? "Gracious Charity"); ?>"/>
+              <input class="form-input" name="site_name" value="<?php echo Helpers::e($settings["site_name"] ?? $siteName); ?>"/>
             </div>
             <div class="form-field">
               <label class="form-label">Contact Email</label>
@@ -5459,6 +5680,8 @@ const MODAL_FORMS = {
       {name:'id',type:'hidden'},
       {name:'title',label:'Headline',type:'text',required:true,placeholder:'Enter a strong article headline'},
       {name:'featured_image',label:'Cover Image',type:'file'},
+      {name:'media_files[]',label:'Upload Gallery Images/Videos',type:'file',multiple:true},
+      {name:'media_paths',label:'Gallery Media Paths',type:'textarea',placeholder:'One image or video path per line',rows:4},
       {name:'category',label:'Category',type:'select',options:['Impact Stories','News','Announcements','Healthcare','Education','Partnerships','General']},
       {name:'author_name',label:'Author Byline',type:'text',placeholder:'Author name'},
       {name:'status',label:'Status',type:'select',options:['draft','published','archived']},
@@ -5495,6 +5718,8 @@ const MODAL_FORMS = {
       {name:'id',type:'hidden'},
       {name:'title',label:'Title',type:'text',required:true,placeholder:'Event title'},
       {name:'featured_image',label:'Cover Image',type:'file'},
+      {name:'media_files[]',label:'Upload Gallery Images/Videos',type:'file',multiple:true},
+      {name:'media_paths',label:'Gallery Media Paths',type:'textarea',placeholder:'One image or video path per line',rows:4},
       {name:'venue',label:'Venue',type:'text',placeholder:'Event venue'},
       {name:'city',label:'City',type:'text',placeholder:'City'},
       {name:'event_start',label:'Start Date',type:'datetime-local',required:true},
@@ -5746,7 +5971,7 @@ function openModal(type, id) {
     } else if (f.type === 'textarea') {
       html += '<textarea class="form-control" name="' + f.name + '" placeholder="' + (f.placeholder||'') + '" rows="' + (f.rows||4) + '"' + (f.required ? ' required' : '') + '></textarea>';
     } else {
-      html += '<input class="form-control" type="' + f.type + '" name="' + f.name + '" placeholder="' + (f.placeholder||'') + '"' + (f.required ? ' required' : '') + '/>';
+      html += '<input class="form-control" type="' + f.type + '" name="' + f.name + '" placeholder="' + (f.placeholder||'') + '"' + (f.required ? ' required' : '') + (f.multiple ? ' multiple' : '') + '/>';
     }
     html += '</div>';
   }

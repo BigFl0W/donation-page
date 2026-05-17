@@ -4,7 +4,7 @@ declare(strict_types=1);
 use App\Database;
 use App\Helpers;
 
-$brand_name = Helpers::brandName("Gracious Charity");
+$brand_name = Helpers::brandName();
 $brand_logo_footer = Helpers::siteUrl(Helpers::brandLogoPath("assets/images/logo_white.svg"));
 
 $footerSettings = [];
@@ -31,7 +31,7 @@ $footerNoteButton = $footerSettings["footer_note_button"] ?? "Donate Now";
 $footerNoteUrl = $footerSettings["footer_note_url"] ?? "donation-page.php";
 $footerCtaTitle = $footerSettings["footer_cta_title"] ?? "Give us a call";
 $footerCtaPhone = $footerSettings["footer_cta_phone"] ?? $footerPhone;
-$footerCopyright = $footerSettings["footer_copyright"] ?? "Gracious Charity";
+$footerCopyright = $footerSettings["footer_copyright"] ?? $brand_name;
 
 $quickLinks = [];
 for ($i = 1; $i <= 4; $i++) {

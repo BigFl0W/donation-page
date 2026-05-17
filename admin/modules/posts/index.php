@@ -10,6 +10,136 @@ $error = "";
 $categories = admin_post_categories();
 $availableTags = admin_post_tags();
 
+if (!function_exists("post_media_table_ready")) {
+    function post_media_table_ready(): bool
+    {
+        if (!database_available()) {
+            return false;
+        }
+
+        db_execute(
+            "CREATE TABLE IF NOT EXISTS post_media (
+                id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                post_id BIGINT UNSIGNED NOT NULL,
+                media_type ENUM('image', 'video') NOT NULL DEFAULT 'image',
+                media_path VARCHAR(255) NOT NULL,
+                caption VARCHAR(255) NULL,
+                sort_order INT NOT NULL DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                KEY idx_post_media_post_id (post_id),
+                CONSTRAINT fk_post_media_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+            )"
+        );
+
+        return db_table_exists("post_media");
+    }
+}
+
+if (!function_exists("post_media_rows")) {
+    function post_media_rows(int $postId, string $featuredImage = ""): array
+    {
+        if ($postId <= 0 || !post_media_table_ready()) {
+            return $featuredImage !== "" ? [[
+                "media_type" => post_media_type_from_path($featuredImage),
+                "media_path" => $featuredImage,
+                "caption" => "",
+            ]] : [];
+        }
+
+        $rows = db_fetch_all(
+            "SELECT media_type, media_path, caption
+             FROM post_media
+             WHERE post_id = :post_id
+             ORDER BY sort_order ASC, id ASC",
+            ["post_id" => $postId]
+        ) ?: [];
+
+        if ($rows === [] && $featuredImage !== "") {
+            return [[
+                "media_type" => post_media_type_from_path($featuredImage),
+                "media_path" => $featuredImage,
+                "caption" => "",
+            ]];
+        }
+
+        return $rows;
+    }
+}
+
+if (!function_exists("post_media_type_from_path")) {
+    function post_media_type_from_path(string $path): string
+    {
+        $ext = strtolower((string) pathinfo($path, PATHINFO_EXTENSION));
+        return in_array($ext, ["mp4", "webm", "mov", "avi", "mkv"], true) ? "video" : "image";
+    }
+}
+
+if (!function_exists("post_uploaded_media_entries")) {
+    function post_uploaded_media_entries(array $files): array
+    {
+        $entries = [];
+        if (!isset($files["name"]) || !is_array($files["name"])) {
+            return $entries;
+        }
+
+        $uploadDir = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "uploads" . DIRECTORY_SEPARATOR . "posts" . DIRECTORY_SEPARATOR;
+        if (!is_dir($uploadDir)) {
+            @mkdir($uploadDir, 0777, true);
+        }
+
+        foreach ($files["name"] as $index => $originalName) {
+            if (($files["error"][$index] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+                continue;
+            }
+
+            $safeName = time() . "_" . $index . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename((string) $originalName));
+            $targetPath = $uploadDir . $safeName;
+            if (!move_uploaded_file((string) $files["tmp_name"][$index], $targetPath)) {
+                continue;
+            }
+
+            $relativePath = "assets/uploads/posts/" . $safeName;
+            $entries[] = [
+                "media_type" => post_media_type_from_path($relativePath),
+                "media_path" => $relativePath,
+                "caption" => "",
+            ];
+        }
+
+        return $entries;
+    }
+}
+
+if (!function_exists("sync_post_media_entries")) {
+    function sync_post_media_entries(int $postId, array $entries): void
+    {
+        if ($postId <= 0 || !post_media_table_ready()) {
+            return;
+        }
+
+        db_execute("DELETE FROM post_media WHERE post_id = :post_id", ["post_id" => $postId]);
+        $sortOrder = 0;
+        foreach ($entries as $entry) {
+            $path = trim((string) ($entry["media_path"] ?? ""));
+            if ($path === "") {
+                continue;
+            }
+
+            db_execute(
+                "INSERT INTO post_media (post_id, media_type, media_path, caption, sort_order)
+                 VALUES (:post_id, :media_type, :media_path, :caption, :sort_order)",
+                [
+                    "post_id" => $postId,
+                    "media_type" => (string) ($entry["media_type"] ?? post_media_type_from_path($path)),
+                    "media_path" => $path,
+                    "caption" => trim((string) ($entry["caption"] ?? "")),
+                    "sort_order" => $sortOrder++,
+                ]
+            );
+        }
+    }
+}
+
 $form = [
     "id" => 0,
     "title" => "",
@@ -28,6 +158,7 @@ $form = [
     "seo_keywords" => "",
     "canonical_url" => "",
     "permalink_path" => "",
+    "media_gallery" => [],
 ];
 
 if ($isEditing && $pdoReady) {
@@ -36,6 +167,7 @@ if ($isEditing && $pdoReady) {
         $form = array_merge($form, $record);
         $form["published_at"] = $record["published_at"] ? date("Y-m-d\TH:i", strtotime((string) $record["published_at"])) : "";
         $form["tag_names"] = implode(", ", admin_post_tag_names($postId));
+        $form["media_gallery"] = post_media_rows($postId, (string) ($record["featured_image"] ?? ""));
     }
 }
 
@@ -66,6 +198,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["save_post"])) {
     $metaTitle = trim((string) ($_POST["meta_title"] ?? ""));
     $metaDescription = trim((string) ($_POST["meta_description"] ?? ""));
     $seoKeywords = trim((string) ($_POST["seo_keywords"] ?? ""));
+    $mediaTypes = $_POST["media_type"] ?? [];
+    $mediaPaths = $_POST["media_path"] ?? [];
+    $mediaCaptions = $_POST["media_caption"] ?? [];
+    $mediaEntries = [];
+
+    foreach ((array) $mediaPaths as $index => $mediaPath) {
+        $path = trim((string) $mediaPath);
+        if ($path === "") {
+            continue;
+        }
+
+        $mediaEntries[] = [
+            "media_type" => trim((string) (((array) $mediaTypes)[$index] ?? post_media_type_from_path($path))),
+            "media_path" => $path,
+            "caption" => trim((string) (((array) $mediaCaptions)[$index] ?? "")),
+        ];
+    }
+
+    $mediaEntries = array_merge($mediaEntries, post_uploaded_media_entries($_FILES["media_files"] ?? []));
+    if ($featuredImage === "" && $mediaEntries !== []) {
+        $featuredImage = (string) ($mediaEntries[0]["media_path"] ?? "");
+    }
 
     $permalinkPath = build_post_permalink((string) ($categoryRecord["slug"] ?? $category), $slug);
     $canonicalUrl = trim((string) ($_POST["canonical_url"] ?? ""));
@@ -88,6 +242,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["save_post"])) {
         "seo_keywords" => $seoKeywords,
         "canonical_url" => $canonicalUrl,
         "permalink_path" => $permalinkPath,
+        "media_gallery" => $mediaEntries,
     ];
 
     if (!$pdoReady) {
@@ -95,7 +250,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["save_post"])) {
     } elseif ($title === "" || $content === "" || !$categoryRecord) {
         $error = "Title, category, and content are required.";
     } else {
-        $metaTitle = $metaTitle !== "" ? $metaTitle : $title . " | Gracious Charity Blog";
+        $metaTitle = $metaTitle !== "" ? $metaTitle : $title . " | " . \App\Helpers::brandName() . " Blog";
         $metaDescription = $metaDescription !== "" ? $metaDescription : mb_substr($excerpt !== "" ? $excerpt : strip_tags($content), 0, 250);
         $authorId = (int) (current_admin()["id"] ?? 0);
 
@@ -161,6 +316,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["save_post"])) {
 
         if ($saved ?? false) {
             sync_post_tags($savedPostId, split_tag_list($tagNames));
+            sync_post_media_entries($savedPostId, $mediaEntries);
         }
 
         header("Location: " . admin_url("index.php?page=posts"));
@@ -202,7 +358,7 @@ $scheduledPosts = count(array_filter(
     <?php if ($error !== ""): ?>
         <div class="admin-alert error"><?php echo e($error); ?></div>
     <?php endif; ?>
-    <form method="post" class="post-edit-layout">
+    <form method="post" enctype="multipart/form-data" class="post-edit-layout">
         <input type="hidden" name="id" value="<?php echo e((string) $form["id"]); ?>">
 
         <div class="post-edit-main">
@@ -259,7 +415,69 @@ $scheduledPosts = count(array_filter(
                 <div class="admin-form-group">
                     <label for="post-image">Featured Image</label>
                     <input id="post-image" name="featured_image" type="text" value="<?php echo e((string) $form["featured_image"]); ?>" placeholder="assets/images/blogs/blog_img_1.jpg">
+                    <p class="admin-helper">This remains the main cover image for cards and previews. Your full article gallery is managed below.</p>
                 </div>
+            </section>
+
+            <section class="admin-panel">
+                <div class="admin-panel-head">
+                    <div>
+                        <h3>Media Gallery</h3>
+                        <p>Add as many images and videos as you want for the full blog post page.</p>
+                    </div>
+                </div>
+                <div class="admin-form-group">
+                    <label for="post-media-upload">Upload New Media</label>
+                    <input id="post-media-upload" name="media_files[]" type="file" multiple accept="image/*,video/*">
+                    <p class="admin-helper">You can upload multiple files at once. They will be appended to the article gallery when you save.</p>
+                </div>
+                <div id="post-media-rows" class="admin-panel-stack">
+                    <?php foreach (($form["media_gallery"] ?? []) as $mediaIndex => $mediaItem): ?>
+                        <div class="admin-panel side-panel post-media-row">
+                            <div class="admin-grid-2">
+                                <div class="admin-form-group">
+                                    <label>Media Type</label>
+                                    <select name="media_type[]">
+                                        <option value="image" <?php echo (($mediaItem["media_type"] ?? "image") === "image") ? "selected" : ""; ?>>Image</option>
+                                        <option value="video" <?php echo (($mediaItem["media_type"] ?? "") === "video") ? "selected" : ""; ?>>Video</option>
+                                    </select>
+                                </div>
+                                <div class="admin-form-group">
+                                    <label>Caption</label>
+                                    <input type="text" name="media_caption[]" value="<?php echo e((string) ($mediaItem["caption"] ?? "")); ?>" placeholder="Optional caption">
+                                </div>
+                            </div>
+                            <div class="admin-form-group">
+                                <label>Media URL / Path</label>
+                                <input type="text" name="media_path[]" value="<?php echo e((string) ($mediaItem["media_path"] ?? "")); ?>" placeholder="assets/uploads/posts/example.jpg">
+                            </div>
+                            <button type="button" class="admin-btn light post-media-remove">Remove Item</button>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <button type="button" class="admin-btn light" id="add-post-media">Add Media Row</button>
+                <template id="post-media-template">
+                    <div class="admin-panel side-panel post-media-row">
+                        <div class="admin-grid-2">
+                            <div class="admin-form-group">
+                                <label>Media Type</label>
+                                <select name="media_type[]">
+                                    <option value="image">Image</option>
+                                    <option value="video">Video</option>
+                                </select>
+                            </div>
+                            <div class="admin-form-group">
+                                <label>Caption</label>
+                                <input type="text" name="media_caption[]" value="" placeholder="Optional caption">
+                            </div>
+                        </div>
+                        <div class="admin-form-group">
+                            <label>Media URL / Path</label>
+                            <input type="text" name="media_path[]" value="" placeholder="assets/uploads/posts/example.jpg">
+                        </div>
+                        <button type="button" class="admin-btn light post-media-remove">Remove Item</button>
+                    </div>
+                </template>
             </section>
 
             <section class="admin-panel">
@@ -379,6 +597,33 @@ $scheduledPosts = count(array_filter(
             <?php endif; ?>
         </aside>
     </form>
+
+    <script>
+        (() => {
+            const addButton = document.getElementById('add-post-media');
+            const rowsContainer = document.getElementById('post-media-rows');
+            const template = document.getElementById('post-media-template');
+            if (!addButton || !rowsContainer || !template) return;
+
+            const bindRemoveButtons = () => {
+                rowsContainer.querySelectorAll('.post-media-remove').forEach((button) => {
+                    if (button.dataset.bound === '1') return;
+                    button.dataset.bound = '1';
+                    button.addEventListener('click', () => {
+                        const row = button.closest('.post-media-row');
+                        if (row) row.remove();
+                    });
+                });
+            };
+
+            addButton.addEventListener('click', () => {
+                rowsContainer.appendChild(template.content.cloneNode(true));
+                bindRemoveButtons();
+            });
+
+            bindRemoveButtons();
+        })();
+    </script>
 
     <datalist id="post-category-options">
         <?php foreach ($categories as $categoryOption): ?>

@@ -11,17 +11,18 @@ $tagParam = trim((string) ($_GET["tag"] ?? ""));
 $categoryFilter = $categoryParam !== "" ? Helpers::slugify($categoryParam) : "";
 $tagFilter = $tagParam !== "" ? Helpers::slugify($tagParam) : "";
 $posts = Content::publishedPostsFiltered(12, $categoryFilter, $tagFilter);
+$brandName = Helpers::brandName();
 $featuredPost = $posts[0] ?? null;
 $secondaryPosts = array_slice($posts, 1);
 $categories = Content::blogCategorySummaries();
 $tags = Content::blogTagSummaries();
 
-$page_title = "Blog | Gracious Charity";
+$page_title = "Blog | {$brandName}";
 $breadcrumb_title = "Blog";
 $hero_title = "Blog";
 $section_title = "";
 $section_url = "blog.php";
-$page_description = "News, impact stories, announcements, and programme updates from Gracious Charity.";
+$page_description = "News, impact stories, announcements, and programme updates from {$brandName}.";
 $meta_keywords = "charity blog, non-profit news, impact stories, outreach updates";
 $canonical_url = Helpers::siteUrl("blog");
 $share_image = Helpers::siteUrl("assets/images/blogs/blog_img_1.jpg");
@@ -34,10 +35,10 @@ $activeLabel = "All Posts";
 if ($categoryFilter !== "") {
     foreach ($categories as $category) {
         if (($category["slug"] ?? "") === $categoryFilter) {
-            $page_title = ($category["name"] ?? "") . " | Gracious Charity Blog";
+            $page_title = ($category["name"] ?? "") . " | {$brandName} Blog";
             $breadcrumb_title = $category["name"] ?? "";
             $hero_title = $category["name"] ?? "";
-            $page_description = "Browse " . ($category["name"] ?? "") . " articles from Gracious Charity.";
+            $page_description = "Browse " . ($category["name"] ?? "") . " articles from {$brandName}.";
             $canonical_url = Helpers::siteUrl("blog?category=" . urlencode($categoryFilter));
             $activeLabel = (string) ($category["name"] ?? "Category");
             break;
@@ -46,10 +47,10 @@ if ($categoryFilter !== "") {
 }
 
 if ($tagFilter !== "") {
-    $page_title = "Tagged Stories | Gracious Charity Blog";
+    $page_title = "Tagged Stories | {$brandName} Blog";
     $breadcrumb_title = "Tagged Stories";
     $hero_title = "Tagged Stories";
-    $page_description = "Explore tagged Gracious Charity stories and updates.";
+    $page_description = "Explore tagged {$brandName} stories and updates.";
     $canonical_url = Helpers::siteUrl("blog?tag=" . urlencode($tagFilter));
     foreach ($tags as $tag) {
         if (($tag["slug"] ?? "") === $tagFilter) {
@@ -395,7 +396,7 @@ require __DIR__ . "/includes/header.php";
             <div class="journal-intro">
                 <div class="journal-kicker">Editorial Journal</div>
                 <h1 class="journal-title">Stories from the field, <em>impact in focus.</em></h1>
-                <p class="journal-summary">Browse verified updates, outreach stories, programme milestones, and community reflections from Gracious Charity. Every article is organized for clarity, shareability, and trust.</p>
+                <p class="journal-summary">Browse verified updates, outreach stories, programme milestones, and community reflections from <?php echo Helpers::e($brandName); ?>. Every article is organized for clarity, shareability, and trust.</p>
                 <div class="journal-pills">
                     <a class="<?php echo $categoryFilter === "" && $tagFilter === "" ? "active" : ""; ?>" href="blog.php">All Posts</a>
                     <?php foreach (array_slice($categories, 0, 3) as $category): ?>
@@ -516,7 +517,7 @@ require __DIR__ . "/includes/header.php";
 
                 <aside class="journal-sidebar-card">
                     <h4>Explore Gracious</h4>
-                    <p class="journal-standard-copy">Go beyond the stories and discover the wider work happening across Gracious Charity, from live events to programmes you can support directly.</p>
+                    <p class="journal-standard-copy">Go beyond the stories and discover the wider work happening across <?php echo Helpers::e($brandName); ?>, from live events to programmes you can support directly.</p>
                     <div class="journal-standard-grid">
                         <div class="journal-standard-item">
                             <i class="icofont-calendar"></i>
@@ -528,7 +529,7 @@ require __DIR__ . "/includes/header.php";
                         </div>
                         <div class="journal-standard-item">
                             <i class="icofont-users-social"></i>
-                            <div><strong>Partner With Us</strong><span>Work with Gracious Charity as a donor, sponsor, volunteer, or strategic ally.</span></div>
+                            <div><strong>Partner With Us</strong><span>Work with <?php echo Helpers::e($brandName); ?> as a donor, sponsor, volunteer, or strategic ally.</span></div>
                         </div>
                     </div>
                     <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:18px">
