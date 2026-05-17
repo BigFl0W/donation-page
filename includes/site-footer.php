@@ -330,14 +330,19 @@ $socials = [
             justify-content: space-between;
             align-items: center;
             font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.35);
+            color: rgba(255, 255, 255, 0.62);
+        }
+        .site-footer-v2 .footer-bottom-copy {
+            color: rgba(255, 255, 255, 0.72);
+            font-weight: 500;
         }
         .site-footer-v2 .footer-bottom-links {
             display: flex;
             gap: 24px;
+            flex-wrap: wrap;
         }
         .site-footer-v2 .footer-bottom-links a {
-            color: inherit;
+            color: rgba(255, 255, 255, 0.68);
             text-decoration: none;
             transition: color 0.3s ease;
         }
@@ -364,8 +369,16 @@ $socials = [
             }
             .site-footer-v2 .footer-bottom {
                 flex-direction: column;
-                gap: 15px;
+                gap: 12px;
                 text-align: center;
+            }
+            .site-footer-v2 .footer-bottom-links {
+                order: 1;
+                justify-content: center;
+                gap: 18px;
+            }
+            .site-footer-v2 .footer-bottom-copy {
+                order: 2;
             }
         }
     </style>
@@ -439,7 +452,7 @@ $socials = [
             </div>
 
             <div class="footer-bottom">
-                <div>Copyright <?php echo Helpers::e($footerCopyright); ?> <span id="yearText"></span></div>
+                <div class="footer-bottom-copy">Copyright <?php echo Helpers::e($footerCopyright); ?> <span id="yearText"></span></div>
                 <div class="footer-bottom-links">
                     <?php foreach ($bottomLinks as $link): ?>
                         <a href="<?php echo Helpers::e($link["url"]); ?>"><?php echo Helpers::e($link["label"]); ?></a>
