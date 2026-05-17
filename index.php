@@ -806,8 +806,8 @@ $homeCoreValues = [
                     </div>
                 </div>
 
+                <?php if (!empty($recentCauses)): ?>
                 <div class="owl-carousel owl-theme" id="home-second-causes">
-                    <?php if (!empty($recentCauses)): ?>
                         <?php foreach ($recentCauses as $cause): ?>
                             <?php 
                                 $goal = (float)$cause['goal_amount'] > 0 ? (float)$cause['goal_amount'] : 1;
@@ -853,15 +853,82 @@ $homeCoreValues = [
                             </div>
                             <!-- Causes Wrap -->
                         <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="col-12 text-center" style="padding: 50px 0; color: var(--muted); width: 100%;">
-                            <p>No causes have been published yet. Please check back later.</p>
-                        </div>
-                    <?php endif; ?>
                 </div>
+                <?php else: ?>
+                <div class="home-causes-empty-state">
+                    <div class="home-causes-empty-card">
+                        <div class="home-causes-empty-copy">
+                            <div class="home-causes-empty-kicker">Programmes In Preparation</div>
+                            <h3>New causes and outreach opportunities are being prepared with care.</h3>
+                            <p>We are currently shaping the next set of public causes to reflect real community needs, transparent planning, and measurable impact. Supporters can still stand with the mission through general giving and direct conversations with the team.</p>
+                            <div class="home-causes-empty-actions">
+                                <a href="donation-page" class="btn btn-default">Donate Now</a>
+                                <a href="contact-us" class="btn btn-outline-dark">Contact Us</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
             </div>
         </section>
         <!-- Causes Grid Start -->
+
+        <style>
+            .home-causes-empty-state {
+                margin-top: 28px;
+            }
+            .home-causes-empty-card {
+                max-width: 1080px;
+                padding: 38px 42px;
+                border-radius: 34px;
+                background: linear-gradient(135deg, #ffffff 0%, #f8f2e7 100%);
+                border: 1px solid rgba(213, 155, 45, 0.18);
+                box-shadow: 0 24px 60px rgba(17, 51, 42, 0.08);
+            }
+            .home-causes-empty-kicker {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 14px;
+                color: #4e7a64;
+                font-size: 0.8rem;
+                font-weight: 800;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+            }
+            .home-causes-empty-kicker::before {
+                content: "";
+                width: 30px;
+                height: 2px;
+                background: #d59b2d;
+            }
+            .home-causes-empty-copy h3 {
+                margin-bottom: 14px;
+                font-size: 2rem;
+                line-height: 1.2;
+                color: #1f2a44;
+            }
+            .home-causes-empty-copy p {
+                margin-bottom: 22px;
+                max-width: 62ch;
+                font-size: 1rem;
+                line-height: 1.8;
+                color: #5f6986;
+            }
+            .home-causes-empty-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 14px;
+            }
+            @media (max-width: 991px) {
+                .home-causes-empty-card {
+                    padding: 30px 24px;
+                }
+                .home-causes-empty-copy h3 {
+                    font-size: 1.65rem;
+                }
+            }
+        </style>
         
 
         <!-- Callout Style Start -->
