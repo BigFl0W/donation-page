@@ -7,6 +7,7 @@ use App\Helpers;
 use App\Database;
 use App\Content;
 use App\Mailer;
+use App\SeoAssistant;
 
 Auth::requireLogin();
 
@@ -1801,6 +1802,27 @@ if ($dbAvail && isset($_GET["ajax"]) && $_GET["ajax"] === "get_item") {
         }
     }
     echo json_encode($item);
+    exit;
+}
+
+if (isset($_GET["ajax"]) && $_GET["ajax"] === "generate_post_seo") {
+    header("Content-Type: application/json");
+    $input = json_decode((string) file_get_contents("php://input"), true) ?: [];
+    $token = (string) ($input["_csrf_token"] ?? "");
+    if ($token === "" || !hash_equals((string) ($_SESSION["_csrf_token"] ?? ""), $token)) {
+        http_response_code(403);
+        echo json_encode(["ok" => false, "message" => "Invalid form token. Reload and try again."]);
+        exit;
+    }
+
+    $result = SeoAssistant::generatePostSeo([
+        "title" => (string) ($input["title"] ?? ""),
+        "category" => (string) ($input["category"] ?? ""),
+        "excerpt" => (string) ($input["excerpt"] ?? ""),
+        "content" => (string) ($input["content"] ?? ""),
+    ]);
+
+    echo json_encode(["ok" => true, "data" => $result]);
     exit;
 }
 
@@ -5947,6 +5969,13 @@ function openModal(type, id) {
       else if (f.name === 'id') html += '<input type="hidden" name="id" value="' + editId + '"/>';
       continue;
     }
+
+    if (type === 'post' && f.name === 'meta_title') {
+      html += '<div class="form-group">';
+      html += '<button type="button" id="generatePostSeoBtn" class="btn-primary" style="width:100%;justify-content:center"><i class="fas fa-wand-magic-sparkles"></i> Generate SEO</button>';
+      html += '<p id="generatePostSeoNote" style="margin:10px 0 0;font-size:0.78rem;color:var(--mid)">Uses AI when configured, with a smart local fallback when it is not.</p>';
+      html += '</div>';
+    }
     
     // Do not show the password field when creating a new admin (auto-generated)
     if (f.name === 'password' && !isEdit) {
@@ -5991,6 +6020,69 @@ function openModal(type, id) {
     document.getElementById('modalForm').style.display = '';
     document.getElementById('modalSpinner').classList.add('hidden');
   }
+
+  if (type === 'post') {
+    bindGeneratePostSeo();
+  }
+}
+
+function bindGeneratePostSeo() {
+  const button = document.getElementById('generatePostSeoBtn');
+  const note = document.getElementById('generatePostSeoNote');
+  const form = document.getElementById('modalForm');
+  if (!button || !note || !form) return;
+
+  button.addEventListener('click', async () => {
+    const title = form.elements['title']?.value?.trim() || '';
+    const content = form.elements['content']?.value?.trim() || '';
+    const category = form.elements['category']?.value?.trim() || '';
+    const excerpt = form.elements['excerpt']?.value?.trim() || '';
+
+    if (!title || !content) {
+      note.textContent = 'Add at least a title and article content before generating SEO.';
+      note.style.color = 'var(--rose)';
+      return;
+    }
+
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating SEO...';
+    note.textContent = 'Generating SEO suggestions from your article...';
+    note.style.color = 'var(--mid)';
+
+    try {
+      const response = await fetch('?ajax=generate_post_seo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          _csrf_token: CSRF_TOKEN,
+          title,
+          content,
+          category,
+          excerpt
+        })
+      });
+
+      const payload = await response.json();
+      if (!response.ok || !payload?.ok) {
+        throw new Error(payload?.message || 'SEO generation failed.');
+      }
+
+      const data = payload.data || {};
+      if (form.elements['meta_title']) form.elements['meta_title'].value = data.meta_title || '';
+      if (form.elements['meta_description']) form.elements['meta_description'].value = data.meta_description || '';
+      if (form.elements['seo_keywords']) form.elements['seo_keywords'].value = data.seo_keywords || '';
+      if (form.elements['tags']) form.elements['tags'].value = data.tags || '';
+
+      note.textContent = data.message || 'SEO fields generated successfully.';
+      note.style.color = data.source === 'ai' ? 'var(--emerald, #059669)' : 'var(--mid)';
+    } catch (error) {
+      note.textContent = error?.message || 'SEO generation failed.';
+      note.style.color = 'var(--rose)';
+    } finally {
+      button.disabled = false;
+      button.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate SEO';
+    }
+  });
 }
 
 function fetchModalData(type, id) {
