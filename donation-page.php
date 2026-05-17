@@ -304,21 +304,25 @@ $donationPartnerLogos = array_values(array_filter($publishedPartners, static fun
                     </div>
                     <div class="col-lg-4 col-md-12">
                         <div class="faqs-sidebar pos-rel">
-                            <div class="bg-overlay blue opacity-80"></div>                            
-                            <form>
+                            <div class="bg-overlay blue opacity-80"></div>
+                            <div id="donationContactSuccess"></div>
+                            <form action="#" method="post" id="contact_form" data-success-target="#donationContactSuccess" novalidate="novalidate">
                                 <h3 class="h3-sm fw-7 txt-white mb-3">Have any Question?</h3>
                                 <div class="form-group">
-                                    <label for="fullname"><strong>Full Name</strong></label>
-                                    <input type="text" class="form-control form-light" id="fullname">
+                                    <label for="donation_contact_name"><strong>Full Name</strong></label>
+                                    <input type="text" class="form-control form-light" id="donation_contact_name" name="name">
                                 </div>
                                 <div class="form-group">
-                                    <label for="emailform"><strong>Email Address</strong></label>
-                                    <input type="email" class="form-control form-light" id="emailform">
+                                    <label for="donation_contact_email"><strong>Email Address</strong></label>
+                                    <input type="email" class="form-control form-light" id="donation_contact_email" name="email">
                                 </div>
                                 <div class="form-group">
-                                    <label for="questionmsg"><strong>How can help you?</strong></label>
-                                    <textarea class="form-control form-light" rows="5" id="questionmsg"></textarea>
+                                    <label for="donation_contact_comment"><strong>How can help you?</strong></label>
+                                    <textarea class="form-control form-light" rows="5" id="donation_contact_comment" name="comment"></textarea>
                                 </div>
+                                <input type="hidden" name="lastname" value="Donation Enquiry">
+                                <input type="hidden" name="phone" value="">
+                                <input type="hidden" name="subject" value="Donation page enquiry">
                                 <button type="submit" class="btn btn-default mt-3">Ask It Now</button>
                             </form>
                         </div>
@@ -414,6 +418,29 @@ $donationPartnerLogos = array_values(array_filter($publishedPartners, static fun
                 min-width:260px;
                 justify-content:center;
                 text-align:center;
+            }
+            .faqs-sidebar #donationContactSuccess,
+            .faqs-sidebar form{
+                position: relative;
+                z-index: 2;
+            }
+            .faqs-sidebar #donationContactSuccess .alert{
+                border: 0 !important;
+                border-radius: 16px !important;
+                padding: 18px 20px !important;
+                margin-bottom: 18px !important;
+                font-size: 1rem !important;
+                line-height: 1.65 !important;
+                font-weight: 600 !important;
+                box-shadow: 0 14px 30px rgba(8, 15, 31, 0.18) !important;
+            }
+            .faqs-sidebar #donationContactSuccess .alert-success{
+                background: #ecf9f2 !important;
+                color: #113b2c !important;
+            }
+            .faqs-sidebar #donationContactSuccess .alert-danger{
+                background: #ffefef !important;
+                color: #7a1f1f !important;
             }
             @media (max-width: 991px) {
                 .partner-fallback-block .partner-fallback-actions{

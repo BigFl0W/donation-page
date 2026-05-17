@@ -659,20 +659,22 @@ Table of Content
                 $("#contact_form").validate({
                     meta: "validate",
                     submitHandler: function (form) {
-                        const $form = $("#contact_form");
+                        const $form = $(form);
                         const $submitButton = $form.find('button[type="submit"]');
+                        const successTarget = $form.data('successTarget') || '#sucessmessage';
+                        const $successMessage = $(successTarget);
                         if ($form.data('submitting')) {
                             return false;
                         }
                         $form.data('submitting', true);
                         $submitButton.prop('disabled', true).text('Sending...');
-                        var s_name = $("#name").val();
-                        var s_lastname = $("#lastname").val();
-                        var s_email = $("#email").val();
-                        var s_phone = $("#phone").val();
-                        var s_suject = $("#subject").val();
-                        var s_comment = $("#comment").val();
-                        $('#sucessmessage').html('');
+                        var s_name = $form.find('[name="name"]').val();
+                        var s_lastname = $form.find('[name="lastname"]').val();
+                        var s_email = $form.find('[name="email"]').val();
+                        var s_phone = $form.find('[name="phone"]').val();
+                        var s_suject = $form.find('[name="subject"]').val();
+                        var s_comment = $form.find('[name="comment"]').val();
+                        $successMessage.html('');
                         $.post("contact.php", {
                             name: s_name,
                             lastname: s_lastname,
@@ -682,12 +684,12 @@ Table of Content
                             comment: s_comment
                         },
                             function (result) {
-                                $('#sucessmessage').html(result);
+                                $successMessage.html(result);
                                 $form.trigger('reset');
                                 $form.hide();
                             })
                             .fail(function () {
-                                $('#sucessmessage').html("<div class='alert alert-danger mt-4'>We could not send your message right now. Please try again.</div>");
+                                $successMessage.html("<div class='alert alert-danger mt-4'>We could not send your message right now. Please try again.</div>");
                                 $submitButton.prop('disabled', false).text('Send Message');
                                 $form.data('submitting', false);
                             });
@@ -704,13 +706,13 @@ Table of Content
                             email: true
                         },
                         phone: {
-                            required: true,
+                            required: false,
                         },
                         comment: {
                             required: true
                         },
                         subject: {
-                            required: true
+                            required: false
                         }
                     },
                     messages: {
