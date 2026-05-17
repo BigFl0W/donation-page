@@ -463,14 +463,14 @@ $socials = [
     </footer>
 
     <div class="overlay overlay-hugeinc">
-        <form class="form-inline mt-2 mt-md-0">
+        <form class="form-inline mt-2 mt-md-0" action="<?php echo Helpers::e(Helpers::siteUrl('search.php')); ?>" method="get">
             <div class="form-inner">
                 <div class="form-inner-div d-inline-flex align-items-center no-gutters">
                     <div class="col-auto">
                         <i class="icofont-search"></i>
                     </div>
                     <div class="col">
-                        <input class="form-control w-100 p-0" type="text" placeholder="Search" aria-label="Search">
+                        <input class="form-control w-100 p-0" type="text" name="q" placeholder="Search posts, events, programmes..." aria-label="Search">
                     </div>
                     <div class="col-auto">
                         <a href="#" class="overlay-close"><i class="icofont-close-line"></i></a>

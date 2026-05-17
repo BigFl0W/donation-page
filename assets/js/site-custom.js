@@ -222,7 +222,19 @@ Table of Content
 
                 $('#search_home, .overlay-close').on("click", function ($e) {
                     $e.preventDefault();
-                    $(".overlay").toggleClass("open");
+                    const $overlay = $(".overlay");
+                    $overlay.toggleClass("open");
+                    if ($overlay.hasClass("open")) {
+                        window.setTimeout(function () {
+                            $overlay.find('input[name="q"]').trigger('focus');
+                        }, 120);
+                    }
+                });
+
+                $(document).on('keydown', function (event) {
+                    if (event.key === 'Escape') {
+                        $('.overlay').removeClass('open');
+                    }
                 });
             }
         },
