@@ -596,11 +596,11 @@ Table of Content
         // Carousel Home Second Events
         carousel_home_second_events: function () {
             if ($('#home-second-events').length) {
-
-                $("#home-second-events").owlCarousel({
+                var $owl = $("#home-second-events");
+                $owl.owlCarousel({
                     items: 1,
                     margin: 30,
-                    loop: true,
+                    loop: false,
                     nav: true,
                     slideBy: 1,
                     dots: false,
@@ -622,7 +622,7 @@ Table of Content
                         },
                         1000: {
                             items: 3,
-                            loop: true,
+                            loop: false,
                         }
                     }
                 });

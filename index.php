@@ -801,9 +801,11 @@ $homeCoreValues = [
                             More Recent Causes
                         </h1>
                     </div>
+                    <?php if (!empty($recentCauses)): ?>
                     <div class="col-lg-8 col-md-6 text-md-end btn-team">
                         <a href="causes-projects" class="btn btn-outline-dark">View All Causes</a>
                     </div>
+                    <?php endif; ?>
                 </div>
 
                 <?php if (!empty($recentCauses)): ?>
@@ -1076,18 +1078,86 @@ $homeCoreValues = [
                     <?php endforeach; ?>
                 </div>
                 <?php else: ?>
-                <div class="card text-center p-5">
-                    <h3 class="mb-3">No published events yet</h3>
-                    <p class="mb-0">Your newest published events will appear here automatically.</p>
+                <div class="home-events-empty-state">
+                    <div class="home-events-empty-card">
+                        <div class="home-events-empty-kicker">Events In Planning</div>
+                        <h3>No public events are live yet, but new gatherings and outreach moments are being prepared.</h3>
+                        <p>We are shaping the next set of event opportunities to make sure every public gathering is meaningful, well-organised, and worth showing up for. Visitors can still explore the mission, follow updates, and stay ready for the next announcement.</p>
+                        <div class="home-events-empty-actions">
+                            <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('donation-page')); ?>" class="btn btn-default">Support The Mission</a>
+                            <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('contact-us')); ?>" class="btn btn-outline-dark">Contact Us</a>
+                        </div>
+                    </div>
                 </div>
                 <?php endif; ?>
 
+                <?php if ($homeEvents): ?>
                 <div class="text-center mt-5">
                     <a href="<?php echo htmlspecialchars(\App\Helpers::siteUrl('events')); ?>" class="btn btn-outline-dark">View All Events</a>
                 </div>
+                <?php endif; ?>
             </div>
         </section>
         <!-- Event Style End -->
+
+        <style>
+            .home-events-empty-state {
+                margin-top: 28px;
+            }
+            .home-events-empty-card {
+                max-width: 1080px;
+                padding: 38px 42px;
+                border-radius: 34px;
+                background: linear-gradient(135deg, #ffffff 0%, #f8f2e7 100%);
+                border: 1px solid rgba(213, 155, 45, 0.18);
+                box-shadow: 0 24px 60px rgba(17, 51, 42, 0.08);
+            }
+            .home-events-empty-kicker {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 14px;
+                color: #4e7a64;
+                font-size: 0.8rem;
+                font-weight: 800;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+            }
+            .home-events-empty-kicker::before {
+                content: "";
+                width: 30px;
+                height: 2px;
+                background: #d59b2d;
+            }
+            .home-events-empty-card h3 {
+                margin-bottom: 14px;
+                max-width: 24ch;
+                font-size: 2rem;
+                line-height: 1.2;
+                color: #1f2a44;
+            }
+            .home-events-empty-card p {
+                margin-bottom: 22px;
+                max-width: 64ch;
+                font-size: 1rem;
+                line-height: 1.8;
+                color: #5f6986;
+            }
+            .home-events-empty-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 14px;
+            }
+            @media (max-width: 991px) {
+                .home-events-empty-card {
+                    padding: 30px 24px;
+                }
+                .home-events-empty-card h3 {
+                    max-width: none;
+                    font-size: 1.65rem;
+                }
+            }
+        </style>
 
         <!-- Testimonials Style Start -->
         <?php
