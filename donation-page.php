@@ -3,8 +3,13 @@ require_once __DIR__ . '/config/autoload.php';
 $brandName = \App\Helpers::brandName();
 $brandLogo = \App\Helpers::brandLogoPath("assets/images/logo_dark.svg");
 $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
+$innerPageBanner = (string)\App\Helpers::setting('inner_page_banner_image', 'assets/images/breadcrumbs_bg.jpg');
 $donationMetaTitle = (string)\App\Helpers::setting('donation_meta_title', 'Donate | ' . $brandName);
 $donationMetaDescription = (string)\App\Helpers::setting('donation_meta_description', 'Support Friends at Heart Welfare Initiative by donating to children, families and community care programmes that restore dignity and hope.');
+$publishedPartners = \App\Database::fetchAll("SELECT * FROM partners WHERE status = 'published' ORDER BY sort_order ASC, name ASC") ?: [];
+$donationPartnerLogos = array_values(array_filter($publishedPartners, static function ($partner) {
+    return trim((string)($partner['logo_path'] ?? '')) !== '';
+}));
 ?>
 <!doctype html>
 <html lang="en">
@@ -136,7 +141,7 @@ $donationMetaDescription = (string)\App\Helpers::setting('donation_meta_descript
 
     <!-- Page Breadcrumbs Start -->
     <section class="breadcrumbs-page-wrap">
-        <div class="bg-fixed pos-rel breadcrumbs-page">
+        <div class="bg-fixed pos-rel breadcrumbs-page" style="background-image: url('<?php echo htmlspecialchars($innerPageBanner); ?>');">
             <div class="container">
                 <h1>Donation</h1>
                 <nav aria-label="breadcrumb" class="breadcrumb-wrap">
@@ -236,7 +241,7 @@ $donationMetaDescription = (string)\App\Helpers::setting('donation_meta_descript
                                     </div>
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <select class="theme-combo donation-select" name="country">
+                                            <select class="form-control" name="country" data-no-select2="true">
                                                 <option value="">Select Country</option>
                                                 <option value="Nigeria">Nigeria</option>
                                                 <option value="United States">United States</option>
@@ -263,6 +268,7 @@ $donationMetaDescription = (string)\App\Helpers::setting('donation_meta_descript
                             const finalAmount = document.getElementById('final_amount');
                             const customInput = document.getElementById('custom');
                             const radios = document.querySelectorAll('input[name="amount_radio"]');
+                            const countrySelect = document.querySelector('select[name="country"][data-no-select2="true"]');
 
                             radios.forEach(radio => {
                                 radio.addEventListener('change', function() {
@@ -282,6 +288,16 @@ $donationMetaDescription = (string)\App\Helpers::setting('donation_meta_descript
                                     finalAmount.value = first.value;
                                 }
                             });
+
+                            if (countrySelect && window.jQuery) {
+                                const $countrySelect = window.jQuery(countrySelect);
+                                if ($countrySelect.hasClass('select2-hidden-accessible')) {
+                                    $countrySelect.select2('destroy');
+                                }
+                                window.jQuery(countrySelect)
+                                    .siblings('.select2')
+                                    .remove();
+                            }
                         });
                         </script>
 
@@ -337,227 +353,75 @@ $donationMetaDescription = (string)\App\Helpers::setting('donation_meta_descript
                 <div class="row align-items-center">
                     <div class="col-lg-12">
                         <h1 class="heading-main">
-                            <small>Global Providers</small>
-                            Our World Wide Partner
+                            <small>Partnership Network</small>
+                            Organisations and supporters helping us extend our reach
                         </h1>
                     </div>
                     <div class="col-sm-12">
+                        <?php if ($donationPartnerLogos): ?>
                         <div class="owl-carousel owl-theme" id="home-clients">
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client1.png" alt="">
-                                </div>
-                            </div>
-                            <!-- Client Logo -->
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client2.png" alt="">
-                                </div>
-                            </div>
-                            <!-- Client Logo -->
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client3.png" alt="">
-                                </div>
-                            </div>
-                            <!-- Client Logo -->
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client4.png" alt="">
-                                </div>
-                            </div>
-                            <!-- Client Logo -->
-
-                            <!-- Client Logo -->
-                            <div class="item">
-                                <div class="clients-logo">
-                                    <img src="assets/images/clients/client5.png" alt="">
-                                </div>
-                            </div>
-                            <!-- Client Logo -->
-
+                                <?php foreach ($donationPartnerLogos as $partner): ?>
+                                    <div class="item">
+                                        <div class="clients-logo">
+                                            <?php if (!empty($partner['website_url'])): ?>
+                                                <a href="<?php echo htmlspecialchars((string)$partner['website_url']); ?>" target="_blank" rel="noopener">
+                                                    <img
+                                                        src="<?php echo htmlspecialchars((string)$partner['logo_path']); ?>"
+                                                        alt="<?php echo htmlspecialchars((string)($partner['name'] ?: 'Partner')); ?>"
+                                                    >
+                                                </a>
+                                            <?php else: ?>
+                                                <img
+                                                    src="<?php echo htmlspecialchars((string)$partner['logo_path']); ?>"
+                                                    alt="<?php echo htmlspecialchars((string)($partner['name'] ?: 'Partner')); ?>"
+                                                >
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
                         </div>
+                        <?php else: ?>
+                        <div class="explore-accent-block partner-fallback-block" style="padding:40px 42px; border-radius:30px;">
+                            <div class="row align-items-center g-4">
+                                <div class="col-lg-8">
+                                    <div class="explore-kicker">Partnerships and Institutional Alignment</div>
+                                    <h3 class="mb-3">We are building a strong network of individuals, organisations and mission-aligned supporters.</h3>
+                                    <p class="mb-0">As partnerships are confirmed and logo permissions are received, approved partner identities will appear here. Until then, this section reflects our active commitment to credible collaboration and responsible growth.</p>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="partner-fallback-actions">
+                                        <a href="partners-sponsors.php" class="btn btn-default">Become a Partner</a>
+                                        <a href="contact-us.php" class="btn btn-outline-dark">Contact Us</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </section>
         <!-- Our Partners End -->
+
+        <style>
+            .partner-fallback-block .partner-fallback-actions{
+                display:flex;
+                flex-direction:column;
+                align-items:flex-end;
+                gap:16px;
+            }
+            .partner-fallback-block .partner-fallback-actions .btn{
+                min-width:260px;
+                justify-content:center;
+                text-align:center;
+            }
+            @media (max-width: 991px) {
+                .partner-fallback-block .partner-fallback-actions{
+                    align-items:flex-start;
+                }
+            }
+        </style>
         
            
     </main>
     <?php require __DIR__ . "/includes/site-footer.php"; ?>
-
-    <!-- Main Footer Start -->
-    <footer class="wide-tb-70 pb-0 mb-spacer-md" style="display:none">
-        <div class="container pos-rel">
-            <div class="row">
-                <div class="col-lg-5 col-md-10">
-                    <div class="footer-subscribe">
-                        <h3>Newsletter</h3>
-                        <h2>Get Update Every Week</h2>
-                        <div class="input-wrap">
-                            <input type="text" name="name" placeholder="Enter Your Email">
-                            <button type="submit" class="btn btn-default">Subscribe now</button>
-                        </div>
-                    </div>  
-                </div>
-                <div class="give-us-call">
-                    <i data-feather="phone"></i>
-                    <h4>Give us a call</h4>
-                    <h3>+1234567899</h3>
-                </div>
-            </div>
-            <div class="row">
-                <!-- Column First -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="logo-footer">
-                        <a href="index.php">
-                            <img class="site-logo site-logo--footer" src="<?php echo htmlspecialchars($brandLogo); ?>" alt="<?php echo htmlspecialchars($brandName); ?>">
-                        </a>
-                    </div>
-                    <p>This is Photoshop�s version of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet</p>
-                    <div class="social-icons">
-                        <ul class="list-unstyled list-group list-group-horizontal">
-                            <li><a href="#"><i class="icofont-facebook"></i></a></li>
-                            <li><a href="#"><i class="icofont-twitter"></i></a></li>
-                            <li><a href="#"><i class="icofont-instagram"></i></a></li>
-                            <li><a href="#"><i class="icofont-behance"></i></a></li>
-                            <li><a href="#"><i class="icofont-youtube-play"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- Column First -->
-
-                <!-- Column Second -->
-                <div class="col-lg-4 col-md-6">
-                    <h3 class="footer-heading">Contact Info</h3>
-
-                    <div class="footer-widget-contact">
-                        <ul class="list-unstyled">
-                            <li>
-                                <div><i data-feather="map-pin"></i> </div>
-                                <div>Envato Pty Ltd, 13/2 Elizabeth St Melbourne VIC 3000, Australia</div>
-                            </li>
-                            <li>
-                                <div><i data-feather="phone"></i> </div>
-                                <div><a href="tel:+1234567899">+1234567899</a></div>
-                            </li>
-                            <li>
-                                <div><i data-feather="mail"></i> </div>
-                                <div><a href="/cdn-cgi/l/email-protection#61080f070e21090e110413000812044f020e0c"><span class="__cf_email__" data-cfemail="9af3f4fcf5daf2f5eaffe8fbf3e9ffb4f9f5f7">[email&#160;protected]</span></a></div>
-                            </li>
-                            <li>
-                                <div><i data-feather="clock"></i> </div>
-                                <div>Mon-Fri  /  9:00 AM - 19:00 PM</div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>                
-                <!-- Column Second -->
-
-                <!-- Spacer For Medium -->
-                <div class="w-100 d-none d-md-block d-lg-none spacer-30"></div>
-                <!-- Spacer For Medium -->
-
-                <!-- Column Third -->
-                <div class="col-lg-2 col-md-6">
-                    <h3 class="footer-heading">Explore Us</h3>
-                    <div class="footer-widget-menu">
-                        <ul class="list-unstyled">
-                            <li><a href="#"><i class="icofont-simple-right"></i> <span>About Us</span></a></li>
-                            <li><a href="#"><i class="icofont-simple-right"></i> <span>Our History</span></a></li>
-                            <li><a href="#"><i class="icofont-simple-right"></i> <span>Our Services</span></a></li>
-                            <li><a href="#"><i class="icofont-simple-right"></i> <span>Meet Doctors</span></a></li>
-                            <li><a href="#"><i class="icofont-simple-right"></i> <span>Success History</span></a></li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- Column Third -->
-
-                <!-- Column Fourth -->
-                <div class="col-lg-3 col-md-6">
-                    <h3 class="footer-heading">Photo Gallery</h3>
-                    <ul id="basicuse" class="photo-thumbs"></ul>
-                </div>
-                <!-- Column Fourth -->
-            </div>
-        </div>  
-
-        <div class="copyright-wrap">
-            <div class="container pos-rel">
-                <div class="row text-md-start text-center">
-                    <div class="col-sm-12 col-md-auto copyright-text">
-                        � Copyright <span class="txt-blue">Gracious</span> <span id="yearText"></span>.   |   Created by <a href="https://mannatstudio.com/" target="_blank">MannatStudio</a>
-                    </div>
-                    <div class="col-sm-12 col-md-auto ms-md-auto text-md-end text-center copyright-links">
-                        <a href="#">Terms & Condition</a> | <a href="#">Privacy Policy</a> | <a href="#">Legal</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-    <!-- Main Footer End -->
-
-    <!-- Search Popup Start -->
-    <div class="overlay overlay-hugeinc">    
-        <form class="form-inline mt-2 mt-md-0">
-            <div class="form-inner">
-                <div class="form-inner-div d-inline-flex align-items-center no-gutters">
-                    <div class="col-auto">
-                        <i class="icofont-search"></i>
-                    </div> 
-                    <div class="col">
-                        <input class="form-control w-100 p-0" type="text" placeholder="Search" aria-label="Search">
-                    </div>
-                    <div class="col-auto">
-                        <a href="#" class="overlay-close link-oragne"><i class="icofont-close-line"></i></a>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-    <!-- Search Popup End -->
-
-    <!-- Back To Top Start -->
-    <a id="mkdf-back-to-top" href="#" class="off"><i data-feather="corner-right-up"></i></a>
-    <!-- Back To Top End -->
-
-    <!-- Jquery Library JS -->
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="assets/library/jquery/jquery.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="assets/library/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- Feather Icon JS -->
-    <script src="assets/library/feather-icons/feather.min.js"></script>
-    <!-- Owl Carousel JS -->
-    <script src="assets/library/owlcarousel/js/owl.carousel.min.js"></script>
-    <!-- Select2 Dropdown JS -->
-    <script src="assets/library/select2/js/select2.min.js"></script>
-    <!-- Magnific Popup JS -->
-    <script src="assets/library/magnific-popup/jquery.magnific-popup.min.js"></script>
-    <!-- jflickrfeed Images JS -->
-    <script src="assets/library/jflickrfeed/jflickrfeed.min.js"></script>
-    <!-- Way Points JS -->
-    <script src="assets/library/jquery-waypoints/jquery.waypoints.min.js"></script>
-    <!-- Count Down JS -->
-    <script src="assets/library/countdown/jquery.countdown.min.js"></script>
-    <!-- Appear JS -->
-    <script src="assets/library/jquery-appear/jquery.appear.js"></script>
-    <!-- Jquery Easing JS -->
-    <script src="assets/library/jquery-easing/jquery.easing.min.js"></script>
-    <!-- Counter JS -->
-    <script src="assets/library/jquery.counterup/jquery.counterup.min.js"></script>
-    <!-- Form Validation JS -->
-    <script src="assets/library/jquery-validate/jquery.validate.min.js"></script>
-    <!-- Theme Custom -->
-    <script src="assets/js/site-custom.js"></script>
-<script defer="" src="../../beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"64224fc8786846928480d180dfc466bd","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
-</html>

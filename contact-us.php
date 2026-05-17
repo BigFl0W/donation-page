@@ -3,6 +3,7 @@ require_once __DIR__ . '/config/autoload.php';
 $brandName = \App\Helpers::brandName();
 $brandLogo = \App\Helpers::brandLogoPath("assets/images/logo_dark.svg");
 $brandFavicon = \App\Helpers::brandFaviconPath("assets/images/favicon.ico");
+$innerPageBanner = (string)\App\Helpers::setting('inner_page_banner_image', 'assets/images/breadcrumbs_bg.jpg');
 $contactMetaTitle = (string)\App\Helpers::setting('contact_meta_title', 'Contact Us | ' . $brandName);
 $contactMetaDescription = (string)\App\Helpers::setting('contact_meta_description', 'Contact Friends at Heart Welfare Initiative for support, partnership enquiries, donations and community outreach conversations.');
 ?>
@@ -136,7 +137,7 @@ $contactMetaDescription = (string)\App\Helpers::setting('contact_meta_descriptio
 
     <!-- Page Breadcrumbs Start -->
     <section class="breadcrumbs-page-wrap">
-        <div class="bg-fixed pos-rel breadcrumbs-page">
+        <div class="bg-fixed pos-rel breadcrumbs-page" style="background-image: url('<?php echo htmlspecialchars($innerPageBanner); ?>');">
             <div class="container">
                 <h1>Contact Us</h1>
                 <nav aria-label="breadcrumb" class="breadcrumb-wrap">

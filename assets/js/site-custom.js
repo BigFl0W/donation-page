@@ -149,8 +149,9 @@ Table of Content
 
         // Select Dropdown Globally
         select_globally: function () {
-            if ($('select').length) {
-                $('select').select2({
+            const $eligibleSelects = $('select').not('[data-no-select2="true"]');
+            if ($eligibleSelects.length) {
+                $eligibleSelects.select2({
                     width: 'resolve',
                     theme: "form-dark",
                     minimumResultsForSearch: -1
